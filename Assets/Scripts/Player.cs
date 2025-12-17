@@ -133,6 +133,10 @@ public class Player : NetworkBehaviour
                 //Carrier = other.gameObject.GetComponent<NetworkObject>();
             }
         }
+        if (other.gameObject.name.Contains("Triangle") || other.gameObject.name.Contains("Pendulum "))
+        {
+            GameUIManager.Instance.GameOver();
+        }
     }
 
     private void OnCollisionExit2D(Collision2D other)
