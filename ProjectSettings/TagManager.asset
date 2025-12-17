@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - Ground
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: BackGround
+    uniqueID: 7020873
+    locked: 0
+  - name: JumpBlock
+    uniqueID: 320103117
+    locked: 0
+  - name: Ground
+    uniqueID: 1258919979
+    locked: 0
+  - name: Pendulum
+    uniqueID: 1615206009
+    locked: 0
+  - name: Coin
+    uniqueID: 3315864163
+    locked: 0
+  - name: pole
+    uniqueID: 1728195179
+    locked: 0
+  - name: spike
+    uniqueID: 2351394079
+    locked: 0
+  m_RenderingLayers:
+  - Default
