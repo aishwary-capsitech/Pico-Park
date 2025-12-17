@@ -3,7 +3,7 @@ using UnityEngine;
 public class MovingRamp : MonoBehaviour
 {
     public float moveDistance = 1.5f;   // total movement range
-    public float moveSpeed = 2.5f;      // speed
+    public float moveSpeed = 3.0f;      // speed
 
     private Vector3 startPos;
 

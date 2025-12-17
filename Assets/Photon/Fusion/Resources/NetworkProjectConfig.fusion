@@ -19,7 +19,7 @@
         "ReplicationFeatures": 1,
         "InputTransferMode": 0,
         "SimulationUpdateTimeMode": 0,
-        "PlayerCount": 6,
+        "PlayerCount": 10,
         "TickRateSelection": {
             "Client": 64,
             "ServerIndex": 0,
@@ -31,7 +31,7 @@
         "EnableAdaptivePacketFragmentation": false
     },
     "Network": {
-        "ConnectionTimeout": 15.0,
+        "ConnectionTimeout": 10.0,
         "ConnectionShutdownTime": 1.0,
         "ReliableDataTransferModes": 3
     },

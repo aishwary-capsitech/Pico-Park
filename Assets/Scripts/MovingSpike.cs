@@ -26,8 +26,8 @@ using UnityEngine;
 
 public class MovingSpike : MonoBehaviour
 {
-    public float moveHeight = 1.2f;
-    public float moveSpeed = 2f;
+    public float moveHeight = 0.35f;
+    public float moveSpeed = 0.4f;
 
     private Vector3 startPos;
 
@@ -47,3 +47,4 @@ public class MovingSpike : MonoBehaviour
         );
     }
 }
+

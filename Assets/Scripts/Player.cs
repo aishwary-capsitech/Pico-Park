@@ -81,12 +81,12 @@ public class Player : NetworkBehaviour
                 Debug.Log("Horizontal Movement: " + data.horizontalMovement);
             }
 
-            if (jumpPressed.IsSet(Buttons.Jump) && Mathf.Abs(rb.linearVelocity.y) < 0.01f && IsGrounded)
-            {
-                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                IsGrounded = false;
-                Debug.Log("IsGrounded : " + IsGrounded);
-            }
+            // if (jumpPressed.IsSet(Buttons.Jump) && Mathf.Abs(rb.linearVelocity.y) < 0.01f && IsGrounded)
+            // {
+            //     rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            //     IsGrounded = false;
+            //     Debug.Log("IsGrounded : " + IsGrounded);
+            // }
 
             //if (leftPressed.IsSet(Buttons.Left))
             //{
