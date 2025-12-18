@@ -33,7 +33,7 @@ public class MovingSpike : MonoBehaviour
 
     void Start()
     {
-        startPos = transform.position; // ground pivot
+        startPos = transform.position; 
     }
 
     void Update()
