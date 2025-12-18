@@ -62,6 +62,11 @@ public class Player : NetworkBehaviour
     {
         if (_networkRb == null) return;
 
+        if(_networkRb.Rigidbody != null && _networkRb.Rigidbody.transform.position.y < -5f)
+        {
+            UIManager.Instance.GameOver();
+        }
+
         if (GetInput(out NetworkInputData data))
         {
             rb = _networkRb.Rigidbody;
