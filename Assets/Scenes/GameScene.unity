@@ -423,8 +423,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -16, y: 23}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -12.19, y: 45.75649}
+  m_SizeDelta: {x: 173, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &112876537
 MonoBehaviour:
@@ -1979,7 +1979,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 50.24144
+  orthographic size: 4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2004,7 +2004,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 71.31457, y: 6.7770333, z: -100.8853}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2459,7 +2459,7 @@ MonoBehaviour:
     CustomLookAtTarget: 0
   Lens:
     FieldOfView: 34
-    OrthographicSize: 50.24144
+    OrthographicSize: 4
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -2486,7 +2486,7 @@ Transform:
   m_GameObject: {fileID: 642731379}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 71.31457, y: 6.7770333, z: -100.8853}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5048,7 +5048,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 159.8, y: -21.7}
+  m_AnchoredPosition: {x: 159.79999, y: -21.699951}
   m_SizeDelta: {x: 16.5056, y: 15.8303}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1181613812
@@ -6305,7 +6305,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: II
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7463,7 +7463,7 @@ Transform:
   m_GameObject: {fileID: 1674211562}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -60.85443, y: 3.3270895, z: 0.0458933}
+  m_LocalPosition: {x: -60.85443, y: 2.67, z: 0.0458933}
   m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7846,7 +7846,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 160.69998, y: -44.099976}
+  m_AnchoredPosition: {x: 160.69998, y: -44.099854}
   m_SizeDelta: {x: 19.513, y: 19.3249}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1710281806
@@ -8733,6 +8733,7 @@ GameObject:
   - component: {fileID: 1850429805}
   - component: {fileID: 1850429804}
   - component: {fileID: 1850429803}
+  - component: {fileID: 1850429806}
   m_Layer: 5
   m_Name: Pause
   m_TagString: Untagged
@@ -8757,8 +8758,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 489.1, y: 202.3}
-  m_SizeDelta: {x: 20.754, y: 30}
+  m_AnchoredPosition: {x: 503.91193, y: 269.0555}
+  m_SizeDelta: {x: 34.9181, y: 32.771}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1850429803
 MonoBehaviour:
@@ -8804,9 +8805,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 687714449}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: PauseGame
+      - m_Target: {fileID: 1850429806}
+        m_TargetAssemblyTypeName: PauseManager, Assembly-CSharp
+        m_MethodName: OnPauseClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8836,7 +8837,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -8878088185706026076, guid: bb824070c61d95c41a9767d23ea727e8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8854,6 +8855,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1850429801}
   m_CullTransparentMesh: 1
+--- !u!114 &1850429806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850429801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 378ce6b5bd35d3849b9fc8d317aaaa2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseSprite: {fileID: -8878088185706026076, guid: bb824070c61d95c41a9767d23ea727e8, type: 3}
+  resumeSprite: {fileID: 7225310921578687789, guid: 6cf0d51bb9c564a40b7f1845cebd9456, type: 3}
+  pausePanel: {fileID: 1087370032}
 --- !u!1 &1858200050
 GameObject:
   m_ObjectHideFlags: 0
@@ -9024,8 +9040,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -13, y: -27}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -13, y: -36.231915}
+  m_SizeDelta: {x: 173, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1922074536
 MonoBehaviour:
@@ -9071,9 +9087,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 687714449}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: ResumeGame
+      - m_Target: {fileID: 1850429806}
+        m_TargetAssemblyTypeName: PauseManager, Assembly-CSharp
+        m_MethodName: OnResumeClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
