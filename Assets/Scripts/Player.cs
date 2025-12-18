@@ -81,12 +81,12 @@ public class Player : NetworkBehaviour
                 Debug.Log("Horizontal Movement: " + data.horizontalMovement);
             }
 
-            // if (jumpPressed.IsSet(Buttons.Jump) && Mathf.Abs(rb.linearVelocity.y) < 0.01f && IsGrounded)
-            // {
-            //     rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            //     IsGrounded = false;
-            //     Debug.Log("IsGrounded : " + IsGrounded);
-            // }
+            if (jumpPressed.IsSet(Buttons.Jump) && Mathf.Abs(rb.linearVelocity.y) < 0.01f && IsGrounded)
+            {
+                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                IsGrounded = false;
+                Debug.Log("IsGrounded : " + IsGrounded);
+            }
 
             //if (leftPressed.IsSet(Buttons.Left))
             //{
@@ -133,9 +133,9 @@ public class Player : NetworkBehaviour
                 //Carrier = other.gameObject.GetComponent<NetworkObject>();
             }
         }
-        if (other.gameObject.name.Contains("Triangle") || other.gameObject.name.Contains("Pendulum "))
+        if (other.gameObject.name.Contains("Triangle") || other.gameObject.name.Contains("Pendulum"))
         {
-            GameUIManager.Instance.GameOver();
+            UIManager.Instance.GameOver();
         }
     }
 

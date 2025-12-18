@@ -1,13 +1,13 @@
-
-
-
 using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement;   // ⭐ ADD THIS
+using UnityEngine.SceneManagement;
+using System.Collections;   // ⭐ ADD THIS
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
+
+    public GameObject GameOverScreen;
 
     [Header("UI")]
     public TMP_Text coinText;
@@ -32,6 +32,7 @@ public class UIManager : MonoBehaviour
         // ⭐ ADD THIS
         if (pausePanel != null)
             pausePanel.SetActive(false);
+        GameOverScreen.SetActive(false);
 
         Time.timeScale = 1f;
     }
@@ -80,5 +81,17 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void GameOver()
+    {
+        StartCoroutine(OpenCloseScreen());
+    }
+
+    private IEnumerator OpenCloseScreen()
+    {
+        GameOverScreen.SetActive(true);
+        yield return new WaitForSeconds(1.5f);
+        GameOverScreen.SetActive(false);
     }
 }
