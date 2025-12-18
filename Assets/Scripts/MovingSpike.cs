@@ -2,22 +2,25 @@
 
 // public class MovingSpike : MonoBehaviour
 // {
-//     public float moveHeight = 1.5f;
-//     public float moveSpeed = 2f;
+//     public float moveHeight = 0.35f;
+//     public float moveSpeed = 0.4f;
 
 //     private Vector3 startPos;
-//     // Start is called once before the first execution of Update after the MonoBehaviour is created
+
 //     void Start()
 //     {
-//         startPos = transform.position;
+//         startPos = transform.position; 
 //     }
 
-//     // Update is called once per frame
 //     void Update()
 //     {
-//         float offset = Mathf.Sin(Time.time * moveSpeed);
+//         float yOffset = Mathf.PingPong(Time.time * moveSpeed, moveHeight);
 
-//         transform.position= startPos + Vector3.up * offset  * (moveHeight / 2f);
+//         transform.position = new Vector3(
+//             startPos.x,
+//             startPos.y + yOffset,
+//             startPos.z
+//         );
 //     }
 // }
 
@@ -29,15 +32,19 @@ public class MovingSpike : MonoBehaviour
     public float moveHeight = 0.35f;
     public float moveSpeed = 0.4f;
 
+    public bool canMove = true;   // 🔴 added
+
     private Vector3 startPos;
 
     void Start()
     {
-        startPos = transform.position; // ground pivot
+        startPos = transform.position; 
     }
 
     void Update()
     {
+        if (!canMove) return;   // 🔴 added
+
         float yOffset = Mathf.PingPong(Time.time * moveSpeed, moveHeight);
 
         transform.position = new Vector3(
@@ -46,5 +53,10 @@ public class MovingSpike : MonoBehaviour
             startPos.z
         );
     }
-}
 
+    // 🔔 called by buzzer
+    public void StopSpike()
+    {
+        canMove = false;
+    }
+}
