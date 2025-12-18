@@ -1452,6 +1452,8 @@ GameObject:
   - component: {fileID: 364715473}
   - component: {fileID: 364715472}
   - component: {fileID: 364715474}
+  - component: {fileID: 364715475}
+  - component: {fileID: 364715476}
   m_Layer: 0
   m_Name: Coin2
   m_TagString: Untagged
@@ -1559,12 +1561,43 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 1.3
+--- !u!114 &364715475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364715471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1110982349
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 364715476}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &364715476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 364715471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 549d77d06d566ee41a1921c9a23dcd98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &429986104
 GameObject:
   m_ObjectHideFlags: 0
@@ -5093,6 +5126,8 @@ GameObject:
   - component: {fileID: 1009477792}
   - component: {fileID: 1009477791}
   - component: {fileID: 1009477793}
+  - component: {fileID: 1009477794}
+  - component: {fileID: 1009477795}
   m_Layer: 0
   m_Name: Coin3
   m_TagString: Untagged
@@ -5200,12 +5235,43 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 1.3
+--- !u!114 &1009477794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009477790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3993889058
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1009477795}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &1009477795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009477790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 549d77d06d566ee41a1921c9a23dcd98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1036389580
 GameObject:
   m_ObjectHideFlags: 0
@@ -6939,6 +7005,8 @@ GameObject:
   - component: {fileID: 1277389398}
   - component: {fileID: 1277389397}
   - component: {fileID: 1277389399}
+  - component: {fileID: 1277389401}
+  - component: {fileID: 1277389400}
   m_Layer: 0
   m_Name: Diamond
   m_TagString: Untagged
@@ -7242,6 +7310,37 @@ PolygonCollider2D:
       - {x: 0.3307715, y: -7.542618}
       - {x: 0.45284182, y: -7.4205475}
   m_UseDelaunayMesh: 0
+--- !u!114 &1277389400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277389396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b718a08a535df4a4296f7b51649e9c77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1277389401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277389396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 678335525
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1277389400}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &1298348695
 GameObject:
   m_ObjectHideFlags: 0
@@ -9174,6 +9273,8 @@ GameObject:
   - component: {fileID: 1674211564}
   - component: {fileID: 1674211563}
   - component: {fileID: 1674211565}
+  - component: {fileID: 1674211566}
+  - component: {fileID: 1674211567}
   m_Layer: 0
   m_Name: Coin1
   m_TagString: Untagged
@@ -9281,12 +9382,43 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 1.3
+--- !u!114 &1674211566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1674211562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1391284422
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1674211567}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &1674211567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1674211562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 549d77d06d566ee41a1921c9a23dcd98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1742279465
 GameObject:
   m_ObjectHideFlags: 0
