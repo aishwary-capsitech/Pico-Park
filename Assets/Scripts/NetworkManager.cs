@@ -94,7 +94,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         {
             Debug.Log($"OnPlayerJoined: Player {player.PlayerId}");
 
-            Vector3 spawnPos = new Vector3(Random.Range(-3, 0), 1, 0);
+            Vector3 spawnPos = new Vector3(Random.Range(-3, 0), 2, 0);
             int i = player.PlayerId % playerPrefab.Length;
             NetworkPrefabRef playerPref = playerPrefab[i];
 

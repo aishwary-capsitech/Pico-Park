@@ -14,7 +14,7 @@ public class LobbyUIManager : MonoBehaviour
 
     [Header("Loading")]
     public Slider loadingSlider;      // LoadingSlider
-    public float loadingTime = 2.5f;
+    public float loadingTime = 3f;
 
     void Start()
     {

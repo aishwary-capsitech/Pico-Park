@@ -71,3 +71,6 @@ public class FusionLobby : MonoBehaviour
         Debug.Log("Client has entered in the room");
     }
 }
+
+
+

@@ -116,7 +116,7 @@ public class Player : NetworkBehaviour
     {
         //if (!Object.HasStateAuthority) return;
 
-        if (other.gameObject.name.Contains(GroundTag))
+        if (other.gameObject.CompareTag(GroundTag))
         {
             //if (IsCollisionFromBelow(other))
             //{
@@ -133,9 +133,23 @@ public class Player : NetworkBehaviour
                 //Carrier = other.gameObject.GetComponent<NetworkObject>();
             }
         }
-        if (other.gameObject.name.Contains("Triangle") || other.gameObject.name.Contains("Pendulum"))
+        if (other.gameObject.name.Contains("Spike"))
         {
             UIManager.Instance.GameOver();
+        }
+        if(other.gameObject.name.Contains("Coin"))
+        {
+            UIManager.Instance.CollectCoin();
+            Destroy(other.gameObject);
+        }
+        if (other.gameObject.name.Contains("Diamond"))
+        {
+            UIManager.Instance.CollectDiamond();
+            Destroy(other.gameObject);
+        }
+        if(other.gameObject.CompareTag("Finish"))
+        {
+            UIManager.Instance.LevelComplete();
         }
     }
 
@@ -143,7 +157,7 @@ public class Player : NetworkBehaviour
     {
         //if (!Object.HasStateAuthority) return;
 
-        if (other.gameObject.name.Contains(GroundTag))
+        if (other.gameObject.CompareTag(GroundTag))
         {
             IsGrounded = false;
         }
