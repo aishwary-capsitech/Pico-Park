@@ -56,14 +56,12 @@ public class MovingSpike : MonoBehaviour
         );
     }
 
-    // 🔔 Called when buzzer pressed
     public void StopSpike()
     {
         canMove = false;
-        transform.position = startPos;   // keep spike inside ground
+        transform.position = startPos; // keep spike hidden
     }
 
-    // 🔔 Called when buzzer released
     public void ResumeSpike()
     {
         timeOffset = Time.time;
