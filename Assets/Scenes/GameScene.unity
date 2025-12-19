@@ -1094,6 +1094,7 @@ GameObject:
   - component: {fileID: 311288549}
   - component: {fileID: 311288551}
   - component: {fileID: 311288550}
+  - component: {fileID: 311288552}
   m_Layer: 0
   m_Name: JumpMovePlatform
   m_TagString: Ground
@@ -1240,7 +1241,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 311288545}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
@@ -1259,14 +1260,27 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 311288545}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 204403f09be5d6544a3c75d193a1d900, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   requiredMass: 2
   moveSpeed: 2
-  targetOffset: {x: 4, y: 0.625}
+  startPosition: {fileID: 1215016114}
+  endPosition: {fileID: 286528897}
+--- !u!114 &311288552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311288545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b7d7828873e31f4aa7db567ae35a873, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &319433267
 GameObject:
   m_ObjectHideFlags: 0
@@ -4869,6 +4883,8 @@ GameObject:
   - component: {fileID: 989480053}
   - component: {fileID: 989480052}
   - component: {fileID: 989480055}
+  - component: {fileID: 989480057}
+  - component: {fileID: 989480056}
   m_Layer: 0
   m_Name: Ground13
   m_TagString: Ground
@@ -5004,7 +5020,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 6
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 3
@@ -5019,6 +5035,37 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &989480056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989480051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c086ed93f594db5458d1d8ec342f3e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &989480057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989480051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 4029049302
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 989480056}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &994272312
 GameObject:
   m_ObjectHideFlags: 0
@@ -5643,6 +5690,8 @@ GameObject:
   - component: {fileID: 1112962520}
   - component: {fileID: 1112962519}
   - component: {fileID: 1112962522}
+  - component: {fileID: 1112962524}
+  - component: {fileID: 1112962523}
   m_Layer: 0
   m_Name: Ground11
   m_TagString: Ground
@@ -5778,7 +5827,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 6
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 3
@@ -5793,6 +5842,37 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &1112962523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112962518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c086ed93f594db5458d1d8ec342f3e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1112962524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112962518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 546412464
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1112962523}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &1121125366
 GameObject:
   m_ObjectHideFlags: 0
@@ -10466,6 +10546,8 @@ GameObject:
   - component: {fileID: 1941534137}
   - component: {fileID: 1941534136}
   - component: {fileID: 1941534139}
+  - component: {fileID: 1941534141}
+  - component: {fileID: 1941534140}
   m_Layer: 0
   m_Name: Ground12
   m_TagString: Ground
@@ -10601,7 +10683,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 10
+  m_Mass: 6
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 3
@@ -10616,6 +10698,37 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &1941534140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1941534135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c086ed93f594db5458d1d8ec342f3e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1941534141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1941534135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3485528285
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1941534140}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &1950978448
 GameObject:
   m_ObjectHideFlags: 0

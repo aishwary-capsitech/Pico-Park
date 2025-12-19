@@ -319,18 +319,18 @@ public class Player : NetworkBehaviour
             UIManager.Instance.CollectDiamond();
             Destroy(other.gameObject);
         }
-        if(other.gameObject.CompareTag("Finish"))
-        {
-            // Mark this player as having reached the finish
-            if (Object.HasStateAuthority)
-            {
-                HasReachedFinish = true;
-                Debug.Log($"Player {Object.Id} reached finish");
-            }
+        //if(other.gameObject.CompareTag("Finish"))
+        //{
+        //    // Mark this player as having reached the finish
+        //    if (Object.HasStateAuthority)
+        //    {
+        //        HasReachedFinish = true;
+        //        Debug.Log($"Player {Object.Id} reached finish");
+        //    }
             
-            // Check if all players have reached finish
-            UIManager.Instance.CheckAllPlayersFinished();
-        }
+        //    // Check if all players have reached finish
+        //    UIManager.Instance.CheckAllPlayersFinished();
+        //}
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -345,6 +345,15 @@ public class Player : NetworkBehaviour
         if (collision.gameObject.name.Contains(PlayerName))
         {
             IsGrounded = true;
+        }
+        if(collision.gameObject.CompareTag("Finish"))
+        {
+            if (Object.HasStateAuthority)
+            {
+                HasReachedFinish = true;
+                Debug.Log($"Player {Object.Id} reached finish");
+            }
+            UIManager.Instance.CheckAllPlayersFinished();
         }
     }
 
@@ -361,6 +370,15 @@ public class Player : NetworkBehaviour
         if(other.gameObject.name.Contains(PlayerName) && !other.gameObject.CompareTag(GroundTag))
         {
             IsGrounded = false;
+        }
+
+        if(other.gameObject.CompareTag("Finish"))
+        {
+            if (Object.HasStateAuthority)
+            {
+                HasReachedFinish = false;
+                Debug.Log($"Player {Object.Id} left finish");
+            }
         }
     }
 }
