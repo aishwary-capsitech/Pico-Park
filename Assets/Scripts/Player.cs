@@ -258,6 +258,9 @@ public class Player : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+        if(!Object.HasStateAuthority)
+            return;
+
         if (_networkRb == null) return;
 
         if(_networkRb.Rigidbody != null && _networkRb.Rigidbody.transform.position.y < -5f)
@@ -291,18 +294,16 @@ public class Player : NetworkBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
+        if (!Object.HasStateAuthority)
+            return;
+
         if (other.gameObject.CompareTag(GroundTag))
         {
             IsGrounded = true;
         }
         if (other.gameObject.name.Contains(PlayerName))
         {
-            Vector2 contactNormal = other.GetContact(0).normal;
-
-            if (contactNormal.y > 0.5f)
-            {
-                IsGrounded = true;
-            }
+            IsGrounded = true;
         }
         if (other.gameObject.name.Contains("Spike") || other.gameObject.name.Contains("Pendulum"))
         {
@@ -332,14 +333,32 @@ public class Player : NetworkBehaviour
         }
     }
 
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (!Object.HasStateAuthority)
+            return;
+
+        if (collision.gameObject.CompareTag(GroundTag))
+        {
+            IsGrounded = true;
+        }
+        if (collision.gameObject.name.Contains(PlayerName))
+        {
+            IsGrounded = true;
+        }
+    }
+
     private void OnCollisionExit2D(Collision2D other)
     {
+        if (!Object.HasStateAuthority)
+            return;
+
         if (other.gameObject.CompareTag(GroundTag))
         {
             IsGrounded = false;
         }
 
-        if(other.gameObject.name.Contains(PlayerName))
+        if(other.gameObject.name.Contains(PlayerName) && !other.gameObject.CompareTag(GroundTag))
         {
             IsGrounded = false;
         }

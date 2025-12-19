@@ -1092,6 +1092,8 @@ GameObject:
   - component: {fileID: 311288546}
   - component: {fileID: 311288548}
   - component: {fileID: 311288549}
+  - component: {fileID: 311288551}
+  - component: {fileID: 311288550}
   m_Layer: 0
   m_Name: JumpMovePlatform
   m_TagString: Ground
@@ -1222,7 +1224,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 311288545}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e19bc7610e5a7614c96ed72d94d92db8, type: 3}
   m_Name: 
@@ -1231,6 +1233,40 @@ MonoBehaviour:
   rightEnd: {fileID: 286528897}
   moveSpeed: 5
   syncTimeWindow: 0.3
+--- !u!114 &311288550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311288545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 12949772
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 311288551}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &311288551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311288545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 204403f09be5d6544a3c75d193a1d900, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredMass: 2
+  moveSpeed: 2
+  targetOffset: {x: 4, y: 0.625}
 --- !u!1 &319433267
 GameObject:
   m_ObjectHideFlags: 0
@@ -10263,7 +10299,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3ef1f89358c6234b9eea189ff12db91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredMass: 1
+  requiredMass: 2
   rotationSpeed: 45
 --- !u!114 &1858200055
 MonoBehaviour:
