@@ -6,7 +6,7 @@ public class LobbyUIManager : MonoBehaviour
 {
     [Header("Panels")]
     public GameObject startPanel;     // Start
-    public GameObject loadingPanel;   // LoadingPanel
+    public GameObject loadingPanel;   // loadingPanel
     public GameObject roomPanel;      // Canvas -> Image
 
     [Header("Start Button")]

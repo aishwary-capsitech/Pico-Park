@@ -6,7 +6,8 @@ public class MoveBridge : NetworkBehaviour
 {
     [SerializeField] private float requiredMass = 5f;
     [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private Vector2 targetOffset = new Vector2(4f, 0.625f);
+    [SerializeField] private Transform startPosition;
+    [SerializeField] private Transform endPosition;
 
     [Networked] private NetworkBool isMoving { get; set; }
     [Networked] private NetworkBool hasReachedTarget { get; set; }
@@ -19,8 +20,25 @@ public class MoveBridge : NetworkBehaviour
 
     public override void Spawned()
     {
-        initialPosition = transform.position;
-        targetPosition = initialPosition + targetOffset;
+        if (startPosition != null)
+        {
+            initialPosition = startPosition.position;
+            transform.position = initialPosition;
+        }
+        else
+        {
+            initialPosition = transform.position;
+        }
+
+        if (endPosition != null)
+        {
+            targetPosition = endPosition.position;
+        }
+        else
+        {
+            Debug.LogError("End Position is not assigned!");
+            targetPosition = initialPosition;
+        }
 
         // Initialize networked position
         currentPositionX = transform.position.x;

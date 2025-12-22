@@ -1,196 +1,192 @@
-// using Fusion;
-// using Fusion.Addons.Physics;
-// using Unity.Cinemachine;
-// using UnityEngine;
+//using Fusion;
+//using Fusion.Addons.Physics;
+//using Unity.Cinemachine;
+//using UnityEngine;
 
-// public class Player : NetworkBehaviour
-// {
-//     public static Player Instance;
+//public class Player : NetworkBehaviour
+//{
+//    public static Player Instance;
 
-//     [HideInInspector] public NetworkRigidbody2D _networkRb;
+//    [HideInInspector] public NetworkRigidbody2D _networkRb;
 
-//     private Rigidbody2D rb;
+//    private Rigidbody2D rb;
+//    private TeamJumpRamp teamJumpRamp;
+//    private bool jumpReported;
 
-//     [Networked] public NetworkButtons JumpButtonsPrevious { get; set; }
-//     [Networked] public NetworkButtons LeftButtonsPrevious { get; set; }
-//     [Networked] public NetworkButtons RightButtonsPrevious { get; set; }
-//     [Networked] public NetworkObject Carrier { get; set; }
-//     [SerializeField] private Vector3 headOffset = new Vector3(0, 1.1f, 0);
+//    [Networked] public NetworkButtons JumpButtonsPrevious { get; set; }
+//    [Networked] public NetworkObject Carrier { get; set; }
+//    [Networked] public NetworkBool HasReachedFinish { get; set; }
 
-//     [Header("Movement Settings")]
-//     public float moveSpeed = 6f;
-//     public float jumpForce = 12f;
-//     private CinemachineCamera cam;
+//    [Header("Movement Settings")]
+//    public float moveSpeed = 6f;
+//    public float jumpForce = 12f;
 
-//     [Networked]
-//     private NetworkBool IsGrounded { get; set; }
+//    private CinemachineCamera cam;
 
-//     [Networked]
-//     private Vector2 PreviousDirection { get; set; }
+//    [Networked] private NetworkBool IsGrounded { get; set; }
 
-//     private const string GroundTag = "Ground";
-//     private const string PlayerName = "Player";
+//    private const string GroundTag = "Ground";
+//    private const string PlayerName = "Player";
 
-//     private void Awake()
-//     {
-//         Instance = this;
-//     }
+//    private void Awake()
+//    {
+//        Instance = this;
+//    }
 
-//     public override void Spawned()
-//     {
-//         _networkRb = GetComponent<NetworkRigidbody2D>();
-//         if (_networkRb == null)
-//         {
-//             Debug.LogError($"Player {Object.Id} is missing NetworkRigidbody2D!");
-//         }
+//    public override void Spawned()
+//    {
+//        _networkRb = GetComponent<NetworkRigidbody2D>();
+//        if (_networkRb == null)
+//        {
+//            Debug.LogError($"Player {Object.Id} is missing NetworkRigidbody2D!");
+//        }
 
-//         if(HasInputAuthority)
-//         {
-//             cam = FindObjectOfType<CinemachineCamera>();
-//             if (cam != null)
-//             {
-//                 cam.Follow = this.transform;
-//             }
-//             else
-//             {
-//                 Debug.LogError("Cinemachine Virtual Camera not found in the scene!");
-//             }
-//         }
-//     }
+//        if (HasInputAuthority)
+//        {
+//            cam = FindObjectOfType<CinemachineCamera>();
+//            if (cam != null)
+//                //cam.Follow = transform;
+//                cam.Follow = this.transform; 
+//        }
 
-//     public override void FixedUpdateNetwork()
-//     {
-//         if (_networkRb == null) return;
+//        HasReachedFinish = false;
+//    }
 
-//         if(_networkRb.Rigidbody != null && _networkRb.Rigidbody.transform.position.y < -5f)
-//         {
-//             UIManager.Instance.GameOver();
-//         }
+//    public override void FixedUpdateNetwork()
+//    {
+//        if (!Object.HasStateAuthority)
+//            return;
 
-//         if (GetInput(out NetworkInputData data))
-//         {
-//             rb = _networkRb.Rigidbody;
-//             Vector2 targetVelocity = new Vector2(data.horizontalMovement * moveSpeed, rb.linearVelocity.y);
-//             rb.linearVelocity = targetVelocity;
+//        if (_networkRb == null)
+//            return;
 
-//             var jumpPressed = data.jumpButton.GetPressed(JumpButtonsPrevious);
-//             //var leftPressed = data.jumpButton.GetPressed(LeftButtonsPrevious);
-//             //var rightPressed = data.jumpButton.GetPressed(RightButtonsPrevious);
+//        rb = _networkRb.Rigidbody;
 
-//             JumpButtonsPrevious = data.jumpButton;
-//             //LeftButtonsPrevious = data.leftButtons;
-//             //RightButtonsPrevious = data.rightButtons;
+//        if (rb != null && rb.position.y < -5f)
+//        {
+//            UIManager.Instance.GameOver();
+//            return;
+//        }
 
-//             if(data.horizontalMovement != 0)
-//             {
-//                 Debug.Log("Horizontal Movement: " + data.horizontalMovement);
-//             }
+//        if (!GetInput(out NetworkInputData data))
+//            return;
 
-//             if (jumpPressed.IsSet(Buttons.Jump) && Mathf.Abs(rb.linearVelocity.y) < 0.01f && IsGrounded)
-//             {
-//                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-//                 IsGrounded = false;
-//                 Debug.Log("IsGrounded : " + IsGrounded);
-//             }
+//        // Horizontal movement
+//        rb.linearVelocity = new Vector2(
+//            data.horizontalMovement * moveSpeed,
+//            rb.linearVelocity.y
+//        );
 
-//             //if (leftPressed.IsSet(Buttons.Left))
-//             //{
-//             //    transform.position += Vector3.left * moveSpeed * Runner.DeltaTime;
-//             //}
+//        var jumpPressed = data.jumpButton.GetPressed(JumpButtonsPrevious);
+//        JumpButtonsPrevious = data.jumpButton;
 
-//             //if (rightPressed.IsSet(Buttons.Right))
-//             //{
-//             //    transform.position += Vector3.right * moveSpeed * Runner.DeltaTime;
-//             //}
-//         }
+//        // JUMP LOGIC
+//        if (
+//            jumpPressed.IsSet(Buttons.Jump) &&
+//            Mathf.Abs(rb.linearVelocity.y) < 0.01f &&
+//            IsGrounded
+//        )
+//        {
+//            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+//            IsGrounded = false;
 
-//         //if(Carrier != null)
-//         //{
-//         //    transform.position = Carrier.transform.position + headOffset;
+//            if (teamJumpRamp != null && !jumpReported)
+//            {
+//                jumpReported = true;
+//                teamJumpRamp.PlayerJumped();
+//                Debug.Log("TeamJumpRamp activated by jump");
+//            }
+//        }
+//    }
 
-//         //    if (Carrier.TryGetComponent<Rigidbody2D>(out var carrierRb))
-//         //    {
-//         //        rb.linearVelocity = carrierRb.linearVelocity;
-//         //    }
+//    private void OnCollisionEnter2D(Collision2D other)
+//    {
+//        if (!Object.HasStateAuthority)
+//            return;
 
-//         //    return;
-//         //}
-//     }
+//        // Grounding
+//        if (other.gameObject.CompareTag(GroundTag))
+//        {
+//            IsGrounded = true;
+//        }
 
-//     private void OnCollisionEnter2D(Collision2D other)
-//     {
-//         //if (!Object.HasStateAuthority) return;
+//        if (other.gameObject.name.Contains(PlayerName))
+//        {
+//            IsGrounded = true;
+//        }
 
-//         if (other.gameObject.CompareTag(GroundTag))
-//         {
-//             //if (IsCollisionFromBelow(other))
-//             //{
-//             IsGrounded = true;
-//             //}
-//         }
-//         if (other.gameObject.name.Contains(PlayerName))
-//         {
-//             Vector2 contactNormal = other.GetContact(0).normal;
+//        // Detect TeamJumpRamp
+//        TeamJumpRamp ramp = other.gameObject.GetComponent<TeamJumpRamp>();
+//        if (ramp != null)
+//        {
+//            teamJumpRamp = ramp;
+//            jumpReported = false;
+//        }
 
-//             if (contactNormal.y > 0.5f)
-//             {
-//                 IsGrounded = true;
-//                 //Carrier = other.gameObject.GetComponent<NetworkObject>();
-//             }
-//         }
-//         if (other.gameObject.name.Contains("Spike") || other.gameObject.name.Contains("Pendulum"))
-//         {
-//             UIManager.Instance.GameOver();
-//         }
-//         if(other.gameObject.name.Contains("Coin"))
-//         {
-//             UIManager.Instance.CollectCoin();
-//             Destroy(other.gameObject);
-//         }
-//         if (other.gameObject.name.Contains("Diamond"))
-//         {
-//             UIManager.Instance.CollectDiamond();
-//             Destroy(other.gameObject);
-//         }
-//         if(other.gameObject.CompareTag("Finish"))
-//         {
-//             UIManager.Instance.LevelComplete();
-//         }
-//     }
+//        // Hazards
+//        if (other.gameObject.name.Contains("Spike") ||
+//            other.gameObject.name.Contains("Pendulum"))
+//        {
+//            UIManager.Instance.GameOver();
+//        }
 
-//     private void OnCollisionExit2D(Collision2D other)
-//     {
-//         //if (!Object.HasStateAuthority) return;
+//        // Collectibles
+//        if (other.gameObject.name.Contains("Coin"))
+//        {
+//            UIManager.Instance.CollectCoin();
+//            Destroy(other.gameObject);
+//        }
 
-//         if (other.gameObject.CompareTag(GroundTag))
-//         {
-//             IsGrounded = false;
-//         }
+//        if (other.gameObject.name.Contains("Diamond"))
+//        {
+//            UIManager.Instance.CollectDiamond();
+//            Destroy(other.gameObject);
+//        }
+//    }
 
-//         if(other.gameObject.name.Contains(PlayerName))
-//         {
-//             IsGrounded = false;
-//         }
+//    private void OnCollisionStay2D(Collision2D collision)
+//    {
+//        if (!Object.HasStateAuthority)
+//            return;
 
-//         //if (Carrier != null && other.gameObject.name == Carrier.gameObject.name)
-//         //{
-//         //    IsGrounded = false;
-//         //    Carrier = null;
-//         //}
-//     }
+//        if (collision.gameObject.CompareTag(GroundTag) ||
+//            collision.gameObject.name.Contains(PlayerName))
+//        {
+//            IsGrounded = true;
+//        }
 
-//     //private bool IsCollisionFromBelow(Collision2D collision)
-//     //{
-//     //    foreach (ContactPoint2D contact in collision.contacts)
-//     //    {
-//     //        if (contact.normal.y > 0.7f)
-//     //        {
-//     //            return true;
-//     //        }
-//     //    }
-//     //    return false;
-//     //}
-// }
+//        // Finish logic
+//        if (collision.gameObject.CompareTag("Finish"))
+//        {
+//            HasReachedFinish = true;
+//            UIManager.Instance.CheckAllPlayersFinished();
+//        }
+//    }
+
+//    private void OnCollisionExit2D(Collision2D other)
+//    {
+//        if (!Object.HasStateAuthority)
+//            return;
+
+//        if (other.gameObject.CompareTag(GroundTag) ||
+//            other.gameObject.name.Contains(PlayerName))
+//        {
+//            IsGrounded = false;
+//        }
+
+//        // Clear ramp reference
+//        if (other.gameObject.GetComponent<TeamJumpRamp>() != null)
+//        {
+//            teamJumpRamp = null;
+//            jumpReported = false;
+//        }
+
+//        if (other.gameObject.CompareTag("Finish"))
+//        {
+//            HasReachedFinish = false;
+//        }
+//    }
+//}
 
 using Fusion;
 using Fusion.Addons.Physics;
@@ -202,26 +198,21 @@ public class Player : NetworkBehaviour
     public static Player Instance;
 
     [HideInInspector] public NetworkRigidbody2D _networkRb;
-
     private Rigidbody2D rb;
 
+    private TeamJumpRamp teamJumpRamp;
+    private bool jumpReported;
+
     [Networked] public NetworkButtons JumpButtonsPrevious { get; set; }
-    [Networked] public NetworkButtons LeftButtonsPrevious { get; set; }
-    [Networked] public NetworkButtons RightButtonsPrevious { get; set; }
     [Networked] public NetworkObject Carrier { get; set; }
     [Networked] public NetworkBool HasReachedFinish { get; set; }
-    [SerializeField] private Vector3 headOffset = new Vector3(0, 1.1f, 0);
+    [Networked] private NetworkBool IsGrounded { get; set; }
 
     [Header("Movement Settings")]
     public float moveSpeed = 6f;
     public float jumpForce = 12f;
+
     private CinemachineCamera cam;
-
-    [Networked]
-    private NetworkBool IsGrounded { get; set; }
-
-    [Networked]
-    private Vector2 PreviousDirection { get; set; }
 
     private const string GroundTag = "Ground";
     private const string PlayerName = "Player";
@@ -234,61 +225,58 @@ public class Player : NetworkBehaviour
     public override void Spawned()
     {
         _networkRb = GetComponent<NetworkRigidbody2D>();
-        if (_networkRb == null)
-        {
-            Debug.LogError($"Player {Object.Id} is missing NetworkRigidbody2D!");
-        }
+        rb = _networkRb.Rigidbody;
 
-        if(HasInputAuthority)
+        if (HasInputAuthority)
         {
             cam = FindObjectOfType<CinemachineCamera>();
             if (cam != null)
-            {
-                cam.Follow = this.transform;
-            }
-            else
-            {
-                Debug.LogError("Cinemachine Virtual Camera not found in the scene!");
-            }
+                cam.Follow = transform;
         }
 
-        // Initialize finish state
         HasReachedFinish = false;
     }
 
     public override void FixedUpdateNetwork()
     {
-        if(!Object.HasStateAuthority)
+        if (_networkRb == null || rb == null)
             return;
 
-        if (_networkRb == null) return;
-
-        if(_networkRb.Rigidbody != null && _networkRb.Rigidbody.transform.position.y < -5f)
-        {
-            UIManager.Instance.GameOver();
-        }
+        if (!Object.HasInputAuthority && !Object.HasStateAuthority)
+            return;
 
         if (GetInput(out NetworkInputData data))
         {
-            rb = _networkRb.Rigidbody;
-            Vector2 targetVelocity = new Vector2(data.horizontalMovement * moveSpeed, rb.linearVelocity.y);
-            rb.linearVelocity = targetVelocity;
+            Vector2 velocity = new Vector2(
+            data.horizontalMovement * moveSpeed,
+            rb.linearVelocity.y
+            );
 
+            rb.linearVelocity = velocity;
+
+            // Jump button handling
             var jumpPressed = data.jumpButton.GetPressed(JumpButtonsPrevious);
-
             JumpButtonsPrevious = data.jumpButton;
 
-            if(data.horizontalMovement != 0)
-            {
-                Debug.Log("Horizontal Movement: " + data.horizontalMovement);
-            }
-
-            if (jumpPressed.IsSet(Buttons.Jump) && Mathf.Abs(rb.linearVelocity.y) < 0.01f && IsGrounded)
+            if (jumpPressed.IsSet(Buttons.Jump) &&
+                Mathf.Abs(rb.linearVelocity.y) < 0.01f &&
+                IsGrounded)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 IsGrounded = false;
-                Debug.Log("IsGrounded : " + IsGrounded);
+
+                if (teamJumpRamp != null && !jumpReported)
+                {
+                    jumpReported = true;
+                    teamJumpRamp.PlayerJumped();
+                }
             }
+        }
+
+        // Only StateAuthority handles game rules
+        if (Object.HasStateAuthority && rb.position.y < -5f)
+        {
+            UIManager.Instance.GameOver();
         }
     }
 
@@ -297,39 +285,38 @@ public class Player : NetworkBehaviour
         if (!Object.HasStateAuthority)
             return;
 
-        if (other.gameObject.CompareTag(GroundTag))
+        if (other.gameObject.CompareTag(GroundTag) ||
+            other.gameObject.name.Contains(PlayerName))
         {
             IsGrounded = true;
         }
-        if (other.gameObject.name.Contains(PlayerName))
+
+        // Team Jump Ramp
+        TeamJumpRamp ramp = other.gameObject.GetComponent<TeamJumpRamp>();
+        if (ramp != null)
         {
-            IsGrounded = true;
+            teamJumpRamp = ramp;
+            jumpReported = false;
         }
-        if (other.gameObject.name.Contains("Spike") || other.gameObject.name.Contains("Pendulum"))
+
+        // Hazards
+        if (other.gameObject.name.Contains("Spike") ||
+            other.gameObject.name.Contains("Pendulum"))
         {
             UIManager.Instance.GameOver();
         }
-        if(other.gameObject.name.Contains("Coin"))
+
+        // Collectibles
+        if (other.gameObject.name.Contains("Coin"))
         {
             UIManager.Instance.CollectCoin();
             Destroy(other.gameObject);
         }
+
         if (other.gameObject.name.Contains("Diamond"))
         {
             UIManager.Instance.CollectDiamond();
             Destroy(other.gameObject);
-        }
-        if(other.gameObject.CompareTag("Finish"))
-        {
-            // Mark this player as having reached the finish
-            if (Object.HasStateAuthority)
-            {
-                HasReachedFinish = true;
-                Debug.Log($"Player {Object.Id} reached finish");
-            }
-            
-            // Check if all players have reached finish
-            UIManager.Instance.CheckAllPlayersFinished();
         }
     }
 
@@ -338,13 +325,17 @@ public class Player : NetworkBehaviour
         if (!Object.HasStateAuthority)
             return;
 
-        if (collision.gameObject.CompareTag(GroundTag))
+        if (collision.gameObject.CompareTag(GroundTag) ||
+            collision.gameObject.name.Contains(PlayerName))
         {
             IsGrounded = true;
         }
-        if (collision.gameObject.name.Contains(PlayerName))
+
+        // Finish
+        if (collision.gameObject.CompareTag("Finish"))
         {
-            IsGrounded = true;
+            HasReachedFinish = true;
+            UIManager.Instance.CheckAllPlayersFinished();
         }
     }
 
@@ -353,14 +344,22 @@ public class Player : NetworkBehaviour
         if (!Object.HasStateAuthority)
             return;
 
-        if (other.gameObject.CompareTag(GroundTag))
+        if (other.gameObject.CompareTag(GroundTag) ||
+            other.gameObject.name.Contains(PlayerName))
         {
             IsGrounded = false;
         }
 
-        if(other.gameObject.name.Contains(PlayerName) && !other.gameObject.CompareTag(GroundTag))
+        if (other.gameObject.GetComponent<TeamJumpRamp>() != null)
         {
-            IsGrounded = false;
+            teamJumpRamp = null;
+            jumpReported = false;
+        }
+
+        if (other.gameObject.CompareTag("Finish"))
+        {
+            HasReachedFinish = false;
         }
     }
 }
+
