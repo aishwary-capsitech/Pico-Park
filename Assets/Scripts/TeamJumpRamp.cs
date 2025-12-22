@@ -1,123 +1,104 @@
+using Fusion;
 using UnityEngine;
 
-using System.Collections;
-
-public class TeamJumpRamp : MonoBehaviour
+public class TeamJumpRamp : NetworkBehaviour
 {
-    public static TeamJumpRamp Instance;
-
-    public int totalPlayers = 2;          // how many players in level
-
-    public float jumpTimeWindow = 0.3f;   // max allowed delay
-
+    [Header("Ramp Settings")]
+    public int requiredPlayers = 2;
+    public float jumpTimeWindow = 0.3f;
     public float moveDistance = 6f;
-
     public float moveSpeed = 2f;
+    public float returnDelay = 3f;
 
-    private int jumpedPlayers = 0;
+    [Networked] private int JumpedPlayers { get; set; }
+    [Networked] private bool IsMovingForward { get; set; }
+    [Networked] private bool IsReturning { get; set; }
 
-    private bool resolved = false;
+    [Networked] private TickTimer JumpTimer { get; set; }
+    [Networked] private TickTimer ReturnTimer { get; set; }
 
     private Vector3 startPos;
+    private Vector3 targetPos;
 
-    void Awake()
+    public override void Spawned()
     {
-        Instance = this;
-    }
-
-    void Start()
-
-    {
-
         startPos = transform.position;
-
+        targetPos = startPos + Vector3.right * moveDistance;
     }
 
-    // called by players when they jump
-
+    /// <summary>
+    /// Called by Player when jump happens on ramp
+    /// </summary>
     public void PlayerJumped()
-
     {
+        if (!Object.HasStateAuthority)
+            return;
 
-        if (resolved) return;
+        if (IsMovingForward || IsReturning)
+            return;
 
-        jumpedPlayers++;
+        JumpedPlayers++;
 
-        if (jumpedPlayers == 1)
-
+        if (JumpedPlayers == 1)
         {
-
-            StartCoroutine(CheckTeamJump());
-
+            JumpTimer = TickTimer.CreateFromSeconds(Runner, jumpTimeWindow);
         }
-
     }
 
-    IEnumerator CheckTeamJump()
-
+    public override void FixedUpdateNetwork()
     {
+        if (!Object.HasStateAuthority)
+            return;
 
-        yield return new WaitForSeconds(jumpTimeWindow);
-
-        if (jumpedPlayers == totalPlayers)
-
+        // Check simultaneous jump window
+        if (JumpTimer.IsRunning && JumpTimer.Expired(Runner))
         {
+            if (JumpedPlayers >= requiredPlayers)
+            {
+                IsMovingForward = true;
+                ReturnTimer = TickTimer.CreateFromSeconds(Runner, returnDelay);
+            }
 
-            resolved = true;
-
-            StartCoroutine(MoveRamp());
-
+            JumpedPlayers = 0;
+            JumpTimer = TickTimer.None;
         }
 
-        else
-
+        // Move forward
+        if (IsMovingForward)
         {
-
-            resolved = true;
-
-            BreakRamp();
-
-        }
-
-    }
-
-    IEnumerator MoveRamp()
-
-    {
-
-        Vector3 targetPos = startPos + Vector3.right * moveDistance;
-
-        while (Vector3.Distance(transform.position, targetPos) > 0.01f)
-
-        {
-
             transform.position = Vector3.MoveTowards(
-
                 transform.position,
-
                 targetPos,
-
-                moveSpeed * Time.deltaTime
-
+                moveSpeed * Runner.DeltaTime
             );
 
-            yield return null;
-
+            if (Vector3.Distance(transform.position, targetPos) < 0.01f)
+            {
+                IsMovingForward = false;
+            }
         }
 
+        // Return after delay
+        if (!IsMovingForward && ReturnTimer.IsRunning && ReturnTimer.Expired(Runner))
+        {
+            IsReturning = true;
+            ReturnTimer = TickTimer.None;
+        }
+
+        // Move back
+        if (IsReturning)
+        {
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                startPos,
+                moveSpeed * Runner.DeltaTime
+            );
+
+            if (Vector3.Distance(transform.position, startPos) < 0.01f)
+            {
+                IsReturning = false;
+                JumpedPlayers = 0; // reset for reuse
+            }
+        }
     }
-
-    void BreakRamp()
-
-    {
-
-        GetComponent<BoxCollider2D>().enabled = false;
-
-        Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
-
-        rb.gravityScale = 3f;
-
-    }
-
 }
-

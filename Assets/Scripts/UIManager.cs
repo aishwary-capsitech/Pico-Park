@@ -244,8 +244,8 @@ public class UIManager : NetworkBehaviour
     public TMP_Text diamondText;
 
     [Header("Collectible Targets")]
-    public int totalCoins = 1;
-    public int totalDiamonds = 0;
+    public int totalCoins = 3;
+    public int totalDiamonds = 1;
 
     [Header("Pause System")]
     public GameObject pausePanel;
