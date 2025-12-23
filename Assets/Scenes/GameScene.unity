@@ -705,6 +705,8 @@ GameObject:
   - component: {fileID: 158501679}
   - component: {fileID: 158501680}
   - component: {fileID: 158501681}
+  - component: {fileID: 158501683}
+  - component: {fileID: 158501682}
   m_Layer: 0
   m_Name: Spike1
   m_TagString: Untagged
@@ -745,7 +747,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveHeight: 0.35
   moveSpeed: 0.4
-  canMove: 1
 --- !u!50 &158501681
 Rigidbody2D:
   serializedVersion: 5
@@ -773,6 +774,43 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &158501682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158501678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
+--- !u!114 &158501683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 158501678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2302073786
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 158501680}
+  - {fileID: 158501682}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &186158279
 GameObject:
   m_ObjectHideFlags: 0
@@ -1093,6 +1131,7 @@ GameObject:
   - component: {fileID: 311288548}
   - component: {fileID: 311288552}
   - component: {fileID: 311288553}
+  - component: {fileID: 311288554}
   m_Layer: 0
   m_Name: JumpMovePlatform
   m_TagString: Ground
@@ -1228,7 +1267,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b7d7828873e31f4aa7db567ae35a873, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredPlayers: 2
   jumpTimeWindow: 0.3
   moveDistance: 6
   moveSpeed: 2
@@ -1251,7 +1289,25 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 311288552}
+  - {fileID: 311288554}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &311288554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311288545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &319433267
 GameObject:
   m_ObjectHideFlags: 0
@@ -2462,6 +2518,8 @@ GameObject:
   - component: {fileID: 561047512}
   - component: {fileID: 561047513}
   - component: {fileID: 561047514}
+  - component: {fileID: 561047516}
+  - component: {fileID: 561047515}
   m_Layer: 0
   m_Name: Spike2
   m_TagString: Untagged
@@ -2502,7 +2560,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveHeight: 0.15
   moveSpeed: 0.2
-  canMove: 1
 --- !u!50 &561047514
 Rigidbody2D:
   serializedVersion: 5
@@ -2530,6 +2587,43 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &561047515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561047511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
+--- !u!114 &561047516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561047511}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1441369127
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 561047513}
+  - {fileID: 561047515}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &591796676
 GameObject:
   m_ObjectHideFlags: 0
@@ -6340,6 +6434,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1212959627}
   - component: {fileID: 1212959626}
+  - component: {fileID: 1212959632}
+  - component: {fileID: 1212959631}
   - component: {fileID: 1212959628}
   - component: {fileID: 1212959630}
   - component: {fileID: 1212959629}
@@ -6507,6 +6603,43 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1212959631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212959625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1310372803
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1212959632}
+  - {fileID: 1212959628}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &1212959632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212959625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &1215016113
 GameObject:
   m_ObjectHideFlags: 0
@@ -6796,7 +6929,7 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -8484,6 +8617,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1641489468}
   - component: {fileID: 1641489467}
+  - component: {fileID: 1641489473}
+  - component: {fileID: 1641489472}
   - component: {fileID: 1641489469}
   - component: {fileID: 1641489471}
   m_Layer: 0
@@ -8628,6 +8763,43 @@ PolygonCollider2D:
       - {x: 0.5, y: -0.5}
       - {x: 0.5, y: 0.5}
   m_UseDelaunayMesh: 0
+--- !u!114 &1641489472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641489466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 4024575993
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1641489473}
+  - {fileID: 1641489469}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &1641489473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641489466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!1 &1644079685
 GameObject:
   m_ObjectHideFlags: 0

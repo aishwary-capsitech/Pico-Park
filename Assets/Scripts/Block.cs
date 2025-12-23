@@ -1,11 +1,13 @@
 using UnityEngine;
 using Fusion;
+using System.Linq;
 
 public class Block : NetworkBehaviour
 {
     [Networked] private float currentPositionX { get; set; }
     [Networked] private float currentPositionY { get; set; }
     [Networked] private float currentRotationZ { get; set; }
+    [Networked] private float mass { get; set; }
 
     public override void Spawned()
     {
@@ -25,7 +27,15 @@ public class Block : NetworkBehaviour
             currentPositionX = transform.position.x;
             currentPositionY = transform.position.y;
             currentRotationZ = transform.rotation.eulerAngles.z;
+            UpdateRequiredMass();
         }
+    }
+
+    private void UpdateRequiredMass()
+    {
+        int playerCount = Runner.ActivePlayers.Count();
+        mass = playerCount * 3f;
+        gameObject.GetComponent<Rigidbody2D>().mass = mass;
     }
 
     public override void Render()

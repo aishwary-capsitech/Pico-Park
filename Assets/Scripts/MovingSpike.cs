@@ -1,26 +1,36 @@
+using Fusion;
 using UnityEngine;
 
-public class MovingSpike : MonoBehaviour
+public class MovingSpike : NetworkBehaviour
 {
     public float moveHeight = 0.35f;
     public float moveSpeed = 0.4f;
 
-    public bool canMove = true;
+    [Networked] private bool CanMove { get; set; }
 
     private Vector3 startPos;
-    private float timeOffset;
+    private float startTime;
 
-    void Start()
+    public override void Spawned()
     {
         startPos = transform.position;
-        timeOffset = Time.time;
+
+        // Only host initializes
+        if (Object.HasStateAuthority)
+        {
+            CanMove = true;
+            startTime = (float)Runner.SimulationTime;
+        }
     }
 
-    void Update()
+    public override void FixedUpdateNetwork()
     {
-        if (!canMove) return;
+        // Only host moves spike
+        if (!Object.HasStateAuthority || !CanMove)
+            return;
 
-        float yOffset = Mathf.PingPong((Time.time - timeOffset) * moveSpeed, moveHeight);
+        float t = ((float)Runner.SimulationTime - startTime) * moveSpeed;
+        float yOffset = Mathf.PingPong(t, moveHeight);
 
         transform.position = new Vector3(
             startPos.x,
@@ -29,15 +39,21 @@ public class MovingSpike : MonoBehaviour
         );
     }
 
+    // CALL THIS FROM HOST ONLY
     public void StopSpike()
     {
-        canMove = false;
-        transform.position = startPos; // keep spike hidden
+        if (!Object.HasStateAuthority) return;
+
+        CanMove = false;
+        transform.position = startPos;
     }
 
+    // CALL THIS FROM HOST ONLY
     public void ResumeSpike()
     {
-        timeOffset = Time.time;
-        canMove = true;
+        if (!Object.HasStateAuthority) return;
+
+        startTime = (float)Runner.SimulationTime;
+        CanMove = true;
     }
 }

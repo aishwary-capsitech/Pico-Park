@@ -1,23 +1,28 @@
+using Fusion;
 using UnityEngine;
 
-public class MovingRamp : MonoBehaviour
+public class MovingRamp : NetworkBehaviour
 {
-    public float moveDistance = 1.5f;   // total movement range
-    public float moveSpeed = 3.0f;      // speed
+    public float moveDistance = 1.5f;
+    public float moveSpeed = 3.0f;
 
     private Vector3 startPos;
 
-    void Start()
+    public override void Spawned()
     {
-        startPos = transform.position; // center position
+        startPos = transform.position;
     }
 
-    void Update()
+    public override void FixedUpdateNetwork()
     {
-        // Value goes from -1 to +1 smoothly
-        float offset = Mathf.Sin(Time.time * moveSpeed);
+        // ONLY host moves the ramp
+        if (!Object.HasStateAuthority) return;
 
-        // Move equally left and right
-        transform.position = startPos + Vector3.right * offset * (moveDistance / 2f);
+        float offset = Mathf.Sin(Runner.SimulationTime * moveSpeed);
+
+        Vector3 newPos = startPos
+            + Vector3.right * offset * (moveDistance / 2f);
+
+        transform.position = newPos;
     }
 }
