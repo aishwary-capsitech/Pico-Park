@@ -346,12 +346,6 @@ public class UIManager : NetworkBehaviour
 
     }
 
-    // 🔒 ADDED (ONLY NEW METHOD)
-    public bool IsGameStopped()
-    {
-        return isGameOverNetwork || isLevelCompleteNetwork;
-    }
-
     private void Update()
 
     {
