@@ -118,106 +118,244 @@
 //    }
 //}
 
+// using Fusion;
+// using System.Collections.Generic;
+// using UnityEngine;
+
+// public class TeamJumpRamp : NetworkBehaviour
+// {
+//     [Header("Ramp Settings")]
+//     public float jumpTimeWindow = 0.3f;
+//     public float moveDistance = 6f;
+//     public float moveSpeed = 2f;
+//     public float returnDelay = 3f;
+
+//     [Networked] private int RequiredPlayers { get; set; }
+//     [Networked] private int JumpedPlayers { get; set; }
+//     [Networked] private bool IsMovingForward { get; set; }
+//     [Networked] private bool IsReturning { get; set; }
+
+//     [Networked] private TickTimer JumpTimer { get; set; }
+//     [Networked] private TickTimer ReturnTimer { get; set; }
+
+//     private Vector3 startPos;
+//     private Vector3 targetPos;
+
+//     // Players currently standing on ramp
+//     private readonly HashSet<NetworkObject> playersOnRamp = new();
+//     private readonly HashSet<NetworkObject> jumpedThisWindow = new();
+
+//     public override void Spawned()
+//     {
+//         startPos = transform.position;
+//         targetPos = startPos + Vector3.right * moveDistance;
+//     }
+
+//     // PLAYER ENTER / EXIT
+
+//     public void PlayerEntered(NetworkObject player)
+//     {
+//         if (!Object.HasStateAuthority) return;
+
+//         playersOnRamp.Add(player);
+//         UpdateRequiredPlayers();
+//     }
+
+//     public void PlayerExited(NetworkObject player)
+//     {
+//         if (!Object.HasStateAuthority) return;
+
+//         playersOnRamp.Remove(player);
+//         UpdateRequiredPlayers();
+//     }
+
+//     private void UpdateRequiredPlayers()
+//     {
+//         int count = playersOnRamp.Count;
+
+//         RequiredPlayers = Mathf.Clamp(count, 1, 3);
+
+//         Debug.Log($"[Ramp] PlayersOnRamp={count}, RequiredJumps={RequiredPlayers}");
+//     }
+
+//     // PLAYER JUMP
+
+//     public void PlayerJumped(NetworkObject player)
+//     {
+//         if (!Object.HasStateAuthority) return;
+//         if (IsMovingForward || IsReturning) return;
+//         if (!playersOnRamp.Contains(player)) return;
+//         if (jumpedThisWindow.Contains(player)) return;
+
+//         jumpedThisWindow.Add(player);
+//         JumpedPlayers++;
+
+//         if (JumpedPlayers == 1)
+//         {
+//             JumpTimer = TickTimer.CreateFromSeconds(Runner, jumpTimeWindow);
+//         }
+//     }
+
+//     // NETWORK LOOP
+
+//     public override void FixedUpdateNetwork()
+//     {
+//         if (!Object.HasStateAuthority) return;
+
+//         // Jump window expired
+//         if (JumpTimer.IsRunning && JumpTimer.Expired(Runner))
+//         {
+//             if (JumpedPlayers >= RequiredPlayers)
+//             {
+//                 IsMovingForward = true;
+//                 ReturnTimer = TickTimer.CreateFromSeconds(Runner, returnDelay);
+//             }
+
+//             JumpedPlayers = 0;
+//             jumpedThisWindow.Clear();
+//             JumpTimer = TickTimer.None;
+//         }
+
+//         // Move forward
+//         if (IsMovingForward)
+//         {
+//             transform.position = Vector3.MoveTowards(
+//                 transform.position,
+//                 targetPos,
+//                 moveSpeed * Runner.DeltaTime
+//             );
+
+//             if (Vector3.Distance(transform.position, targetPos) < 0.01f)
+//             {
+//                 IsMovingForward = false;
+//             }
+//         }
+
+//         // Return after delay
+//         if (!IsMovingForward && ReturnTimer.IsRunning && ReturnTimer.Expired(Runner))
+//         {
+//             IsReturning = true;
+//             ReturnTimer = TickTimer.None;
+//         }
+
+//         // Move back
+//         if (IsReturning)
+//         {
+//             transform.position = Vector3.MoveTowards(
+//                 transform.position,
+//                 startPos,
+//                 moveSpeed * Runner.DeltaTime
+//             );
+
+//             if (Vector3.Distance(transform.position, startPos) < 0.01f)
+//             {
+//                 IsReturning = false;
+//             }
+//         }
+//     }
+// }
+
 using Fusion;
-using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TeamJumpRamp : NetworkBehaviour
 {
     [Header("Ramp Settings")]
-    public float jumpTimeWindow = 0.3f;
-    public float moveDistance = 6f;
+    public float jumpTimeWindow = 0.4f;
+    public float moveDistance = 4f;
     public float moveSpeed = 2f;
-    public float returnDelay = 3f;
+
+    [Header("Failure Settings")]
+    public float fallSpeed = 6f;
 
     [Networked] private int RequiredPlayers { get; set; }
-    [Networked] private int JumpedPlayers { get; set; }
-    [Networked] private bool IsMovingForward { get; set; }
-    [Networked] private bool IsReturning { get; set; }
+    [Networked] private int LandedPlayers { get; set; }
+    [Networked] private bool IsMoving { get; set; }
+    [Networked] private bool IsFalling { get; set; }
 
     [Networked] private TickTimer JumpTimer { get; set; }
-    [Networked] private TickTimer ReturnTimer { get; set; }
 
     private Vector3 startPos;
     private Vector3 targetPos;
 
-    // Players currently standing on ramp
-    private readonly HashSet<NetworkObject> playersOnRamp = new();
-    private readonly HashSet<NetworkObject> jumpedThisWindow = new();
-
+    // =========================
+    // INITIAL SETUP
+    // =========================
     public override void Spawned()
     {
         startPos = transform.position;
         targetPos = startPos + Vector3.right * moveDistance;
-    }
 
-    // PLAYER ENTER / EXIT
-
-    public void PlayerEntered(NetworkObject player)
-    {
-        if (!Object.HasStateAuthority) return;
-
-        playersOnRamp.Add(player);
-        UpdateRequiredPlayers();
-    }
-
-    public void PlayerExited(NetworkObject player)
-    {
-        if (!Object.HasStateAuthority) return;
-
-        playersOnRamp.Remove(player);
-        UpdateRequiredPlayers();
+        if (Object.HasStateAuthority)
+            UpdateRequiredPlayers();
     }
 
     private void UpdateRequiredPlayers()
     {
-        int count = playersOnRamp.Count;
-
-        RequiredPlayers = Mathf.Clamp(count, 1, 3);
-
-        Debug.Log($"[Ramp] PlayersOnRamp={count}, RequiredJumps={RequiredPlayers}");
+        int totalPlayers = Runner.ActivePlayers.Count();
+        RequiredPlayers = Mathf.Max(1, totalPlayers); // 1 or 2 players
     }
 
-    // PLAYER JUMP
-
-    public void PlayerJumped(NetworkObject player)
+    // =========================
+    // PLAYER LANDING
+    // =========================
+    public void PlayerEntered(NetworkObject player)
     {
-        if (!Object.HasStateAuthority) return;
-        if (IsMovingForward || IsReturning) return;
-        if (!playersOnRamp.Contains(player)) return;
-        if (jumpedThisWindow.Contains(player)) return;
+        if (!Object.HasStateAuthority)
+            return;
 
-        jumpedThisWindow.Add(player);
-        JumpedPlayers++;
+        if (IsMoving || IsFalling)
+            return;
 
-        if (JumpedPlayers == 1)
+        LandedPlayers++;
+
+        // First player starts sync window
+        if (LandedPlayers == 1)
         {
             JumpTimer = TickTimer.CreateFromSeconds(Runner, jumpTimeWindow);
         }
     }
 
-    // NETWORK LOOP
+    // Required because Player.cs calls it
+    public void PlayerExited(NetworkObject player)
+    {
+        // No logic needed
+    }
 
+    // =========================
+    // NETWORK UPDATE
+    // =========================
     public override void FixedUpdateNetwork()
     {
-        if (!Object.HasStateAuthority) return;
+        if (!Object.HasStateAuthority)
+            return;
 
-        // Jump window expired
+        // -------------------------
+        // CHECK SYNC RESULT
+        // -------------------------
         if (JumpTimer.IsRunning && JumpTimer.Expired(Runner))
         {
-            if (JumpedPlayers >= RequiredPlayers)
+            if (LandedPlayers >= RequiredPlayers)
             {
-                IsMovingForward = true;
-                ReturnTimer = TickTimer.CreateFromSeconds(Runner, returnDelay);
+                // ✅ SUCCESS
+                IsMoving = true;
+            }
+            else
+            {
+                // ❌ FAILURE
+                IsFalling = true;
+                UIManager.Instance.GameOver();
             }
 
-            JumpedPlayers = 0;
-            jumpedThisWindow.Clear();
+            LandedPlayers = 0;
             JumpTimer = TickTimer.None;
         }
 
-        // Move forward
-        if (IsMovingForward)
+        // -------------------------
+        // MOVE FORWARD
+        // -------------------------
+        if (IsMoving)
         {
             transform.position = Vector3.MoveTowards(
                 transform.position,
@@ -227,30 +365,16 @@ public class TeamJumpRamp : NetworkBehaviour
 
             if (Vector3.Distance(transform.position, targetPos) < 0.01f)
             {
-                IsMovingForward = false;
+                IsMoving = false;
             }
         }
 
-        // Return after delay
-        if (!IsMovingForward && ReturnTimer.IsRunning && ReturnTimer.Expired(Runner))
+        // -------------------------
+        // FALL DOWN
+        // -------------------------
+        if (IsFalling)
         {
-            IsReturning = true;
-            ReturnTimer = TickTimer.None;
-        }
-
-        // Move back
-        if (IsReturning)
-        {
-            transform.position = Vector3.MoveTowards(
-                transform.position,
-                startPos,
-                moveSpeed * Runner.DeltaTime
-            );
-
-            if (Vector3.Distance(transform.position, startPos) < 0.01f)
-            {
-                IsReturning = false;
-            }
+            transform.position += Vector3.down * fallSpeed * Runner.DeltaTime;
         }
     }
 }
