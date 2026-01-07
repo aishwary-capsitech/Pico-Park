@@ -2,75 +2,89 @@
 //using Fusion;
 //using UnityEngine.UI;
 //using TMPro;
+//using System.Threading.Tasks;
 
 //public class FusionLobby : MonoBehaviour
 //{
-
 //    public TMP_InputField createRoom;
 //    public TMP_InputField joinRoom;
 //    public Button createButton;
 //    public Button joinButton;
 
+//    public GameObject loaderPanel;
+//    public GameObject loader;
+
 //    private NetworkRunner runner;
 
 //    void Start()
 //    {
+//        loaderPanel.SetActive(false);
 
 //        createButton.onClick.AddListener(CreateRoom);
 //        joinButton.onClick.AddListener(JoinRoom);
+
+//        runner = gameObject.AddComponent<NetworkRunner>();
+//        runner.ProvideInput = true;
 //    }
 
-
-//    public async void CreateRoom()
+//    void Update()
 //    {
-//        string roomName = createRoom.text;
+//        LoaderAnimation();
+//    }
 
-//        if (string.IsNullOrEmpty(roomName))
-//        {
-//            Debug.Log("please eneter a room name");
+//    async void CreateRoom() 
+//    {
+//        if (string.IsNullOrEmpty(createRoom.text))
 //            return;
-//        }
-//        runner = gameObject.AddComponent<NetworkRunner>();
-//        await runner.StartGame(new StartGameArgs()
-//        {
 
+//        ShowLoading(true);
+//        //await Task.Yield();
+
+//        await runner.StartGame(new StartGameArgs
+//        {
 //            GameMode = GameMode.Host,
-//            SessionName = roomName,
+//            SessionName = createRoom.text,
 //            Scene = SceneRef.FromIndex(1),
-//            SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>(),
 //            PlayerCount = 6,
-//            SessionProperties = new()
-//            //{
-//            //    {"MaxPlayers",1}
-//            //}
 //        });
 
-//        Debug.Log("Host has create a room to play");
-
+//        Debug.Log("Room Created");
 //    }
 
-//    public async void JoinRoom()
+//    async void JoinRoom()
 //    {
-//        string roomName = joinRoom.text;
-
-//        if (string.IsNullOrEmpty(roomName))
-//        {
-//            Debug.Log("please eneter a room name");
+//        if (string.IsNullOrEmpty(joinRoom.text))
 //            return;
-//        }
-//        runner = gameObject.AddComponent<NetworkRunner>();
-//        await runner.StartGame(new StartGameArgs()
+
+//        ShowLoading(true);
+//        //await Task.Yield();
+
+//        await runner.StartGame(new StartGameArgs
 //        {
 //            GameMode = GameMode.Client,
-//            SessionName = roomName,
-//            SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>(),
-
-
+//            SessionName = joinRoom.text
 //        });
 
-//        Debug.Log("Client has entered in the room");
+//        Debug.Log("Joined Room");
+//    }
+
+//    void ShowLoading(bool show)
+//    {
+//        loaderPanel.SetActive(show);
+//        createButton.interactable = !show;
+//        joinButton.interactable = !show;
+//    }
+
+//    void LoaderAnimation()
+//    {
+//        if(loader != null && loaderPanel.activeSelf == true)
+//        {
+//            loader.transform.Rotate(new Vector3(0f, 0f, -300f) * Time.deltaTime);
+//        }
 //    }
 //}
+
+
 
 using UnityEngine;
 using Fusion;
@@ -80,6 +94,7 @@ using System.Threading.Tasks;
 
 public class FusionLobby : MonoBehaviour
 {
+    [Header("UI")]
     public TMP_InputField createRoom;
     public TMP_InputField joinRoom;
     public Button createButton;
@@ -89,16 +104,24 @@ public class FusionLobby : MonoBehaviour
     public GameObject loader;
 
     private NetworkRunner runner;
+    private bool isConnecting;
 
-    void Start()
+    void Awake()
     {
         loaderPanel.SetActive(false);
 
-        createButton.onClick.AddListener(CreateRoom);
-        joinButton.onClick.AddListener(JoinRoom);
-
+        // Create runner ONCE (important for fast join)
         runner = gameObject.AddComponent<NetworkRunner>();
         runner.ProvideInput = true;
+
+        // Required for fast & correct scene sync
+        runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+    }
+
+    void Start()
+    {
+        createButton.onClick.AddListener(CreateRoom);
+        joinButton.onClick.AddListener(JoinRoom);
     }
 
     void Update()
@@ -106,40 +129,60 @@ public class FusionLobby : MonoBehaviour
         LoaderAnimation();
     }
 
-    async void CreateRoom() 
+    async void CreateRoom()
     {
-        if (string.IsNullOrEmpty(createRoom.text))
+        if (isConnecting || string.IsNullOrEmpty(createRoom.text))
             return;
 
+        isConnecting = true;
         ShowLoading(true);
-        //await Task.Yield();
 
-        await runner.StartGame(new StartGameArgs
+        var args = new StartGameArgs
         {
-            GameMode = GameMode.Host,
+            GameMode = GameMode.Host,       // Host creates room
             SessionName = createRoom.text,
             Scene = SceneRef.FromIndex(1),
             PlayerCount = 6,
-        });
+            IsVisible = true,
+            IsOpen = true
+        };
 
-        Debug.Log("Room Created");
+        var result = await runner.StartGame(args);
+
+        if (!result.Ok)
+        {
+            Debug.LogError($"Create Room Failed: {result.ShutdownReason}");
+            ResetUI();
+            return;
+        }
+
+        Debug.Log("Room Created Successfully");
     }
 
     async void JoinRoom()
     {
-        if (string.IsNullOrEmpty(joinRoom.text))
+        if (isConnecting || string.IsNullOrEmpty(joinRoom.text))
             return;
 
+        isConnecting = true;
         ShowLoading(true);
-        //await Task.Yield();
 
-        await runner.StartGame(new StartGameArgs
+        var args = new StartGameArgs
         {
-            GameMode = GameMode.Client,
-            SessionName = joinRoom.text
-        });
+            GameMode = GameMode.Client,     // Clients join room
+            SessionName = joinRoom.text,
+        };
 
-        Debug.Log("Joined Room");
+        var result = await runner.StartGame(args);
+
+        if (!result.Ok)
+        {
+            Debug.LogError($"Join Room Failed: {result.ShutdownReason}");
+            ResetUI();
+            return;
+        }
+
+        Debug.Log("Joined Room Successfully");
     }
 
     void ShowLoading(bool show)
@@ -149,11 +192,17 @@ public class FusionLobby : MonoBehaviour
         joinButton.interactable = !show;
     }
 
+    void ResetUI()
+    {
+        isConnecting = false;
+        ShowLoading(false);
+    }
+
     void LoaderAnimation()
     {
-        if(loader != null && loaderPanel.activeSelf == true)
+        if (loader != null && loaderPanel.activeSelf)
         {
-            loader.transform.Rotate(new Vector3(0f, 0f, -300f) * Time.deltaTime);
+            loader.transform.Rotate(0f, 0f, -300f * Time.deltaTime);
         }
     }
 }

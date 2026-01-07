@@ -2,7 +2,6 @@ using Fusion;
 using Fusion.Sockets;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum Buttons
 {
@@ -23,6 +22,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     private Dictionary<PlayerRef, NetworkObject> spawnedPlayers =
         new Dictionary<PlayerRef, NetworkObject>();
 
+    [HideInInspector] public NetworkRunner runner;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -33,17 +34,18 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         else
         {
             Instance = this;
+            //DontDestroyOnLoad(gameObject);
         }
 
         // Show mobile controls only on Android
-//         if (mobileControlsUI != null)
-//         {
-// #if UNITY_ANDROID && !UNITY_EDITOR
-//             mobileControlsUI.SetActive(true);
-// #else
-//             mobileControlsUI.SetActive(false);
-// #endif
-//         }
+        //         if (mobileControlsUI != null)
+        //         {
+        // #if UNITY_ANDROID && !UNITY_EDITOR
+        //             mobileControlsUI.SetActive(true);
+        // #else
+        //             mobileControlsUI.SetActive(false);
+        // #endif
+        //         }
 
         // Network Runner callbacks will run
         var runner = FindObjectOfType<NetworkRunner>();
@@ -57,7 +59,6 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    // Button event methods - called from UI buttons
     public void OnLeftButtonDown()
     {
         moveLeft = true;
@@ -88,34 +89,99 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         jump = false;
     }
 
+    public void RestartGamePlayer()
+    {
+        if (!runner.IsServer) return;
+
+        // Despawn all existing players
+        foreach (var kvp in spawnedPlayers)
+        {
+            if(kvp.Value != null && kvp.Value.IsValid)
+            {
+                runner.Despawn(kvp.Value);
+            }
+        }
+
+        spawnedPlayers.Clear();
+
+        // Respawn all active players at start positions
+        foreach (var player in runner.ActivePlayers)
+        {
+            SpawnPlayer(runner, player);
+        }
+
+        Debug.Log("Game Restarted → Players respawned at start");
+    }
+
+    private void SpawnPlayer(NetworkRunner runner, PlayerRef player)
+    {
+        if(spawnedPlayers.ContainsKey(player))
+        {
+            Debug.LogWarning($"Player {player.PlayerId} already exist!");
+            return;
+        }
+
+        Vector3 spawnPos = new Vector3(Random.Range(-3, 0), 2, 0);
+        int i = player.PlayerId % playerPrefab.Length;
+        NetworkPrefabRef playerPref = playerPrefab[i];
+
+        NetworkObject obj = runner.Spawn(playerPref, spawnPos, Quaternion.identity, player);
+
+        if(obj == null)
+        {
+            Debug.LogError("FAILED TO SPAWN PLAYER! Prefab missing or not in NetworkProjectConfig.");
+            return;
+        }
+
+        spawnedPlayers.Add(player, obj);
+    }
+
+
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        if (runner.IsServer)
+        //if (runner.IsServer)
+        //{
+        //    Debug.Log($"OnPlayerJoined: Player {player.PlayerId}");
+
+        //    if (spawnedPlayers.ContainsKey(player))
+        //    {
+        //        Debug.LogWarning($"Player {player.PlayerId} already exist!");
+        //        return;
+        //    }
+
+        //    Vector3 spawnPos = new Vector3(Random.Range(-3, 0), 2, 0);
+        //    int i = player.PlayerId % playerPrefab.Length;
+        //    NetworkPrefabRef playerPref = playerPrefab[i];
+
+        //    NetworkObject obj = runner.Spawn(playerPref, spawnPos, Quaternion.identity, player);
+
+        //    if (obj == null)
+        //    {
+        //        Debug.LogError("FAILED TO SPAWN PLAYER! Prefab missing or not in NetworkProjectConfig.");
+        //        return;
+        //    }
+
+        //    spawnedPlayers.Add(player, obj);
+        //    Debug.Log("PLAYER SPAWNED SUCCESSFULLY");
+        //}
+
+        if(!runner.IsServer)
         {
-            Debug.Log($"OnPlayerJoined: Player {player.PlayerId}");
-
-            Vector3 spawnPos = new Vector3(Random.Range(-3, 0), 2, 0);
-            int i = player.PlayerId % playerPrefab.Length;
-            NetworkPrefabRef playerPref = playerPrefab[i];
-
-            NetworkObject obj = runner.Spawn(playerPref, spawnPos, Quaternion.identity, player);
-
-            if (obj == null)
-            {
-                Debug.LogError("FAILED TO SPAWN PLAYER! Prefab missing or not in NetworkProjectConfig.");
-                return;
-            }
-
-            spawnedPlayers.Add(player, obj);
-            Debug.Log("PLAYER SPAWNED SUCCESSFULLY");
+            return;
         }
+
+        Debug.Log($"OnPlayerJoined: Player {player.PlayerId}");
+        SpawnPlayer(runner, player);
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         if (spawnedPlayers.TryGetValue(player, out NetworkObject obj))
         {
-            runner.Despawn(obj);
+            if (obj != null)
+            {
+                runner.Despawn(obj);
+            }
             spawnedPlayers.Remove(player);
             Debug.Log("Player removed");
         }

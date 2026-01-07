@@ -34,7 +34,7 @@ public class Block : NetworkBehaviour
     private void UpdateRequiredMass()
     {
         int playerCount = Runner.ActivePlayers.Count();
-        mass = playerCount * 3f;
+        mass = playerCount * 1f;
         gameObject.GetComponent<Rigidbody2D>().mass = mass;
     }
 
