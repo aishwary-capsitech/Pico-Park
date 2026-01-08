@@ -275,6 +275,7 @@ GameObject:
   - component: {fileID: 7503764871396401498}
   - component: {fileID: -4780006734951831700}
   - component: {fileID: 6507984437421159146}
+  - component: {fileID: 2615173321099106134}
   m_Layer: 0
   m_Name: PlayerBearCatOwl
   m_TagString: Player
@@ -426,12 +427,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b46ba91c664b0b4eb8b8a08f57df585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _networkRb: {fileID: 0}
   _Carrier: {fileID: 0}
   _HasReachedFinish:
     _value: 0
   moveSpeed: 4
   jumpForce: 8
+  groundCheck: {fileID: 0}
+  groundRadius: 0.15
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!95 &2615173321099106134
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013095924222}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7e7c8b8be0f0da94aa3be9ca3199e628, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1000013134147468
 GameObject:
   m_ObjectHideFlags: 0

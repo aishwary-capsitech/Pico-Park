@@ -195,6 +195,37 @@
 //}
 
 
+//using UnityEngine;
+
+//float coyoteTime = 0.15f;
+
+//float coyoteCounter;
+
+//void Update()
+
+//{
+
+//    if (isGrounded)
+
+//        coyoteCounter = coyoteTime;
+
+//    else
+
+//        coyoteCounter -= Time.deltaTime;
+
+//    if (Input.GetKeyDown(KeyCode.Space) && coyoteCounter > 0)
+
+//    {
+
+//        Jump();
+
+//        coyoteCounter = 0;
+
+//    }
+
+//}
+
+
 using Fusion;
 using Fusion.Addons.Physics;
 using Unity.Cinemachine;
@@ -215,6 +246,9 @@ public class Player : NetworkBehaviour
     [Networked] public NetworkObject Carrier { get; set; }
     [Networked] public NetworkBool HasReachedFinish { get; set; }
     [Networked] private NetworkBool IsGrounded { get; set; }
+
+    float coyoteTime = 0.1f;
+    float coyoteCounter;
 
     [Header("Movement Settings")]
     public float moveSpeed = 6f;
@@ -275,6 +309,15 @@ public class Player : NetworkBehaviour
             return;
         }
 
+        if (IsGrounded)
+        {
+            coyoteCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteCounter -= Runner.DeltaTime;
+        }
+
         if (GetInput(out NetworkInputData data))
         {
             Vector2 velocity = new Vector2(
@@ -287,12 +330,15 @@ public class Player : NetworkBehaviour
             var jumpPressed = data.jumpButton.GetPressed(JumpButtonsPrevious);
             JumpButtonsPrevious = data.jumpButton;
 
+            //if (jumpPressed.IsSet(Buttons.Jump) &&
+            //    Mathf.Abs(rb.linearVelocity.y) < 0.01f &&
+            //    IsGrounded)
             if (jumpPressed.IsSet(Buttons.Jump) &&
-                Mathf.Abs(rb.linearVelocity.y) < 0.01f &&
-                IsGrounded)
+                coyoteCounter > 0)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 IsGrounded = false;
+                coyoteCounter = 0f;
 
                 // TEAM JUMP RAMP (report jump once)
                 if (teamJumpRamp != null && !jumpReported)
@@ -329,6 +375,7 @@ public class Player : NetworkBehaviour
             other.gameObject.name.Contains(PlayerName))
         {
             IsGrounded = true;
+            Debug.Log("Grounded : "+IsGrounded);
 
             // TEAM JUMP RAMP
             jumpReported = false;
@@ -385,6 +432,7 @@ public class Player : NetworkBehaviour
             collision.gameObject.name.Contains(PlayerName))
         {
             IsGrounded = true;
+            Debug.Log("Grounded : " + IsGrounded);
 
             // TEAM JUMP RAMP
             jumpReported = false;
@@ -416,6 +464,7 @@ public class Player : NetworkBehaviour
             other.gameObject.name.Contains(PlayerName))
         {
             IsGrounded = false;
+            Debug.Log("Grounded : " + IsGrounded);
         }
 
         // TEAM JUMP RAMP

@@ -292,7 +292,7 @@ public class UIManager : NetworkBehaviour
             Destroy(gameObject);
             return;
         }
-
+        
         Time.timeScale = 1f;
 
         if (pausePanel != null)
@@ -400,6 +400,34 @@ public class UIManager : NetworkBehaviour
         return NetworkedCoins >= totalCoins && NetworkedDiamonds >= totalDiamonds;
     }
 
+    //private void ResetCollectibles()
+    //{
+    //    if (!Object || !Object.HasStateAuthority) return;
+
+    //    NetworkedCoins = 0;
+    //    NetworkedDiamonds = 0;
+
+    //    Debug.Log("Collectibles reset to 0");
+    //}
+
+    private void ResetCollectibles()
+    {
+        if (!Object || !Object.HasStateAuthority) return;
+
+        NetworkedCoins = 0;
+        NetworkedDiamonds = 0;
+
+        var coins = FindObjectsOfType<NetworkedCoin>(true);
+        Debug.Log($"Resetting {coins.Length} coins");
+
+        foreach (var coin in coins)
+        {
+            coin.RPC_ResetCoin();
+        }
+
+        Debug.Log("All coins reset and re-enabled");
+    }
+
     // CHECK ALL PLAYERS FINISHED
     public void CheckAllPlayersFinished()
     {
@@ -456,13 +484,8 @@ public class UIManager : NetworkBehaviour
     public void RestartGame()
     {
         if (!Object || !Object.IsValid) return;
-        //RPC_RestartGame();
-        RPC_SetPause(false);
 
-        if (NetworkManager.Instance != null || NetworkManager.Instance.runner.IsServer)
-        {
-            NetworkManager.Instance.RestartGamePlayer();
-        }
+        RPC_RestartGame();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -471,7 +494,11 @@ public class UIManager : NetworkBehaviour
         Debug.Log("Restart game RPC received on server");
 
         RPC_SetPause(false);
-        NetworkManager.Instance.RestartGamePlayer();
+        if (NetworkManager.Instance != null && NetworkManager.Instance.runner.IsServer)
+        {
+            ResetCollectibles();
+            NetworkManager.Instance.RestartGamePlayer();
+        }
         //RPC_LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

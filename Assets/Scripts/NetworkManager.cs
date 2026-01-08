@@ -34,7 +34,6 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         else
         {
             Instance = this;
-            //DontDestroyOnLoad(gameObject);
         }
 
         // Show mobile controls only on Android
@@ -47,8 +46,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         // #endif
         //         }
 
-        // Network Runner callbacks will run
-        var runner = FindObjectOfType<NetworkRunner>();
+        runner = FindObjectOfType<NetworkRunner>();
+
         if (runner != null)
         {
             runner.AddCallbacks(this);
@@ -58,6 +57,29 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             Debug.LogError("NetworkRunner not found in hierarchy!");
         }
     }
+
+    //private void Awake()
+    //{
+    //    if (Instance != null && Instance != this)
+    //    {
+    //        Destroy(gameObject);
+    //        return;
+    //    }
+
+    //    Instance = this;
+
+    //    runner = FindObjectOfType<NetworkRunner>();
+
+    //    if (runner != null)
+    //    {
+    //        runner.AddCallbacks(this);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("NetworkRunner not found in hierarchy!");
+    //    }
+
+    //}
 
     public void OnLeftButtonDown()
     {
