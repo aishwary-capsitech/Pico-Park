@@ -90,7 +90,6 @@ using UnityEngine;
 using Fusion;
 using UnityEngine.UI;
 using TMPro;
-using System.Threading.Tasks;
 
 public class FusionLobby : MonoBehaviour
 {
