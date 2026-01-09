@@ -96,4 +96,14 @@ public class BridgeRotation : NetworkBehaviour
             Debug.Log("Bridge rotation started");
         }
     }
+
+    public void ResetBridge()
+    {
+        if (!HasStateAuthority) return;
+        isHorizontal = false;
+        isRotating = false;
+        targetRotation = transform.rotation * Quaternion.Euler(0, 0, 0);
+        playersOnBridge.Clear();
+        Debug.Log("Bridge reset to initial position");
+    }
 }

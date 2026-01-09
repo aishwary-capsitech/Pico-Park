@@ -368,6 +368,7 @@ GameObject:
   - component: {fileID: 7810371497612977430}
   - component: {fileID: 2846196515749684916}
   - component: {fileID: 8909042958001921183}
+  - component: {fileID: 5320106196771741484}
   m_Layer: 0
   m_Name: PlayerBear
   m_TagString: Player
@@ -519,16 +520,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b46ba91c664b0b4eb8b8a08f57df585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _networkRb: {fileID: 0}
   _Carrier: {fileID: 0}
   _HasReachedFinish:
     _value: 0
   moveSpeed: 4
   jumpForce: 8
-  groundCheck: {fileID: 0}
-  groundRadius: 0.15
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!95 &8909042958001921183
 Animator:
   serializedVersion: 7
@@ -551,6 +548,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5320106196771741484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3474624541964211379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e38508a8fbb69f4db9a9d9d623460a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  crouchScale: {x: 0.3, y: 0.1, z: 0.3}
 --- !u!1 &6433412710282606575
 GameObject:
   m_ObjectHideFlags: 0

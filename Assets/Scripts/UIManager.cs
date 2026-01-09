@@ -499,6 +499,12 @@ public class UIManager : NetworkBehaviour
             ResetCollectibles();
             NetworkManager.Instance.RestartGamePlayer();
         }
+
+        BridgeRotation bridge = FindObjectOfType<BridgeRotation>();
+        if (bridge != null && bridge.Object != null && bridge.Object.HasStateAuthority)
+        {
+            bridge.ResetBridge();
+        }
         //RPC_LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
