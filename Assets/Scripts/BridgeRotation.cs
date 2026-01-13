@@ -1,3 +1,120 @@
+﻿//using Fusion;
+//using System.Collections.Generic;
+//using System.Linq;
+//using UnityEngine;
+
+//public class BridgeRotation : NetworkBehaviour
+//{
+//    [SerializeField] private float rotationSpeed = 45f;
+
+//    [Networked] private int requiredMass { get; set; }
+//    [Networked] private NetworkBool isRotating { get; set; }
+//    [Networked] private NetworkBool isHorizontal { get; set; }
+//    [Networked] private float currentRotationZ { get; set; }
+
+//    private Quaternion targetRotation;
+//    private Quaternion initialRotation;
+//    private HashSet<NetworkObject> playersOnBridge = new HashSet<NetworkObject>();
+
+//    public override void Spawned()
+//    {
+//        initialRotation = transform.rotation;
+//        targetRotation = transform.rotation * Quaternion.Euler(0, 0, -90f);
+//        currentRotationZ = transform.rotation.eulerAngles.z;
+//    }
+
+//    private void UpdateRequiredMass()
+//    {
+//        requiredMass = Runner.ActivePlayers.Count();
+//        Debug.Log($"Required Mass set to {requiredMass}");
+//    }
+
+//    public override void FixedUpdateNetwork()
+//    {
+//        if (!HasStateAuthority)
+//            return;
+
+//        UpdateRequiredMass();
+
+//        if (isRotating && !isHorizontal)
+//        {
+//            transform.rotation = Quaternion.RotateTowards(
+//                transform.rotation,
+//                targetRotation,
+//                rotationSpeed * Runner.DeltaTime
+//            );
+
+//            currentRotationZ = transform.rotation.eulerAngles.z;
+
+//            if (Quaternion.Angle(transform.rotation, targetRotation) < 0.1f)
+//            {
+//                isHorizontal = true;
+//                isRotating = false;
+//            }
+//        }
+//    }
+
+//    public override void Render()
+//    {
+//        if (!HasStateAuthority)
+//            transform.rotation = Quaternion.Euler(0, 0, currentRotationZ);
+//    }
+
+//    private void OnCollisionEnter2D(Collision2D col)
+//    {
+//        if (!HasStateAuthority) return;
+
+//        Player player = col.gameObject.GetComponent<Player>();
+//        if (player != null)
+//        {
+//            playersOnBridge.Add(player.Object);
+//            CheckMass();
+//        }
+//    }
+
+//    private void OnCollisionExit2D(Collision2D col)
+//    {
+//        if (!HasStateAuthority) return;
+
+//        Player player = col.gameObject.GetComponent<Player>();
+//        if (player != null)
+//        {
+//            playersOnBridge.Remove(player.Object);
+//        }
+//    }
+
+//    private void CheckMass()
+//    {
+//        if (isHorizontal || isRotating)
+//            return;
+
+//        int currentMass = playersOnBridge.Count;
+
+//        Debug.Log($"Players on bridge: {currentMass}/{requiredMass}");
+
+//        if (currentMass >= requiredMass)
+//        {
+//            isRotating = true;
+//            Debug.Log("Bridge rotation started");
+//        }
+//    }
+
+//    public void ResetBridge()
+//    {
+//        if (!HasStateAuthority) return;
+//        isHorizontal = false;
+//        isRotating = false;
+
+//        transform.rotation = initialRotation;
+//        targetRotation = initialRotation * Quaternion.Euler(0, 0, -90f);
+//        playersOnBridge.Clear();
+//        Debug.Log("Bridge reset to initial position");
+//    }
+//}
+
+
+
+
 using Fusion;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,23 +127,23 @@ public class BridgeRotation : NetworkBehaviour
     [Networked] private int requiredMass { get; set; }
     [Networked] private NetworkBool isRotating { get; set; }
     [Networked] private NetworkBool isHorizontal { get; set; }
-    [Networked] private float currentRotationZ { get; set; }
+    [Networked] private float rotationZ { get; set; }
 
-    private Quaternion targetRotation;
-    private Quaternion initialRotation;
+    private float initialRotationZ;
     private HashSet<NetworkObject> playersOnBridge = new HashSet<NetworkObject>();
 
     public override void Spawned()
     {
-        initialRotation = transform.rotation;
-        targetRotation = transform.rotation * Quaternion.Euler(0, 0, -90f);
-        currentRotationZ = transform.rotation.eulerAngles.z;
-    }
+        initialRotationZ = transform.rotation.eulerAngles.z;
 
-    private void UpdateRequiredMass()
-    {
-        requiredMass = Runner.ActivePlayers.Count();
-        Debug.Log($"Required Mass set to {requiredMass}");
+        if (HasStateAuthority)
+        {
+            rotationZ = initialRotationZ;
+            isRotating = false;
+            isHorizontal = false;
+        }
+
+        ApplyRotation();
     }
 
     public override void FixedUpdateNetwork()
@@ -38,26 +155,37 @@ public class BridgeRotation : NetworkBehaviour
 
         if (isRotating && !isHorizontal)
         {
-            transform.rotation = Quaternion.RotateTowards(
-                transform.rotation,
-                targetRotation,
+            float targetZ = initialRotationZ - 90f;
+
+            rotationZ = Mathf.MoveTowardsAngle(
+                rotationZ,
+                targetZ,
                 rotationSpeed * Runner.DeltaTime
             );
 
-            currentRotationZ = transform.rotation.eulerAngles.z;
+            ApplyRotation();
 
-            if (Quaternion.Angle(transform.rotation, targetRotation) < 0.1f)
+            if (Mathf.Abs(Mathf.DeltaAngle(rotationZ, targetZ)) < 0.1f)
             {
+                rotationZ = targetZ;
+                ApplyRotation();
+
                 isHorizontal = true;
                 isRotating = false;
             }
         }
     }
 
+
     public override void Render()
     {
         if (!HasStateAuthority)
-            transform.rotation = Quaternion.Euler(0, 0, currentRotationZ);
+            ApplyRotation();
+    }
+
+    private void ApplyRotation()
+    {
+        transform.rotation = Quaternion.Euler(0, 0, rotationZ);
     }
 
     private void OnCollisionEnter2D(Collision2D col)
@@ -88,26 +216,26 @@ public class BridgeRotation : NetworkBehaviour
         if (isHorizontal || isRotating)
             return;
 
-        int currentMass = playersOnBridge.Count;
-
-        Debug.Log($"Players on bridge: {currentMass}/{requiredMass}");
-
-        if (currentMass >= requiredMass)
+        if (playersOnBridge.Count >= requiredMass)
         {
             isRotating = true;
-            Debug.Log("Bridge rotation started");
         }
+    }
+
+    private void UpdateRequiredMass()
+    {
+        requiredMass = Runner.ActivePlayers.Count();
     }
 
     public void ResetBridge()
     {
         if (!HasStateAuthority) return;
+
         isHorizontal = false;
         isRotating = false;
+        rotationZ = initialRotationZ;
 
-        transform.rotation = initialRotation;
-        targetRotation = initialRotation * Quaternion.Euler(0, 0, -90f);
+        ApplyRotation();
         playersOnBridge.Clear();
-        Debug.Log("Bridge reset to initial position");
     }
 }

@@ -1,4 +1,4 @@
-//using UnityEngine;
+﻿//using UnityEngine;
 //using UnityEngine.UI;
 //using TMPro;
 //using UnityEngine.SceneManagement;
@@ -255,6 +255,9 @@ public class UIManager : NetworkBehaviour
 {
     public static UIManager Instance;
 
+    public TMP_Text levelText;
+    public TMP_Text pingText;
+
     [Header("Game Over")]
     public GameObject GameOverScreen;
     public GameObject LevelCompleteScreen;
@@ -262,10 +265,12 @@ public class UIManager : NetworkBehaviour
     [Header("Collectibles UI")]
     public TMP_Text coinText;
     public TMP_Text diamondText;
+    public TMP_Text keyText;
 
     [Header("Collectible Targets")]
     public int totalCoins = 3;
     public int totalDiamonds = 1;
+    public int totalKeys = 6;
 
     [Header("Pause System")]
     public GameObject pausePanel;
@@ -273,11 +278,20 @@ public class UIManager : NetworkBehaviour
     public Sprite pauseSprite;
     public Sprite resumeSprite;
 
+    [Header("Levels")]
+    public GameObject level1;
+    public GameObject level2;
+
     [Networked] private NetworkBool isPausedNetwork { get; set; }
     [Networked] private NetworkBool isGameOverNetwork { get; set; }
     [Networked] private NetworkBool isLevelCompleteNetwork { get; set; }
     [Networked] public int NetworkedCoins { get; set; }
     [Networked] public int NetworkedDiamonds { get; set; }
+    [Networked] private int collectedKeys { get; set; }
+
+    [SerializeField] private float updateInterval = 0.5f;
+    private float timer;
+    private NetworkRunner runner;
 
     void Awake()
     {
@@ -306,6 +320,8 @@ public class UIManager : NetworkBehaviour
 
         if (pauseButtonImage != null)
             pauseButtonImage.sprite = pauseSprite;
+
+        runner = FindObjectOfType<NetworkRunner>();
     }
 
     public override void Spawned()
@@ -323,6 +339,7 @@ public class UIManager : NetworkBehaviour
         }
 
         UpdateUI();
+        UpdateCollectibleUI();
         Debug.Log("UIManager spawned and initialized");
     }
 
@@ -338,6 +355,19 @@ public class UIManager : NetworkBehaviour
         {
             UpdateUI();
         }
+
+        if (runner == null || !runner.IsRunning)
+            return;
+
+        timer += Time.deltaTime;
+        if (timer < updateInterval)
+            return;
+
+        timer = 0f;
+
+        int ping = (int)runner.GetPlayerRtt(runner.LocalPlayer);
+        pingText.text = "Ping: " + ping + " ms";
+        Debug.Log("Ping updated: " + ping + " ms");
     }
 
     public override void Render()
@@ -383,6 +413,15 @@ public class UIManager : NetworkBehaviour
         }
     }
 
+    public void CollectKey()
+    {
+        if (Object && Object.HasStateAuthority)
+        {
+            collectedKeys++;
+            UpdateUI();
+        }
+    }
+
     void UpdateUI()
     {
         if (!Object || !Object.IsValid) return;
@@ -392,6 +431,39 @@ public class UIManager : NetworkBehaviour
 
         if (diamondText != null)
             diamondText.text = NetworkedDiamonds + " / " + totalDiamonds;
+
+        if (keyText != null)
+            keyText.text = $"{collectedKeys}/{totalKeys}";
+
+        if (levelText != null)
+            levelText.text = "Level " + LevelManager.Instance.level;
+    }
+
+    //private void UpdateCollectibleUI()
+    //{
+    //    bool isLevel1 = LevelManager.Instance.level1;
+    //    coinText.transform.parent.gameObject.SetActive(isLevel1);
+    //    diamondText.transform.parent.gameObject.SetActive(isLevel1);
+    //    keyText.transform.parent.gameObject.SetActive(!isLevel1);
+    //}
+
+    private void UpdateCollectibleUI()
+    {
+        int currentLevel = LevelManager.Instance.level;
+
+        bool isLevel1 = currentLevel == 1;
+        bool isLevel2 = currentLevel == 2;
+
+        if (coinText != null)
+            coinText.transform.parent.gameObject.SetActive(isLevel1);
+
+        if (diamondText != null)
+            diamondText.transform.parent.gameObject.SetActive(isLevel1);
+
+        if (keyText != null)
+            keyText.transform.parent.gameObject.SetActive(isLevel2);
+
+        Debug.Log($"UpdateCollectibleUI → Level: {currentLevel}");
     }
 
     public bool AllCollected()
@@ -399,16 +471,6 @@ public class UIManager : NetworkBehaviour
         if (!Object || !Object.IsValid) return false;
         return NetworkedCoins >= totalCoins && NetworkedDiamonds >= totalDiamonds;
     }
-
-    //private void ResetCollectibles()
-    //{
-    //    if (!Object || !Object.HasStateAuthority) return;
-
-    //    NetworkedCoins = 0;
-    //    NetworkedDiamonds = 0;
-
-    //    Debug.Log("Collectibles reset to 0");
-    //}
 
     private void ResetCollectibles()
     {
@@ -447,7 +509,9 @@ public class UIManager : NetworkBehaviour
         bool allFinished = allPlayers.All(player => player.HasReachedFinish);
 
         if (allFinished)
+        {
             LevelComplete();
+        }
     }
 
     // PAUSE SYSTEM
@@ -506,6 +570,7 @@ public class UIManager : NetworkBehaviour
         if (NetworkManager.Instance != null && NetworkManager.Instance.runner.IsServer)
         {
             ResetCollectibles();
+            UpdateCollectibleUI();
             NetworkManager.Instance.RestartGamePlayer();
         }
 
@@ -545,6 +610,57 @@ public class UIManager : NetworkBehaviour
         isLevelCompleteNetwork = completed;
         Debug.Log("Level complete screen shown to all players");
     }
+
+    public void OnNextLevelClicked()
+    {
+        if (!Object || !Object.IsValid)
+            return;
+
+        // Only StateAuthority should change level
+        RPC_NextLevel();
+    }
+
+    //[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    //private void RPC_NextLevel()
+    //{
+    //    RPC_SetLevelComplete(false);
+
+    //    LevelManager.Instance.IncreaseLevel();
+
+    //    if (NetworkManager.Instance != null && NetworkManager.Instance.runner.IsServer)
+    //    {
+    //        ResetCollectibles();
+    //        UpdateCollectibleUI();
+    //        NetworkManager.Instance.RestartGamePlayer();
+    //    }
+    //}
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_NextLevel()
+    {
+        // Hide level complete UI
+        isLevelCompleteNetwork = false;
+
+        // Reset values
+        NetworkedCoins = 0;
+        NetworkedDiamonds = 0;
+        collectedKeys = 0;
+
+        // Switch levels
+        LevelManager.Instance.IncreaseLevel();
+
+        if (NetworkManager.Instance != null && NetworkManager.Instance.runner.IsServer)
+        {
+            ResetCollectibles();
+            UpdateCollectibleUI();
+            NetworkManager.Instance.RestartGamePlayer();
+        }
+
+        UpdateUI();
+
+        Debug.Log("Switched to Level 2 via Next Button");
+    }
+
 
     public void GameOver()
     {

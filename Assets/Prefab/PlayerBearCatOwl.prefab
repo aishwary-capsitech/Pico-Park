@@ -392,6 +392,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: -4780006734951831700}
   - {fileID: 6507984437421159146}
+  - {fileID: 1303089848679367413}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &-4780006734951831700
 MonoBehaviour:
@@ -469,7 +470,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e38508a8fbb69f4db9a9d9d623460a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crouchScale: {x: 0.3, y: 0.1, z: 0.3}
+  crouchHeight: 0.1
+  normalHeight: 0.2
 --- !u!1 &1000013134147468
 GameObject:
   m_ObjectHideFlags: 0
