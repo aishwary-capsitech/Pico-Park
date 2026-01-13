@@ -11,7 +11,7 @@ public class BuzzerButtonUP : MonoBehaviour
 
         ContactPoint2D contact = collision.GetContact(0);
 
-        // ✅ Player landed ON TOP
+        // Player landed ON TOP
         if (contact.normal.y < -0.5f)
         {
             targetBox.StartLift();
@@ -25,7 +25,7 @@ public class BuzzerButtonUP : MonoBehaviour
 
         ContactPoint2D contact = collision.GetContact(0);
 
-        // ✅ Keep lifting ONLY while standing on top
+        // Keep lifting ONLY while standing on top
         if (contact.normal.y < -0.5f)
         {
             targetBox.StartLift();
@@ -37,7 +37,7 @@ public class BuzzerButtonUP : MonoBehaviour
         if (!collision.gameObject.CompareTag("Player"))
             return;
 
-        // ❌ Player left → STOP immediately
+        // Player left -> STOP immediately
         targetBox.StopLift();
     }
 }

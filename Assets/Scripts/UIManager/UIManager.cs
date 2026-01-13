@@ -425,6 +425,14 @@ public class UIManager : NetworkBehaviour
             coin.RPC_ResetCoin();
         }
 
+        var diamonds = FindObjectsOfType<NetworkedDiamond>(true);
+        Debug.Log($"Resetting {diamonds.Length} diamonds");
+
+        foreach (var diamond in diamonds)
+        {
+            diamond.RPC_ResetDiamond();
+        }
+
         Debug.Log("All coins reset and re-enabled");
     }
 
@@ -494,6 +502,7 @@ public class UIManager : NetworkBehaviour
         Debug.Log("Restart game RPC received on server");
 
         RPC_SetPause(false);
+        RPC_SetGameOver(false);
         if (NetworkManager.Instance != null && NetworkManager.Instance.runner.IsServer)
         {
             ResetCollectibles();
@@ -501,9 +510,15 @@ public class UIManager : NetworkBehaviour
         }
 
         BridgeRotation bridge = FindObjectOfType<BridgeRotation>();
-        if (bridge != null && bridge.Object != null && bridge.Object.HasStateAuthority)
+        if (bridge != null && bridge.Object != null)
         {
             bridge.ResetBridge();
+        }
+
+        Block block = FindObjectOfType<Block>();
+        if (block != null && block.Object != null)
+        {
+            block.ResetBlock();
         }
         //RPC_LoadScene(SceneManager.GetActiveScene().buildIndex);
     }

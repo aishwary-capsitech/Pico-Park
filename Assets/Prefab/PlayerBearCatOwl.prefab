@@ -428,10 +428,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b46ba91c664b0b4eb8b8a08f57df585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _networkRb: {fileID: 0}
+  networkRb: {fileID: 0}
   _Carrier: {fileID: 0}
   _HasReachedFinish:
     _value: 0
+  coyoteTime: 0.05
   moveSpeed: 4
   jumpForce: 8
 --- !u!95 &2615173321099106134

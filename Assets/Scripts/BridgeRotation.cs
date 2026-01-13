@@ -13,10 +13,12 @@ public class BridgeRotation : NetworkBehaviour
     [Networked] private float currentRotationZ { get; set; }
 
     private Quaternion targetRotation;
+    private Quaternion initialRotation;
     private HashSet<NetworkObject> playersOnBridge = new HashSet<NetworkObject>();
 
     public override void Spawned()
     {
+        initialRotation = transform.rotation;
         targetRotation = transform.rotation * Quaternion.Euler(0, 0, -90f);
         currentRotationZ = transform.rotation.eulerAngles.z;
     }
@@ -102,7 +104,9 @@ public class BridgeRotation : NetworkBehaviour
         if (!HasStateAuthority) return;
         isHorizontal = false;
         isRotating = false;
-        targetRotation = transform.rotation * Quaternion.Euler(0, 0, 0);
+
+        transform.rotation = initialRotation;
+        targetRotation = initialRotation * Quaternion.Euler(0, 0, -90f);
         playersOnBridge.Clear();
         Debug.Log("Bridge reset to initial position");
     }
