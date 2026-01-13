@@ -1,5 +1,3 @@
-// -----------
-
 // using UnityEngine;
 // using UnityEngine.UI;
 // using TMPro;
@@ -12,116 +10,101 @@
 // {
 //     public static UIManager Instance;
 
-//     [Header("Game Over")]
-//     public GameObject GameOverScreen;
-//     public GameObject LevelCompleteScreen;
+//     // ============================
+//     // UI SCREENS
+//     // ============================
+//     [Header("Screens")]
+//     public GameObject pausePanel;
+//     public GameObject gameOverPanel;
+//     public GameObject levelCompletePanel;
 
+//     // ============================
+//     // UI TEXT
+//     // ============================
 //     [Header("Collectibles UI")]
 //     public TMP_Text coinText;
 //     public TMP_Text diamondText;
-
-//     // 🔧 ADDED: UI parents
-//     public GameObject coinUI;
-//     public GameObject diamondUI;
+//     public TMP_Text keyText;
 //     public GameObject keyUI;
 
-//     [Header("Targets")]
+//     // ============================
+//     // TARGET COUNTS
+//     // ============================
 //     public int totalCoins = 3;
 //     public int totalDiamonds = 1;
+//     public int totalKeys = 6;
 
-//     [Header("Pause")]
-//     public GameObject pausePanel;
-//     public Image pauseButtonImage;
-//     public Sprite pauseSprite;
-//     public Sprite resumeSprite;
 
-//     [Header("LEVEL OBJECTS")]
+//     // ============================
+//     // LEVEL OBJECTS
+//     // ============================
+//     [Header("Levels")]
 //     public GameObject level1;
 //     public GameObject level2;
 
-//     [Header("LEVEL 2 START POINT")]
-//     public Transform level2StartPoint;
+//     [Header("Level 2 Start Point")]
+//     public Transform level2SpawnPoint;
 
-//     [Networked] private NetworkBool isPausedNetwork { get; set; }
-//     [Networked] private NetworkBool isGameOverNetwork { get; set; }
-//     [Networked] private NetworkBool isLevelCompleteNetwork { get; set; }
+//     // ============================
+//     // NETWORKED STATE
+//     // ============================
+//     [Networked] private NetworkBool isPaused { get; set; }
+//     [Networked] private NetworkBool isGameOver { get; set; }
+//     [Networked] private NetworkBool isLevelComplete { get; set; }
 
-//     private int collectedCoins;
-//     private int collectedDiamonds;
+//     [Networked] public int NetworkedCoins { get; set; }
+//     [Networked] public int NetworkedDiamonds { get; set; }
 
+//     // ============================
+//     // LOCAL STATE
+//     // ============================
+//     private int collectedKeys;
 //     [HideInInspector] public bool isLevelSwitching = false;
+
+//     // 🔥 ORIGINAL START POSITION (NO SPAWN POINT NEEDED)
+//     private Vector2 initialPlayerSpawnPosition;
+//     private bool initialSpawnCaptured = false;
 
 //     // ============================
 //     // LIFECYCLE
 //     // ============================
-//     void Awake()
+//     private void Awake()
 //     {
 //         Instance = this;
-//         Time.timeScale = 1f;
-
-//         // your existing logic
-//         if (level1 != null) level1.SetActive(false);
-//         if (level2 != null) level2.SetActive(true);
 
 //         pausePanel?.SetActive(false);
-//         GameOverScreen?.SetActive(false);
-//         LevelCompleteScreen?.SetActive(false);
-
-//         collectedCoins = 0;
-//         collectedDiamonds = 0;
-//         UpdateUI();
-
-//         // 🔧 ADDED
-//         UpdateCollectibleUI();
-
-//         StartCoroutine(ForceStartAtLevel2());
+//         gameOverPanel?.SetActive(false);
+//         levelCompletePanel?.SetActive(false);
 //     }
 
-//     IEnumerator ForceStartAtLevel2()
+//     public override void Spawned()
 //     {
-//         yield return null;
-
-//         var player = Player.Instance;
-//         if (player != null && level2StartPoint != null && player.Object.HasStateAuthority)
+//         if (Object.HasStateAuthority)
 //         {
-//             var netRb = player.GetComponent<NetworkRigidbody2D>();
-//             if (netRb != null)
-//             {
-//                 netRb.Teleport(level2StartPoint.position);
-//                 netRb.Rigidbody.linearVelocity = Vector2.zero;
-//                 netRb.Rigidbody.angularVelocity = 0f;
-//             }
+//             CaptureInitialSpawnPosition();
+//             ResetToFreshGame();
 //         }
+
+//         UpdateUI();
+//         UpdateCollectibleUI();
 //     }
 
 //     // ============================
-//     // 🔧 ADDED: UI VISIBILITY LOGIC
+//     // GAME STATE
 //     // ============================
-//     void UpdateCollectibleUI()
-//     {
-//         bool isLevel2 = level2 != null && level2.activeSelf;
-
-//         // Level 1 → Coin + Diamond
-//         if (coinUI != null) coinUI.SetActive(!isLevel2);
-//         if (diamondUI != null) diamondUI.SetActive(!isLevel2);
-
-//         // Level 2 → Key only
-//         if (keyUI != null) keyUI.SetActive(isLevel2);
-//     }
-
 //     public bool IsGameStopped()
 //     {
-//         return isGameOverNetwork || isLevelCompleteNetwork;
+//         if (Object == null || !Object.IsValid) return false;
+//         return isPaused || isGameOver || isLevelComplete;
 //     }
 
 //     public override void Render()
 //     {
-//         pausePanel?.SetActive(isPausedNetwork);
-//         GameOverScreen?.SetActive(isGameOverNetwork);
-//         LevelCompleteScreen?.SetActive(isLevelCompleteNetwork);
+//         pausePanel?.SetActive(isPaused);
+//         gameOverPanel?.SetActive(isGameOver);
+//         levelCompletePanel?.SetActive(isLevelComplete);
 
-//         if (!isPausedNetwork)
-//             Time.timeScale = 1f;
+//         Time.timeScale = isPaused ? 0f : 1f;
 //     }
 
 //     // ============================
@@ -129,100 +112,174 @@
 //     // ============================
 //     public void CollectCoin()
 //     {
-//         collectedCoins++;
+//         if (!Object.HasStateAuthority) return;
+//         NetworkedCoins++;
 //         UpdateUI();
 //     }
 
 //     public void CollectDiamond()
 //     {
-//         collectedDiamonds++;
+//         if (!Object.HasStateAuthority) return;
+//         NetworkedDiamonds++;
 //         UpdateUI();
 //     }
 
-//     void UpdateUI()
+//     public void OnKeyCollected()
 //     {
-//         if (coinText != null)
-//             coinText.text = $"{collectedCoins} / {totalCoins}";
-//         if (diamondText != null)
-//             diamondText.text = $"{collectedDiamonds} / {totalDiamonds}";
+//         collectedKeys++;
+//         UpdateUI();
 //     }
 
-//     public bool AllCollected()
+//     private void UpdateUI()
 //     {
-//         return collectedCoins >= totalCoins &&
-//                collectedDiamonds >= totalDiamonds;
+//         if (coinText != null)
+//             coinText.text = $"{NetworkedCoins}/{totalCoins}";
+
+//         if (diamondText != null)
+//             diamondText.text = $"{NetworkedDiamonds}/{totalDiamonds}";
+
+//         if (keyText != null)
+//             keyText.text = $"{collectedKeys}/{totalKeys}";
+//     }
+
+//     private void UpdateCollectibleUI()
+//     {
+//         bool level2Active = level2 != null && level2.activeSelf;
+
+//         coinText.transform.parent.gameObject.SetActive(!level2Active);
+//         diamondText.transform.parent.gameObject.SetActive(!level2Active);
+//         keyUI.SetActive(level2Active);
 //     }
 
 //     // ============================
-//     // LEVEL COMPLETE
+//     // FINISH CHECK
 //     // ============================
 //     public void CheckAllPlayersFinished()
 //     {
+//         if (!Object.HasStateAuthority) return;
+
 //         if (FindObjectsOfType<Player>().All(p => p.HasReachedFinish))
 //             LevelComplete();
 //     }
 
+//     // ============================
+//     // LEVEL COMPLETE → LEVEL 2
+//     // ============================
 //     public void LevelComplete()
 //     {
-//         if (AllCollected())
-//             RPC_SetLevelComplete(true);
+//         if (!Object.HasStateAuthority || isLevelSwitching) return;
+//         RPC_StartLevel2();
 //     }
 
 //     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-//     private void RPC_SetLevelComplete(NetworkBool completed)
+//     private void RPC_StartLevel2()
 //     {
-//         isLevelCompleteNetwork = completed;
-
-//         if (completed)
-//             StartCoroutine(SwitchToLevel2());
+//         StartCoroutine(SwitchToLevel2());
 //     }
 
-//     IEnumerator SwitchToLevel2()
+//     private IEnumerator SwitchToLevel2()
 //     {
 //         isLevelSwitching = true;
+//         isLevelComplete = true;
 
-//         yield return new WaitForSecondsRealtime(1.5f);
+//         levelCompletePanel.SetActive(true);
+//         yield return new WaitForSecondsRealtime(2f);
+//         levelCompletePanel.SetActive(false);
 
-//         collectedCoins = 0;
-//         collectedDiamonds = 0;
+//         NetworkedCoins = 0;
+//         NetworkedDiamonds = 0;
+//         collectedKeys = 0;
+
+//         level1.SetActive(false);
+//         level2.SetActive(true);
+
+//         TeleportPlayers(level2SpawnPoint.position);
+//         ResetAllCollectibles();
+
+//         UpdateCollectibleUI();
 //         UpdateUI();
 
-//         if (level1 != null) level1.SetActive(false);
-//         if (level2 != null) level2.SetActive(true);
-
-//         // 🔧 ADDED
-//         UpdateCollectibleUI();
-
-//         var player = Player.Instance;
-//         if (player != null && level2StartPoint != null && player.Object.HasStateAuthority)
-//         {
-//             var netRb = player.GetComponent<NetworkRigidbody2D>();
-//             if (netRb != null)
-//             {
-//                 netRb.Teleport(level2StartPoint.position);
-//                 netRb.Rigidbody.linearVelocity = Vector2.zero;
-//                 netRb.Rigidbody.angularVelocity = 0f;
-//             }
-//         }
-
-//         isLevelCompleteNetwork = false;
-//         LevelCompleteScreen?.SetActive(false);
+//         isLevelComplete = false;
 //         isLevelSwitching = false;
 //     }
 
 //     // ============================
-//     // GAME OVER
+//     // 🔁 RESTART GAME (BRAND NEW)
 //     // ============================
-//     public void GameOver()
+//     public void RestartGame()
 //     {
-//         if (!isLevelSwitching)
-//             RPC_SetGameOver(true);
+//         if (!Object.HasStateAuthority) return;
+//         RPC_RestartGame();
 //     }
 
 //     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-//     private void RPC_SetGameOver(NetworkBool gameOver)
+//     private void RPC_RestartGame()
 //     {
-//         isGameOverNetwork = gameOver;
+//         ResetToFreshGame();
+//     }
+
+//     private void ResetToFreshGame()
+//     {
+//         isPaused = false;
+//         isGameOver = false;
+//         isLevelComplete = false;
+//         isLevelSwitching = false;
+
+//         NetworkedCoins = 0;
+//         NetworkedDiamonds = 0;
+//         collectedKeys = 0;
+
+//         level1.SetActive(true);
+//         level2.SetActive(false);
+
+//         TeleportPlayers(initialPlayerSpawnPosition);
+//         ResetAllCollectibles();
+
+//         UpdateCollectibleUI();
+//         UpdateUI();
+//     }
+
+//     // ============================
+//     // PLAYER RESET
+//     // ============================
+//     private void TeleportPlayers(Vector2 position)
+//     {
+//         foreach (Player player in FindObjectsOfType<Player>())
+//         {
+//             if (!player.Object.HasStateAuthority) continue;
+
+//             var rb = player.GetComponent<NetworkRigidbody2D>();
+//             rb.Teleport(position);
+//             rb.Rigidbody.linearVelocity = Vector2.zero;
+//             rb.Rigidbody.angularVelocity = 0f;
+
+//             player.HasReachedFinish = false;
+//         }
+//     }
+
+//     // ============================
+//     // COLLECTIBLE RESET
+//     // ============================
+//     private void ResetAllCollectibles()
+//     {
+//         var coins = FindObjectsOfType<NetworkedCoin>(true);
+//         foreach (var coin in coins)
+//             coin.RPC_ResetCoin();
+//     }
+
+//     // ============================
+//     // INITIAL SPAWN CAPTURE
+//     // ============================
+//     private void CaptureInitialSpawnPosition()
+//     {
+//         if (initialSpawnCaptured) return;
+
+//         Player player = FindObjectOfType<Player>();
+//         if (player != null)
+//         {
+//             initialPlayerSpawnPosition = player.transform.position;
+//             initialSpawnCaptured = true;
+//         }
 //     }
 
 //     // ============================
@@ -230,278 +287,29 @@
 //     // ============================
 //     public void OnPauseClicked()
 //     {
+//         if (!Object.HasStateAuthority) return;
 //         RPC_SetPause(true);
 //     }
 
 //     public void OnResumeClicked()
 //     {
+//         if (!Object.HasStateAuthority) return;
 //         RPC_SetPause(false);
 //     }
 
 //     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-//     private void RPC_SetPause(NetworkBool paused)
+//     private void RPC_SetPause(NetworkBool value)
 //     {
-//         isPausedNetwork = paused;
+//         isPaused = value;
 //     }
 
 //     // ============================
-//     // HOME
-//     // ============================
-//     public void OnHomeClicked()
-//     {
-//         StartCoroutine(GoHomeSafe());
-//     }
-
-//     IEnumerator GoHomeSafe()
-//     {
-//         Time.timeScale = 1f;
-//         yield return null;
-
-//         var runner = FindObjectOfType<NetworkRunner>();
-//         if (runner != null)
-//         {
-//             runner.Shutdown();
-//             Destroy(runner.gameObject);
-//         }
-
-//         UnityEngine.SceneManagement.SceneManager.LoadScene("LobbyScene");
-//     }
-// }
-
-// using UnityEngine;
-// using UnityEngine.UI;
-// using TMPro;
-// using Fusion;
-// using Fusion.Addons.Physics;
-// using System.Collections;
-// using System.Linq;
-
-// public class UIManager : NetworkBehaviour
-// {
-//     public static UIManager Instance;
-
-//     [Header("Game Over")]
-//     public GameObject GameOverScreen;
-//     public GameObject LevelCompleteScreen;
-
-//     [Header("Collectibles UI")]
-//     public TMP_Text coinText;
-//     public TMP_Text diamondText;
-
-//     [Header("Key UI")]
-//     public TMP_Text keyText;
-//     public GameObject keyUI;
-
-//     [Header("Targets")]
-//     public int totalCoins = 3;
-//     public int totalDiamonds = 1;
-//     public int totalKeys = 6;
-
-//     [Header("Pause")]
-//     public GameObject pausePanel;
-
-//     [Header("LEVEL OBJECTS")]
-//     public GameObject level1;
-//     public GameObject level2;
-
-//     [Header("LEVEL 2 START POINT")]
-//     public Transform level2StartPoint;
-
-//     [Networked] private NetworkBool isPausedNetwork { get; set; }
-//     [Networked] private NetworkBool isGameOverNetwork { get; set; }
-//     [Networked] private NetworkBool isLevelCompleteNetwork { get; set; }
-
-//     private int collectedCoins;
-//     private int collectedDiamonds;
-//     private int collectedKeys;
-
-//     [HideInInspector] public bool isLevelSwitching = false;
-
-//     // ============================
-//     // LIFECYCLE
-//     // ============================
-//     void Awake()
-//     {
-//         Instance = this;
-//         Time.timeScale = 1f;
-
-//         // ✅ START WITH LEVEL 1
-//         if (level1 != null) level1.SetActive(true);
-//         if (level2 != null) level2.SetActive(false);
-
-//         pausePanel?.SetActive(false);
-//         GameOverScreen?.SetActive(false);
-//         LevelCompleteScreen?.SetActive(false);
-
-//         collectedCoins = 0;
-//         collectedDiamonds = 0;
-//         collectedKeys = 0;
-
-//         UpdateCollectibleUI();
-//         UpdateUI();
-//     }
-
-//     // ============================
-//     // REQUIRED METHODS
-//     // ============================
-//     public bool IsGameStopped()
-//     {
-//         return isGameOverNetwork || isLevelCompleteNetwork;
-//     }
-
-//     public void CheckAllPlayersFinished()
-//     {
-//         if (FindObjectsOfType<Player>().All(p => p.HasReachedFinish))
-//         {
-//             LevelComplete();
-//         }
-//     }
-
-//     // ============================
-//     // 🔑 KEY COLLECTION
-//     // ============================
-//     public void OnKeyCollected()
-//     {
-//         collectedKeys = Mathf.Clamp(collectedKeys + 1, 0, totalKeys);
-//         UpdateUI();
-//     }
-
-//     // ============================
-//     // UPDATE
-//     // ============================
-//     public override void Render()
-//     {
-//         pausePanel?.SetActive(isPausedNetwork);
-//         GameOverScreen?.SetActive(isGameOverNetwork);
-//         LevelCompleteScreen?.SetActive(isLevelCompleteNetwork);
-        
-
-//         if (!isPausedNetwork)
-//             Time.timeScale = 1f;
-//     }
-
-//     // ============================
-//     // UI VISIBILITY
-//     // ============================
-//     void UpdateCollectibleUI()
-//     {
-//         bool isLevel2Active = level2 != null && level2.activeSelf;
-
-//         // Level 1 UI
-//         coinText?.transform.parent.gameObject.SetActive(!isLevel2Active);
-//         diamondText?.transform.parent.gameObject.SetActive(!isLevel2Active);
-
-//         // Level 2 UI
-//         keyUI?.SetActive(isLevel2Active);
-//     }
-
-//     // ============================
-//     // COLLECTIBLES
-//     // ============================
-//     public void CollectCoin()
-//     {
-//         collectedCoins++;
-//         UpdateUI();
-//     }
-
-//     public void CollectDiamond()
-//     {
-//         collectedDiamonds++;
-//         UpdateUI();
-//     }
-
-//     void UpdateUI()
-//     {
-//         if (coinText != null)
-//             coinText.text = $"{collectedCoins} / {totalCoins}";
-
-//         if (diamondText != null)
-//             diamondText.text = $"{collectedDiamonds} / {totalDiamonds}";
-
-//         if (keyText != null)
-//             keyText.text = $"{collectedKeys} / {totalKeys}";
-//     }
-
-//     // ============================
-//     // LEVEL COMPLETE FLOW
-//     // ============================
-//     void LevelComplete()
-//     {
-//         if (!isLevelSwitching)
-//             RPC_SetLevelComplete(true);
-//     }
-
-//     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-//     private void RPC_SetLevelComplete(NetworkBool completed)
-//     {
-//         isLevelCompleteNetwork = completed;
-
-//         if (completed)
-//             StartCoroutine(SwitchToLevel2());
-//     }
-
-//     IEnumerator SwitchToLevel2()
-//     {
-//         isLevelSwitching = true;
-
-//         // Show Level Complete UI
-//         LevelCompleteScreen?.SetActive(true);
-
-//         yield return new WaitForSecondsRealtime(2f);
-
-//         // Hide Level Complete UI
-//         LevelCompleteScreen?.SetActive(false);
-
-//         // Reset Level 1 collectibles
-//         collectedCoins = 0;
-//         collectedDiamonds = 0;
-
-//         // Activate Level 2
-//         if (level1 != null) level1.SetActive(false);
-//         if (level2 != null) level2.SetActive(true);
-
-//         UpdateCollectibleUI();
-//         UpdateUI();
-
-//         // Move player to Level 2 start
-//         var player = Player.Instance;
-//         if (player != null && level2StartPoint != null && player.Object.HasStateAuthority)
-//         {
-//             var netRb = player.GetComponent<NetworkRigidbody2D>();
-//             if (netRb != null)
-//             {
-//                 netRb.Teleport(level2StartPoint.position);
-//                 netRb.Rigidbody.linearVelocity = Vector2.zero;
-//                 netRb.Rigidbody.angularVelocity = 0f;
-//             }
-//         }
-
-//         isLevelCompleteNetwork = false;
-//         isLevelSwitching = false;
-//     }
-
-//     // ============================
-//     // GAME OVER / PAUSE
+//     // GAME OVER
 //     // ============================
 //     public void GameOver()
 //     {
-//         if (!isLevelSwitching)
-//             RPC_SetGameOver(true);
-//     }
-
-//     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-//     private void RPC_SetGameOver(NetworkBool gameOver)
-//     {
-//         isGameOverNetwork = gameOver;
-//     }
-
-//     public void OnPauseClicked() => RPC_SetPause(true);
-//     public void OnResumeClicked() => RPC_SetPause(false);
-
-//     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-//     private void RPC_SetPause(NetworkBool paused)
-//     {
-//         isPausedNetwork = paused;
+//         if (!Object.HasStateAuthority) return;
+//         isGameOver = true;
 //     }
 // }
 
@@ -509,135 +317,140 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 using Fusion;
 using Fusion.Addons.Physics;
-using System.Collections;
 using System.Linq;
 
 public class UIManager : NetworkBehaviour
 {
     public static UIManager Instance;
 
-    [Header("Game Over")]
+    // ============================
+    // SCREENS
+    // ============================
+    [Header("Screens")]
+    public GameObject pausePanel;
     public GameObject GameOverScreen;
     public GameObject LevelCompleteScreen;
 
+    // ============================
+    // COLLECTIBLES UI
+    // ============================
     [Header("Collectibles UI")]
     public TMP_Text coinText;
     public TMP_Text diamondText;
 
-    [Header("Key UI")]
+    [Header("Key UI (Level 2)")]
     public TMP_Text keyText;
     public GameObject keyUI;
 
-    [Header("Targets")]
+    // ============================
+    // TARGET COUNTS
+    // ============================
     public int totalCoins = 3;
     public int totalDiamonds = 1;
     public int totalKeys = 6;
 
-    [Header("Pause")]
-    public GameObject pausePanel;
-
-    // 🔧 ONLY ADDITION FOR FIX
+    // ============================
+    // PAUSE BUTTON
+    // ============================
     public Image pauseButtonImage;
     public Sprite pauseSprite;
     public Sprite resumeSprite;
 
-    [Header("LEVEL OBJECTS")]
+    // ============================
+    // LEVEL OBJECTS
+    // ============================
     public GameObject level1;
     public GameObject level2;
 
-    [Header("LEVEL 2 START POINT")]
+    [Header("Level 2 Start Point")]
     public Transform level2StartPoint;
 
+    // ============================
+    // NETWORKED STATE
+    // ============================
     [Networked] private NetworkBool isPausedNetwork { get; set; }
     [Networked] private NetworkBool isGameOverNetwork { get; set; }
     [Networked] private NetworkBool isLevelCompleteNetwork { get; set; }
 
-    private int collectedCoins;
-    private int collectedDiamonds;
-    private int collectedKeys;
+    [Networked] public int NetworkedCoins { get; set; }
+    [Networked] public int NetworkedDiamonds { get; set; }
 
+    // ============================
+    // LOCAL STATE
+    // ============================
+    private int collectedKeys = 0;
     [HideInInspector] public bool isLevelSwitching = false;
+
+    // 🔥 IMPORTANT: REAL GAME START POSITION
+    private Vector2 initialPlayerSpawnPos;
+    private bool spawnCaptured = false;
 
     // ============================
     // LIFECYCLE
     // ============================
-    void Awake()
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
-        Time.timeScale = 1f;
-
-        // Start with Level 1
-        if (level1 != null) level1.SetActive(true);
-        if (level2 != null) level2.SetActive(false);
 
         pausePanel?.SetActive(false);
         GameOverScreen?.SetActive(false);
         LevelCompleteScreen?.SetActive(false);
 
-        collectedCoins = 0;
-        collectedDiamonds = 0;
-        collectedKeys = 0;
+        if (pauseButtonImage != null)
+            pauseButtonImage.sprite = pauseSprite;
+    }
+
+    public override void Spawned()
+    {
+        if (Object.HasStateAuthority)
+        {
+            CaptureInitialSpawn();
+            ResetToFreshGame();
+        }
 
         UpdateCollectibleUI();
         UpdateUI();
     }
 
     // ============================
-    // REQUIRED METHODS
+    // GAME STATE
     // ============================
     public bool IsGameStopped()
     {
-        return isGameOverNetwork || isLevelCompleteNetwork;
+        if (!Object || !Object.IsValid) return false;
+        return isPausedNetwork || isGameOverNetwork || isLevelCompleteNetwork;
     }
 
-    public void CheckAllPlayersFinished()
-    {
-        if (FindObjectsOfType<Player>().All(p => p.HasReachedFinish))
-        {
-            LevelComplete();
-        }
-    }
-
-    // ============================
-    // KEY COLLECTION
-    // ============================
-    public void OnKeyCollected()
-    {
-        collectedKeys = Mathf.Clamp(collectedKeys + 1, 0, totalKeys);
-        UpdateUI();
-    }
-
-    // ============================
-    // UPDATE
-    // ============================
     public override void Render()
     {
         pausePanel?.SetActive(isPausedNetwork);
         GameOverScreen?.SetActive(isGameOverNetwork);
         LevelCompleteScreen?.SetActive(isLevelCompleteNetwork);
 
-        // ✅ FIX: CHANGE PAUSE ICON (ONLY FIX)
         if (pauseButtonImage != null)
-        {
             pauseButtonImage.sprite = isPausedNetwork ? resumeSprite : pauseSprite;
-        }
 
-        if (!isPausedNetwork)
-            Time.timeScale = 1f;
+        Time.timeScale = isPausedNetwork ? 0f : 1f;
     }
 
     // ============================
     // UI VISIBILITY
     // ============================
-    void UpdateCollectibleUI()
+    private void UpdateCollectibleUI()
     {
-        bool isLevel2Active = level2 != null && level2.activeSelf;
+        bool level2Active = level2.activeSelf;
 
-        coinText?.transform.parent.gameObject.SetActive(!isLevel2Active);
-        diamondText?.transform.parent.gameObject.SetActive(!isLevel2Active);
-        keyUI?.SetActive(isLevel2Active);
+        coinText.transform.parent.gameObject.SetActive(!level2Active);
+        diamondText.transform.parent.gameObject.SetActive(!level2Active);
+        keyUI.SetActive(level2Active);
     }
 
     // ============================
@@ -645,94 +458,186 @@ public class UIManager : NetworkBehaviour
     // ============================
     public void CollectCoin()
     {
-        collectedCoins++;
+        if (!Object.HasStateAuthority) return;
+        NetworkedCoins++;
         UpdateUI();
     }
 
     public void CollectDiamond()
     {
-        collectedDiamonds++;
+        if (!Object.HasStateAuthority) return;
+        NetworkedDiamonds++;
         UpdateUI();
     }
 
-    void UpdateUI()
+    public void CollectKey()
     {
-        if (coinText != null)
-            coinText.text = $"{collectedCoins} / {totalCoins}";
+        collectedKeys = Mathf.Clamp(collectedKeys + 1, 0, totalKeys);
+        UpdateUI();
+    }
 
-        if (diamondText != null)
-            diamondText.text = $"{collectedDiamonds} / {totalDiamonds}";
+    public void OnKeyCollected() => CollectKey();
 
-        if (keyText != null)
-            keyText.text = $"{collectedKeys} / {totalKeys}";
+    private void UpdateUI()
+    {
+        coinText.text = $"{NetworkedCoins}/{totalCoins}";
+        diamondText.text = $"{NetworkedDiamonds}/{totalDiamonds}";
+        keyText.text = $"{collectedKeys}/{totalKeys}";
+    }
+
+    public bool AllCollected()
+    {
+        return NetworkedCoins >= totalCoins &&
+               NetworkedDiamonds >= totalDiamonds;
     }
 
     // ============================
-    // LEVEL COMPLETE FLOW
+    // RESET COLLECTIBLES
     // ============================
-    void LevelComplete()
+    private void ResetCollectibles()
     {
-        if (!isLevelSwitching)
-            RPC_SetLevelComplete(true);
+        NetworkedCoins = 0;
+        NetworkedDiamonds = 0;
+        collectedKeys = 0;
+
+        var coins = FindObjectsByType<NetworkedCoin>(
+            FindObjectsInactive.Include,
+            FindObjectsSortMode.None
+        );
+
+        foreach (var coin in coins)
+            coin.RPC_ResetCoin();
+    }
+
+    // ============================
+    // LEVEL COMPLETE → LEVEL 2
+    // ============================
+    public void LevelComplete()
+    {
+        if (!Object.HasStateAuthority || isLevelSwitching) return;
+        if (AllCollected())
+            RPC_StartLevel2();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_SetLevelComplete(NetworkBool completed)
+    private void RPC_StartLevel2()
     {
-        isLevelCompleteNetwork = completed;
-
-        if (completed)
-            StartCoroutine(SwitchToLevel2());
+        StartCoroutine(Level2Flow());
     }
 
-    IEnumerator SwitchToLevel2()
+    private System.Collections.IEnumerator Level2Flow()
     {
         isLevelSwitching = true;
+        isLevelCompleteNetwork = true;
 
-        LevelCompleteScreen?.SetActive(true);
+        LevelCompleteScreen.SetActive(true);
         yield return new WaitForSecondsRealtime(2f);
-        LevelCompleteScreen?.SetActive(false);
+        LevelCompleteScreen.SetActive(false);
 
-        collectedCoins = 0;
-        collectedDiamonds = 0;
+        ResetCollectibles();
 
-        if (level1 != null) level1.SetActive(false);
-        if (level2 != null) level2.SetActive(true);
+        level1.SetActive(false);
+        level2.SetActive(true);
+
+        TeleportPlayer(level2StartPoint.position);
 
         UpdateCollectibleUI();
         UpdateUI();
-
-        var player = Player.Instance;
-        if (player != null && level2StartPoint != null && player.Object.HasStateAuthority)
-        {
-            var netRb = player.GetComponent<NetworkRigidbody2D>();
-            if (netRb != null)
-            {
-                netRb.Teleport(level2StartPoint.position);
-                netRb.Rigidbody.linearVelocity = Vector2.zero;
-                netRb.Rigidbody.angularVelocity = 0f;
-            }
-        }
 
         isLevelCompleteNetwork = false;
         isLevelSwitching = false;
     }
 
     // ============================
-    // GAME OVER / PAUSE
+    // RESTART GAME (REAL FRESH START)
     // ============================
-    public void GameOver()
+    public void RestartGame()
     {
-        if (!isLevelSwitching)
-            RPC_SetGameOver(true);
+        if (!Object.HasStateAuthority) return;
+        RPC_RestartGame();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    private void RPC_SetGameOver(NetworkBool gameOver)
+    private void RPC_RestartGame()
     {
-        isGameOverNetwork = gameOver;
+        ResetToFreshGame();
     }
 
+    private void ResetToFreshGame()
+    {
+        isPausedNetwork = false;
+        isGameOverNetwork = false;
+        isLevelCompleteNetwork = false;
+        isLevelSwitching = false;
+
+        ResetCollectibles();
+
+        level1.SetActive(true);
+        level2.SetActive(false);
+
+        TeleportPlayer(initialPlayerSpawnPos);
+
+        UpdateCollectibleUI();
+        UpdateUI();
+    }
+
+    // ============================
+// CHECK ALL PLAYERS FINISHED
+// ============================
+public void CheckAllPlayersFinished()
+{
+    // Safety checks
+    if (!Object || !Object.IsValid)
+        return;
+
+    // Only server/state authority decides
+    if (!Object.HasStateAuthority)
+        return;
+
+    Player[] players = FindObjectsOfType<Player>();
+    if (players.Length == 0)
+        return;
+
+    bool allFinished = players.All(p => p.HasReachedFinish);
+
+    if (allFinished)
+    {
+        LevelComplete();
+    }
+}
+
+
+    // ============================
+    // PLAYER HANDLING
+    // ============================
+    private void CaptureInitialSpawn()
+    {
+        if (spawnCaptured) return;
+
+        Player player = FindObjectOfType<Player>();
+        if (player != null)
+        {
+            initialPlayerSpawnPos = player.transform.position;
+            spawnCaptured = true;
+        }
+    }
+
+    private void TeleportPlayer(Vector2 pos)
+    {
+        Player player = FindObjectOfType<Player>();
+        if (player == null || !player.Object.HasStateAuthority) return;
+
+        var rb = player.GetComponent<NetworkRigidbody2D>();
+        rb.Teleport(pos);
+        rb.Rigidbody.linearVelocity = Vector2.zero;
+        rb.Rigidbody.angularVelocity = 0f;
+
+        player.HasReachedFinish = false;
+    }
+
+    // ============================
+    // PAUSE
+    // ============================
     public void OnPauseClicked() => RPC_SetPause(true);
     public void OnResumeClicked() => RPC_SetPause(false);
 
@@ -740,5 +645,23 @@ public class UIManager : NetworkBehaviour
     private void RPC_SetPause(NetworkBool paused)
     {
         isPausedNetwork = paused;
+    }
+
+    // ============================
+    // GAME OVER
+    // ============================
+    public void GameOver()
+    {
+        if (!Object.HasStateAuthority) return;
+        isGameOverNetwork = true;
+    }
+
+    // ============================
+    // QUIT
+    // ============================
+    public void QuitGame()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("LobbyScene");
     }
 }
