@@ -16,7 +16,7 @@ public class KeyPickup : NetworkBehaviour
         collected = true;
 
         // ✅ THIS IS THE FIX
-        UIManager.Instance.OnKeyCollected();
+        UIManager.Instance.CollectKey();
 
         // Hide / despawn key
         gameObject.SetActive(false);
