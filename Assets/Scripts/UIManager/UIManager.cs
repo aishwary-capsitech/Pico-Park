@@ -370,29 +370,48 @@ public class UIManager : NetworkBehaviour
         Debug.Log("Ping updated: " + ping + " ms");
     }
 
+    //public override void Render()
+    //{
+    //    base.Render();
+
+    //    if (!Object || !Object.IsValid) return;
+
+    //    // Sync panel states from network
+    //    if (pausePanel != null)
+    //        pausePanel.SetActive(isPausedNetwork);
+
+    //    if (GameOverScreen != null)
+    //        GameOverScreen.SetActive(isGameOverNetwork);
+
+    //    if (LevelCompleteScreen != null)
+    //        LevelCompleteScreen.SetActive(isLevelCompleteNetwork);
+
+    //    // Update pause button icon
+    //    if (pauseButtonImage != null)
+    //        pauseButtonImage.sprite = isPausedNetwork ? resumeSprite : pauseSprite;
+
+    //    // Sync time scale
+    //    Time.timeScale = isPausedNetwork ? 0f : 1f;
+
+    //    UpdateCollectibleUI();
+    //}
+
     public override void Render()
     {
         base.Render();
 
         if (!Object || !Object.IsValid) return;
 
-        // Sync panel states from network
-        if (pausePanel != null)
-            pausePanel.SetActive(isPausedNetwork);
+        pausePanel?.SetActive(isPausedNetwork);
+        GameOverScreen?.SetActive(isGameOverNetwork);
+        LevelCompleteScreen?.SetActive(isLevelCompleteNetwork);
 
-        if (GameOverScreen != null)
-            GameOverScreen.SetActive(isGameOverNetwork);
-
-        if (LevelCompleteScreen != null)
-            LevelCompleteScreen.SetActive(isLevelCompleteNetwork);
-
-        // Update pause button icon
-        if (pauseButtonImage != null)
-            pauseButtonImage.sprite = isPausedNetwork ? resumeSprite : pauseSprite;
-
-        // Sync time scale
+        pauseButtonImage.sprite = isPausedNetwork ? resumeSprite : pauseSprite;
         Time.timeScale = isPausedNetwork ? 0f : 1f;
+
+        UpdateCollectibleUI();
     }
+
 
     // COLLECTIBLES
     public void CollectCoin()
