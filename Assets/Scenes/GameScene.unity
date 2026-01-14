@@ -14474,6 +14474,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level1: {fileID: 1846759534}
   level2: {fileID: 2222415978717199737}
+  level2Hazards:
+  - {fileID: 8767167435141295363}
+  - {fileID: 6110756058889331916}
+  - {fileID: 1363736139384054787}
+  - {fileID: 7237424615880030013}
+  - {fileID: 8342778683195112057}
+  - {fileID: 3857869798801846580}
+  - {fileID: 613535473912782497}
+  - {fileID: 8013858161169848031}
+  - {fileID: 2446513950083596029}
+  - {fileID: 6982197468629883950}
+  - {fileID: 557378069824262869}
+  - {fileID: 3305556874563904964}
+  - {fileID: 6097221781997802788}
   _level: 1
 --- !u!1 &1212959625
 GameObject:
@@ -27311,6 +27325,7 @@ GameObject:
   - component: {fileID: 5164506008177367436}
   - component: {fileID: 2196813660776518677}
   - component: {fileID: 1933548554096818094}
+  - component: {fileID: 5164506008177367439}
   - component: {fileID: 1036591813672776456}
   - component: {fileID: 5164506008177367437}
   - component: {fileID: 5164506008177367438}
@@ -30275,6 +30290,7 @@ GameObject:
   - component: {fileID: 7271857278740234201}
   - component: {fileID: 6319876460928610241}
   - component: {fileID: 8713303942309676209}
+  - component: {fileID: 8713303942309676212}
   - component: {fileID: 6388782851868377530}
   - component: {fileID: 8713303942309676210}
   - component: {fileID: 8713303942309676211}
@@ -30626,6 +30642,7 @@ GameObject:
   - component: {fileID: 6945875244077411724}
   - component: {fileID: 6658625114031211427}
   - component: {fileID: 5009682284130947953}
+  - component: {fileID: 6945875244077411727}
   - component: {fileID: 4429838997108778657}
   - component: {fileID: 6945875244077411725}
   - component: {fileID: 6945875244077411726}
@@ -31882,6 +31899,7 @@ GameObject:
   - component: {fileID: 1947937088782778177}
   - component: {fileID: 6937103843092203123}
   - component: {fileID: 1208698663473688689}
+  - component: {fileID: 6937103843092203126}
   - component: {fileID: 1709619858748305600}
   - component: {fileID: 6937103843092203124}
   - component: {fileID: 6937103843092203125}
@@ -32175,6 +32193,27 @@ PolygonCollider2D:
       - {x: -0.015, y: 0.955}
       - {x: -0.024999999, y: 0.965}
   m_UseDelaunayMesh: 0
+--- !u!114 &5164506008177367439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003188119627675236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3836515609
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects:
+  - {fileID: 2838463877715543996}
+  NetworkedBehaviours:
+  - {fileID: 2196813660776518677}
+  - {fileID: 1036591813672776456}
+  ForceRemoteRenderTimeframe: 0
 --- !u!61 &5203481951254611721
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -32733,6 +32772,7 @@ GameObject:
   - component: {fileID: 1693534527338404521}
   - component: {fileID: 108689712133778023}
   - component: {fileID: 4043816549311293937}
+  - component: {fileID: 8756116907202857287}
   - component: {fileID: 8756116907202857284}
   - component: {fileID: 8756116907202857285}
   - component: {fileID: 8756116907202857286}
@@ -34842,6 +34882,7 @@ GameObject:
   - component: {fileID: 565612036560451101}
   - component: {fileID: 5477839734749402728}
   - component: {fileID: 514949340962174972}
+  - component: {fileID: 8291493662838907711}
   - component: {fileID: 8291493662838907708}
   - component: {fileID: 8291493662838907709}
   - component: {fileID: 8291493662838907710}
@@ -34880,26 +34921,20 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects:
+  - {fileID: 8291493662838907711}
   - {fileID: 7426796593607993389}
+  - {fileID: 8756116907202857287}
   - {fileID: 8595288868521395353}
+  - {fileID: 6937103843092203126}
   - {fileID: 8917210238940062065}
+  - {fileID: 8713303942309676212}
   - {fileID: 298062945419354601}
+  - {fileID: 5164506008177367439}
   - {fileID: 2838463877715543996}
+  - {fileID: 6945875244077411727}
   - {fileID: 48565130025431996}
   NetworkedBehaviours:
   - {fileID: 6219820762643180709}
-  - {fileID: 5477839734749402728}
-  - {fileID: 8291493662838907708}
-  - {fileID: 108689712133778023}
-  - {fileID: 8756116907202857284}
-  - {fileID: 6937103843092203123}
-  - {fileID: 1709619858748305600}
-  - {fileID: 6319876460928610241}
-  - {fileID: 6388782851868377530}
-  - {fileID: 2196813660776518677}
-  - {fileID: 1036591813672776456}
-  - {fileID: 6658625114031211427}
-  - {fileID: 4429838997108778657}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &6658625114031211427
 MonoBehaviour:
@@ -35340,6 +35375,27 @@ PolygonCollider2D:
       - {x: -0.015, y: 0.955}
       - {x: -0.024999999, y: 0.965}
   m_UseDelaunayMesh: 0
+--- !u!114 &6937103843092203126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5145560861717057705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 4206952048
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects:
+  - {fileID: 8917210238940062065}
+  NetworkedBehaviours:
+  - {fileID: 6937103843092203123}
+  - {fileID: 1709619858748305600}
+  ForceRemoteRenderTimeframe: 0
 --- !u!4 &6945875244077411724
 Transform:
   m_ObjectHideFlags: 0
@@ -35504,6 +35560,27 @@ PolygonCollider2D:
       - {x: -0.015, y: 0.955}
       - {x: -0.024999999, y: 0.965}
   m_UseDelaunayMesh: 0
+--- !u!114 &6945875244077411727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4324711948530811492}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3139276678
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects:
+  - {fileID: 48565130025431996}
+  NetworkedBehaviours:
+  - {fileID: 6658625114031211427}
+  - {fileID: 4429838997108778657}
+  ForceRemoteRenderTimeframe: 0
 --- !u!60 &6969490853296030833
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -39514,6 +39591,27 @@ PolygonCollider2D:
       - {x: -0.015, y: 0.955}
       - {x: -0.024999999, y: 0.965}
   m_UseDelaunayMesh: 0
+--- !u!114 &8291493662838907711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6609515172302559733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 70136484
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects:
+  - {fileID: 7426796593607993389}
+  NetworkedBehaviours:
+  - {fileID: 5477839734749402728}
+  - {fileID: 8291493662838907708}
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &8296402938198469821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40504,6 +40602,27 @@ PolygonCollider2D:
       - {x: -0.015, y: 0.955}
       - {x: -0.024999999, y: 0.965}
   m_UseDelaunayMesh: 0
+--- !u!114 &8713303942309676212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4074088103988334641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2723178398
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects:
+  - {fileID: 298062945419354601}
+  NetworkedBehaviours:
+  - {fileID: 6319876460928610241}
+  - {fileID: 6388782851868377530}
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &8756116907202857284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40664,6 +40783,27 @@ PolygonCollider2D:
       - {x: -0.015, y: 0.955}
       - {x: -0.024999999, y: 0.965}
   m_UseDelaunayMesh: 0
+--- !u!114 &8756116907202857287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5467482713162626369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1485078488
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects:
+  - {fileID: 8595288868521395353}
+  NetworkedBehaviours:
+  - {fileID: 108689712133778023}
+  - {fileID: 8756116907202857284}
+  ForceRemoteRenderTimeframe: 0
 --- !u!114 &8764534229850928295
 MonoBehaviour:
   m_ObjectHideFlags: 0
