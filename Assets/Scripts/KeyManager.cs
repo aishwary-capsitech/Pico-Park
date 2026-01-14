@@ -46,6 +46,7 @@
 // }
 
 
+
 using UnityEngine;
 using Fusion;
 
@@ -53,7 +54,8 @@ public class KeyManager : NetworkBehaviour
 {
     public static KeyManager Instance;
 
-    public GameObject[] keys;
+    [Header("Keys in order")]
+    public KeyPickup[] keys;   // Assign in correct order
 
     [Networked] private int collectedKeys { get; set; }
 
@@ -64,27 +66,42 @@ public class KeyManager : NetworkBehaviour
 
     public override void Spawned()
     {
-        if (!Object.HasStateAuthority) return;
+        if (Object.HasStateAuthority)
+        {
+            collectedKeys = 0;
+        }
 
-        for (int i = 0; i < keys.Length; i++)
-            keys[i].SetActive(i == 0);
+        UpdateKeysVisibility();
     }
 
+    public override void Render()
+    {
+        UpdateKeysVisibility();
+    }
+
+    // CALLED BY KEY
     public void CollectKey(int keyIndex)
     {
         if (!Object.HasStateAuthority) return;
-
         if (keyIndex != collectedKeys) return;
 
         collectedKeys++;
 
-        if (collectedKeys < keys.Length)
-        {
-            keys[collectedKeys].SetActive(true);
-        }
-        else
+        if (collectedKeys >= keys.Length)
         {
             DoorController.Instance.OpenDoor();
         }
     }
+
+    // VISIBILITY SYNC
+    private void UpdateKeysVisibility()
+    {
+        for (int i = 0; i < keys.Length; i++)
+        {
+            bool visible = (i == collectedKeys);
+            keys[i].SetVisible(visible);
+        }
+    }
 }
+
+

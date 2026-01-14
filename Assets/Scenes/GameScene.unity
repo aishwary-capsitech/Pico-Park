@@ -7422,7 +7422,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 88.3, y: 8.3, z: -10}
+  m_LocalPosition: {x: 0, y: 2, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20210,7 +20210,6 @@ MonoBehaviour:
   _NetworkedCoins: 0
   _NetworkedDiamonds: 0
   updateInterval: 0.5
-  simulationTickRate: 60
 --- !u!4 &1767212771
 Transform:
   m_ObjectHideFlags: 0
@@ -24740,7 +24739,7 @@ Transform:
   m_GameObject: {fileID: 2130085537}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 88.3, y: 8.3, z: -10}
+  m_LocalPosition: {x: 0, y: 2, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -26264,6 +26263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyIndex: 4
 --- !u!60 &1064259195413168177
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -27203,6 +27203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyIndex: 2
 --- !u!212 &1791680174029323062
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -31068,6 +31069,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyIndex: 5
 --- !u!4 &4505303062866975242
 Transform:
   m_ObjectHideFlags: 0
@@ -34502,6 +34504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyIndex: 3
 --- !u!4 &6396895224692674248
 Transform:
   m_ObjectHideFlags: 0
@@ -39038,12 +39041,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   keys:
-  - {fileID: 6609515172302559733}
-  - {fileID: 5467482713162626369}
-  - {fileID: 5145560861717057705}
-  - {fileID: 4074088103988334641}
-  - {fileID: 2003188119627675236}
-  - {fileID: 4324711948530811492}
+  - {fileID: 8291493662838907708}
+  - {fileID: 8756116907202857284}
+  - {fileID: 1709619858748305600}
+  - {fileID: 6388782851868377530}
+  - {fileID: 1036591813672776456}
+  - {fileID: 4429838997108778657}
 --- !u!1 &8114661300865212575
 GameObject:
   m_ObjectHideFlags: 0
@@ -39565,6 +39568,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyIndex: 0
 --- !u!212 &8291493662838907709
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -40715,6 +40719,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyIndex: 1
 --- !u!212 &8756116907202857285
 SpriteRenderer:
   m_ObjectHideFlags: 0
