@@ -289,6 +289,7 @@ public class UIManager : NetworkBehaviour
     [Networked] public int NetworkedDiamonds { get; set; }
     [Networked] private int collectedKeys { get; set; }
 
+    //[SerializeField] private int simulationTickRate = 240;
     [SerializeField] private float updateInterval = 0.5f;
     private float timer;
     private NetworkRunner runner;
@@ -365,11 +366,36 @@ public class UIManager : NetworkBehaviour
             return;
 
         timer = 0f;
-
-        int ping = (int)runner.GetPlayerRtt(runner.LocalPlayer);
-        pingText.text = "Ping: " + ping + " ms";
-        Debug.Log("Ping updated: " + ping + " ms");
+        UpdatePingUI();
     }
+
+    private void UpdatePingUI()
+    {
+        if (runner == null || !runner.IsRunning || pingText == null)
+        {
+            pingText.text = "Ping: --";
+            return;
+        }
+
+        // RTT returned in SECONDS (Fusion API in your version)
+        double rttSeconds = runner.GetPlayerRtt(runner.LocalPlayer);
+
+        // Convert seconds → milliseconds
+        int rttMs = Mathf.RoundToInt((float)(rttSeconds * 1000.0));
+
+        // Color coding
+        if (rttMs < 60)
+            pingText.color = Color.green;
+        else if (rttMs < 120)
+            pingText.color = Color.yellow;
+        else
+            pingText.color = Color.red;
+
+        pingText.text = $"Ping: {rttMs} ms";
+        Debug.Log($"Updated Ping: {rttMs} ms" );
+        Debug.Log($"RTT Seconds from Fusion API: {rttSeconds}" );
+    }
+
 
     //public override void Render()
     //{
