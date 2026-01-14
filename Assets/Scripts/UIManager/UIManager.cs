@@ -336,6 +336,7 @@ public class UIManager : NetworkBehaviour
             isLevelCompleteNetwork = false;
             NetworkedCoins = 0;
             NetworkedDiamonds = 0;
+            collectedKeys = 0;
         }
 
         UpdateUI();
@@ -498,6 +499,13 @@ public class UIManager : NetworkBehaviour
         NetworkedCoins = 0;
         NetworkedDiamonds = 0;
 
+        int currentLevel = LevelManager.Instance.level;
+        bool isLevel2 = currentLevel == 2;
+        if (isLevel2)
+        {
+            collectedKeys = 0;
+        }
+
         var coins = FindObjectsOfType<NetworkedCoin>(true);
         Debug.Log($"Resetting {coins.Length} coins");
 
@@ -512,6 +520,14 @@ public class UIManager : NetworkBehaviour
         foreach (var diamond in diamonds)
         {
             diamond.RPC_ResetDiamond();
+        }
+
+        var keys = FindObjectsOfType<NetworkedKey>(true);
+        Debug.Log($"Resetting {keys.Length} keys");
+
+        foreach (var key in keys)
+        {
+            key.RPC_ResetKey();
         }
 
         Debug.Log("All coins reset and re-enabled");
