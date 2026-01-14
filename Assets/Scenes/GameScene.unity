@@ -3141,6 +3141,39 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2005923598}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &287463705
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 287463706}
+  m_Layer: 0
+  m_Name: Levels
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &287463706
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287463705}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 104.74655, y: 1.322609, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 773682707}
+  - {fileID: 1655635654}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &311288545
 GameObject:
   m_ObjectHideFlags: 0
@@ -14441,20 +14474,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level1: {fileID: 1846759534}
   level2: {fileID: 2222415978717199737}
-  level2Hazards:
-  - {fileID: 8767167435141295363}
-  - {fileID: 6110756058889331916}
-  - {fileID: 1363736139384054787}
-  - {fileID: 7237424615880030013}
-  - {fileID: 8342778683195112057}
-  - {fileID: 3857869798801846580}
-  - {fileID: 613535473912782497}
-  - {fileID: 8013858161169848031}
-  - {fileID: 2446513950083596029}
-  - {fileID: 6982197468629883950}
-  - {fileID: 557378069824262869}
-  - {fileID: 3305556874563904964}
-  - {fileID: 6097221781997802788}
+  level2Hazards: []
   _level: 1
 --- !u!1 &1212959625
 GameObject:
@@ -26538,7 +26558,7 @@ GameObject:
   - component: {fileID: 7138373267339041576}
   m_Layer: 0
   m_Name: Spike1 (1)
-  m_TagString: Untagged
+  m_TagString: Spike
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28732,11 +28752,11 @@ GameObject:
   - component: {fileID: 4716874280724551146}
   m_Layer: 0
   m_Name: Spike1 (3)
-  m_TagString: Untagged
+  m_TagString: Spike
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &3210760413852095705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33858,7 +33878,7 @@ GameObject:
   - component: {fileID: 7580085715899735021}
   m_Layer: 0
   m_Name: Spike1 (2)
-  m_TagString: Untagged
+  m_TagString: Spike
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -35794,7 +35814,7 @@ GameObject:
   - component: {fileID: 7237424615880030014}
   m_Layer: 0
   m_Name: Spike2
-  m_TagString: Untagged
+  m_TagString: Spike
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -40927,7 +40947,7 @@ GameObject:
   - component: {fileID: 8767167435141295364}
   m_Layer: 0
   m_Name: Spike1
-  m_TagString: Untagged
+  m_TagString: Spike
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

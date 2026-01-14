@@ -1,64 +1,77 @@
-//using Fusion;
-//using UnityEngine;
 
-//public class LevelManager : NetworkBehaviour
-//{
-//    public static LevelManager Instance;
+// using Fusion;
+// using UnityEngine;
 
-//    [Header("Levels")]
-//    public GameObject level1;
-//    public GameObject level2;
+// public class LevelManager : NetworkBehaviour
+// {
+//     public static LevelManager Instance;
 
-//    [Networked] public int level { get; set; } = 1;
+//     [Header("Levels")]
+//     public GameObject level1;
+//     public GameObject level2;
 
-//    private void Awake()
-//    {
-//        if (Instance == null)
-//            Instance = this;
-//        else
-//            Destroy(gameObject);
-//    }
+//     [Header("Level 2 Hazards")]
+//     public GameObject[] level2Hazards;
+//     // spikes, pendulum, boulder, etc.
 
-//    public override void Spawned()
-//    {
-//        if (Object.HasStateAuthority)
-//        {
-//            level = 1;
-//            ApplyLevelState();
-//        }
-//    }
+//     [Networked] public int level { get; set; } = 1;
 
-//    // Called when level is completed
-//    public void IncreaseLevel()
-//    {
-//        if (!Object.HasStateAuthority)
-//            return;
+//     private int lastAppliedLevel = -1;
 
-//        level++;
+//     private void Awake()
+//     {
+//         if (Instance == null)
+//             Instance = this;
+//         else
+//             Destroy(gameObject);
 
-//        ApplyLevelState();
-//    }
+//         level1.SetActive(true);
+//         level2.SetActive(false);
+//     }
 
-//    // Handles enabling/disabling level GameObjects
-//    private void ApplyLevelState()
-//    {
-//        switch (level)
-//        {
-//            case 1:
-//                level1.SetActive(true);
-//                level2.SetActive(false);
-//                break;
+//     public override void Render()
+//     {
+//         if (level != lastAppliedLevel)
+//         {
+//             ApplyLevelState();
+//             lastAppliedLevel = level;
+//         }
+//     }
 
-//            case 2:
-//                level1.SetActive(false);
-//                level2.SetActive(true);
-//                break;
-//        }
+//     public override void Spawned()
+//     {
+//         if (Object.HasStateAuthority)
+//         {
+//             level = 1;
+//         }
+//     }
 
-//        Debug.Log($"Level switched to: {level}");
-//    }
-//}
+//     public void IncreaseLevel()
+//     {
+//         if (!Object.HasStateAuthority)
+//             return;
 
+//         level++;
+//     }
+
+//     private void ApplyLevelState()
+//     {
+//         // LEVEL OBJECTS
+//         level1.SetActive(level == 1);
+//         level2.SetActive(level == 2);
+
+//         // HAZARDS
+//         bool enableHazards = level == 2;
+
+//         foreach (var hazard in level2Hazards)
+//         {
+//             if (hazard != null)
+//                 hazard.SetActive(enableHazards);
+//         }
+
+//         Debug.Log($"[ALL CLIENTS] Applied Level {level} state");
+//     }
+// }
 
 
 using Fusion;
@@ -68,28 +81,45 @@ public class LevelManager : NetworkBehaviour
 {
     public static LevelManager Instance;
 
-    [Header("Levels")]
+    [Header("Level Roots (Scene Objects)")]
     public GameObject level1;
     public GameObject level2;
-
-    [Header("Level 2 Hazards")]
-    public GameObject[] level2Hazards;
-    // spikes, pendulum, boulder, etc.
 
     [Networked] public int level { get; set; } = 1;
 
     private int lastAppliedLevel = -1;
+
+    // -----------------------------------------------------
 
     private void Awake()
     {
         if (Instance == null)
             Instance = this;
         else
+        {
             Destroy(gameObject);
+            return;
+        }
 
+        // IMPORTANT:
+        // Do NOT disable levels here
+        // Both must stay ACTIVE for Fusion
         level1.SetActive(true);
-        level2.SetActive(false);
+        level2.SetActive(true);
     }
+
+    // -----------------------------------------------------
+
+    public override void Spawned()
+    {
+        // Host decides initial level
+        if (Object.HasStateAuthority)
+        {
+            level = 1;
+        }
+    }
+
+    // -----------------------------------------------------
 
     public override void Render()
     {
@@ -100,38 +130,26 @@ public class LevelManager : NetworkBehaviour
         }
     }
 
-    public override void Spawned()
-    {
-        if (Object.HasStateAuthority)
-        {
-            level = 1;
-        }
-    }
+    // -----------------------------------------------------
 
     public void IncreaseLevel()
     {
-        if (!Object.HasStateAuthority)
-            return;
-
+        if (!Object.HasStateAuthority) return;
         level++;
     }
 
+    // -----------------------------------------------------
+    // THIS DOES NOT TOUCH SPIKES OR HAZARDS
+    // -----------------------------------------------------
+
     private void ApplyLevelState()
     {
-        // LEVEL OBJECTS
+        // ONLY toggle level ROOT visibility
+        // (These roots MUST NOT contain NetworkObjects)
+
         level1.SetActive(level == 1);
         level2.SetActive(level == 2);
 
-        // HAZARDS
-        bool enableHazards = level == 2;
-
-        foreach (var hazard in level2Hazards)
-        {
-            if (hazard != null)
-                hazard.SetActive(enableHazards);
-        }
-
-        Debug.Log($"[ALL CLIENTS] Applied Level {level} state");
+        Debug.Log($"[LevelManager] Level switched to {level}");
     }
 }
-
