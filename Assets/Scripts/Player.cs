@@ -1,59 +1,60 @@
+//using Fusion;
+//using Fusion.Addons.Physics;
+//using Unity.Cinemachine;
+//using UnityEngine;
 
-// using Fusion;
-// using Fusion.Addons.Physics;
-// using Unity.Cinemachine;
-// using UnityEngine;
+//public class Player : NetworkBehaviour
+//{
+//    public static Player Instance;
 
-// public class Player : NetworkBehaviour
-// {
-//     public static Player Instance;
+//    [HideInInspector] public NetworkRigidbody2D _networkRb;
+//    private Rigidbody2D rb;
 
 //    // TEAM JUMP RAMP
 //    private TeamJumpRamp teamJumpRamp;
 //    private bool jumpReported;
 
-//     [Networked] public NetworkBool HasReachedFinish { get; set; }
-//     [Networked] private NetworkBool IsGrounded { get; set; }
+//    [Networked] public NetworkButtons JumpButtonsPrevious { get; set; }
+//    [Networked] public NetworkObject Carrier { get; set; }
+//    [Networked] public NetworkBool HasReachedFinish { get; set; }
+//    [Networked] private NetworkBool IsGrounded { get; set; }
 
-//     public float moveSpeed = 6f;
-//     public float jumpForce = 12f;
+//    [Header("Movement Settings")]
+//    public float moveSpeed = 6f;
+//    public float jumpForce = 12f;
 
-//     private CinemachineCamera cam;
+//    private CinemachineCamera cam;
 
-//     private void Awake()
-//     {
-//         Instance = this;
-//     }
+//    private const string GroundTag = "Ground";
+//    private const string PlayerName = "Player";
 
-//     public override void Spawned()
-//     {
-//         netRb = GetComponent<NetworkRigidbody2D>();
-//         rb = netRb.Rigidbody;
+//    private void Awake()
+//    {
+//        Instance = this;
+//    }
 
-//         if (HasInputAuthority)
-//         {
-//             cam = FindObjectOfType<CinemachineCamera>();
-//             if (cam != null)
-//                 cam.Follow = transform;
-//         }
+//    public override void Spawned()
+//    {
+//        _networkRb = GetComponent<NetworkRigidbody2D>();
+//        rb = _networkRb.Rigidbody;
 
-//         HasReachedFinish = false;
-//     }
+//        if (HasInputAuthority)
+//        {
+//            cam = FindObjectOfType<CinemachineCamera>();
+//            if (cam != null)
+//                cam.Follow = transform;
+//        }
 
-//     public override void FixedUpdateNetwork()
-//     {
-//         if (!Object.HasInputAuthority || rb == null)
-//             return;
+//        HasReachedFinish = false;
+//    }
 
-//         if (UIManager.Instance != null && UIManager.Instance.IsGameStopped())
-//         {
-//             rb.linearVelocity = Vector2.zero;
-//             return;
-//         }
+//    public override void FixedUpdateNetwork()
+//    {
+//        if (_networkRb == null || rb == null)
+//            return;
 
-//         if (GetInput(out NetworkInputData input))
-//         {
-//             rb.linearVelocity = new Vector2(input.horizontalMovement * moveSpeed, rb.linearVelocity.y);
+//        if (!Object.HasInputAuthority && !Object.HasStateAuthority)
+//            return;
 
 //        // STOP PLAYER AFTER GAME END OR PAUSE
 //        if (UIManager.Instance != null && UIManager.Instance.IsGameStopped())
@@ -69,15 +70,7 @@
 //                rb.linearVelocity.y
 //            );
 
-//         // FALL GAME OVER
-//         if (Object.HasStateAuthority &&
-//             rb.position.y < -4f &&
-//             UIManager.Instance != null &&
-//             !UIManager.Instance.IsGameStopped())
-//         {
-//             UIManager.Instance.GameOver();
-//         }
-//     }
+//            rb.linearVelocity = velocity;
 
 //            var jumpPressed = data.jumpButton.GetPressed(JumpButtonsPrevious);
 //            JumpButtonsPrevious = data.jumpButton;
@@ -108,9 +101,10 @@
 //        }
 //    }
 
-//     private void OnCollisionStay2D(Collision2D col)
-//     {
-//         if (!Object.HasStateAuthority) return;
+//    private void OnCollisionEnter2D(Collision2D other)
+//    {
+//        if (!Object.HasStateAuthority)
+//            return;
 
 //        if (UIManager.Instance != null && UIManager.Instance.IsGameStopped())
 //            return;
@@ -520,9 +514,6 @@ public class Player : NetworkBehaviour
     private const string GroundTag = "Ground";
     private const string PlayerName = "Player";
 
-    // ============================
-    // LIFECYCLE
-    // ============================
     private void Awake()
     {
         Instance = this;
@@ -541,12 +532,8 @@ public class Player : NetworkBehaviour
         }
 
         HasReachedFinish = false;
-        IsGrounded = false;
     }
 
-    // ============================
-    // MOVEMENT
-    // ============================
     public override void FixedUpdateNetwork()
     {
         if (rb == null)
@@ -602,27 +589,18 @@ public class Player : NetworkBehaviour
         // FALL DEATH CHECK
         if (rb.position.y < -4f &&
             UIManager.Instance != null &&
-            UIManager.Instance.Object != null &&
-            UIManager.Instance.Object.IsValid &&
-            !UIManager.Instance.IsGameStopped() &&
-            !UIManager.Instance.isLevelSwitching)
+            !UIManager.Instance.IsGameStopped())
         {
             UIManager.Instance.GameOver();
         }
     }
 
-    // ============================
-    // COLLISIONS
-    // ============================
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (Object == null || !Object.IsValid || !Object.HasStateAuthority)
+        if (!Object.HasStateAuthority)
             return;
 
-        if (UIManager.Instance != null &&
-            UIManager.Instance.Object != null &&
-            UIManager.Instance.Object.IsValid &&
-            UIManager.Instance.IsGameStopped())
+        if (UIManager.Instance != null && UIManager.Instance.IsGameStopped())
             return;
 
         if (other.gameObject.CompareTag(GroundTag) ||
@@ -640,25 +618,25 @@ public class Player : NetworkBehaviour
         if (other.gameObject.name.Contains("Spike") ||
             other.gameObject.name.Contains("Pendulum"))
         {
-            UIManager.Instance?.GameOver();
+            UIManager.Instance.GameOver();
         }
 
         if (other.gameObject.name.Contains("Coin"))
         {
-            UIManager.Instance?.CollectCoin();
+            UIManager.Instance.CollectCoin();
             Destroy(other.gameObject);
         }
 
         if (other.gameObject.name.Contains("Diamond"))
         {
-            UIManager.Instance?.CollectDiamond();
+            UIManager.Instance.CollectDiamond();
             Destroy(other.gameObject);
         }
     }
 
     private void OnCollisionStay2D(Collision2D other)
     {
-        if (Object == null || !Object.IsValid || !Object.HasStateAuthority)
+        if (!Object.HasStateAuthority)
             return;
 
         if (other.gameObject.CompareTag(GroundTag) ||
@@ -671,13 +649,13 @@ public class Player : NetworkBehaviour
         if (other.gameObject.CompareTag("Finish"))
         {
             HasReachedFinish = true;
-            UIManager.Instance?.CheckAllPlayersFinished();
+            UIManager.Instance.CheckAllPlayersFinished();
         }
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (Object == null || !Object.IsValid || !Object.HasStateAuthority)
+        if (!Object.HasStateAuthority)
             return;
 
         if (other.gameObject.CompareTag(GroundTag) ||
@@ -689,8 +667,12 @@ public class Player : NetworkBehaviour
         if (other.gameObject.TryGetComponent(out TeamJumpRamp ramp))
         {
             teamJumpRamp = null;
+        }
 
         if (other.gameObject.CompareTag("Finish"))
+        {
             HasReachedFinish = false;
+        }
     }
 }
+
