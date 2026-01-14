@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BuzzerButtonDOWN : MonoBehaviour
 {
-    public BoxMoveDownPlatform targetBox;
+    public BlockMoveDown targetBox;
 
     private int playerCount = 0;
 

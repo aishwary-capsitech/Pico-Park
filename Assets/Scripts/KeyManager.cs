@@ -57,7 +57,8 @@ public class KeyManager : NetworkBehaviour
     [Header("Keys in order")]
     public KeyPickup[] keys;   // Assign in correct order
 
-    [Networked] private int collectedKeys { get; set; }
+    [HideInInspector]
+    [Networked] public int collectedKeys { get; set; }
 
     private void Awake()
     {
@@ -87,7 +88,17 @@ public class KeyManager : NetworkBehaviour
 
         collectedKeys++;
 
-        if (collectedKeys >= keys.Length)
+        //if (collectedKeys >= keys.Length)
+        //{
+        //    DoorController.Instance.OpenDoor();
+        //}
+    }
+
+    public void CheckAllKeyCollected()
+    {
+        if (!Object.HasStateAuthority) return;
+
+        if(collectedKeys >= keys.Length)
         {
             DoorController.Instance.OpenDoor();
         }

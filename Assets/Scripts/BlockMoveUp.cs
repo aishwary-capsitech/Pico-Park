@@ -1,77 +1,89 @@
-// using UnityEngine;
+//using UnityEngine;
 
-// public class BlockMoveUp : MonoBehaviour
-// {
-//     public float moveSpeed = 4f;
-//     public float upDistance = 4f;   // how much the block moves up
+//public class BlockMoveUp : MonoBehaviour
+//{
+//    public float moveSpeed = 4f;
+//    public float upDistance = 4f;   // how much the block moves up
 
-//     private Vector3 startPos;
-//     private Vector3 upPos;
-//     private bool moveUp = false;
+//    private Vector3 startPos;
+//    private Vector3 upPos;
 
-//     void Awake()
-//     {
-//         startPos = transform.position;
-//         upPos = startPos + Vector3.up * upDistance;
-//     }
+//    private bool moveUp = false;
 
-//     void Update()
-//     {
-//         if (!moveUp) return;
+//    void Awake()
+//    {
+//        startPos = transform.position;
+//        upPos = startPos + Vector3.up * upDistance;
+//    }
 
-//         transform.position = Vector3.MoveTowards(
-//             transform.position,
-//             upPos,
-//             moveSpeed * Time.deltaTime
-//         );
-//     }
+//    void Update()
+//    {
+//        Vector3 targetPos = moveUp ? upPos : startPos;
 
-//     // 🔼 Called by buzzer
-//     public void StartMoveUp()
-//     {
-//         moveUp = true;
-//     }
-// }
+//        transform.position = Vector3.MoveTowards(
+//            transform.position,
+//            targetPos,
+//            moveSpeed * Time.deltaTime
+//        );
+//    }
+
+//    // 🔼 Called when player is on buzzer
+//    public void StartMoveUp()
+//    {
+//        moveUp = true;
+//    }
+
+//    // 🔽 Called when player leaves buzzer
+//    public void StopMoveUp()
+//    {
+//        moveUp = false;
+//    }
+//}
 
 
+
+using Fusion;
 using UnityEngine;
 
-public class BlockMoveUp : MonoBehaviour
+public class BlockMoveUp : NetworkBehaviour
 {
     public float moveSpeed = 4f;
-    public float upDistance = 4f;   // how much the block moves up
+    public float upDistance = 4f;
 
     private Vector3 startPos;
     private Vector3 upPos;
 
-    private bool moveUp = false;
+    [Networked] private NetworkBool moveUp { get; set; }
 
-    void Awake()
+    public override void Spawned()
     {
         startPos = transform.position;
         upPos = startPos + Vector3.up * upDistance;
     }
 
-    void Update()
+    public override void FixedUpdateNetwork()
     {
-        Vector3 targetPos = moveUp ? upPos : startPos;
+        if (!HasStateAuthority)
+            return;
+
+        Vector3 target = moveUp ? upPos : startPos;
 
         transform.position = Vector3.MoveTowards(
             transform.position,
-            targetPos,
-            moveSpeed * Time.deltaTime
+            target,
+            moveSpeed * Runner.DeltaTime
         );
     }
 
-    // 🔼 Called when player is on buzzer
     public void StartMoveUp()
     {
-        moveUp = true;
+        if (HasStateAuthority)
+            moveUp = true;
     }
 
-    // 🔽 Called when player leaves buzzer
     public void StopMoveUp()
     {
-        moveUp = false;
+        if (HasStateAuthority)
+            moveUp = false;
     }
 }

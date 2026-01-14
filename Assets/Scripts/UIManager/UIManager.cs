@@ -515,7 +515,16 @@ public class UIManager : NetworkBehaviour
     public bool AllCollected()
     {
         if (!Object || !Object.IsValid) return false;
-        return NetworkedCoins >= totalCoins && NetworkedDiamonds >= totalDiamonds;
+
+        int currentLevel = LevelManager.Instance.level;
+        if (currentLevel == 2)
+        {
+            return collectedKeys >= totalKeys;
+        }
+        else
+        {
+            return NetworkedCoins >= totalCoins && NetworkedDiamonds >= totalDiamonds;
+        }
     }
 
     private void ResetCollectibles()

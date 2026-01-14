@@ -1,37 +1,3 @@
-// using Fusion;
-// using UnityEngine;
-
-// public class DoorController : NetworkBehaviour
-// {
-//     public static DoorController Instance;
-
-//     public GameObject doorBlock;
-//     public GameObject finishArea;
-
-//     [Networked] private NetworkBool isUnlocked { get; set; }
-
-//     public override void Spawned()
-//     {
-//         Instance = this;
-
-//         finishArea.SetActive(false);
-//     }
-
-//     public void UnlockDoor()
-//     {
-//         if (!Object.HasStateAuthority) return;
-//         RPC_OpenDoor();
-//     }
-
-//     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-//     void RPC_OpenDoor()
-//     {
-//         doorBlock.SetActive(false);
-//         finishArea.SetActive(true);
-//         isUnlocked = true;
-//     }
-// }
-
 using UnityEngine;
 using Fusion;
 
@@ -40,11 +6,14 @@ public class DoorController : NetworkBehaviour
     public static DoorController Instance;
 
     public GameObject doorBlock;
+    public GameObject doorOpen;
     public GameObject finishArea;
 
     private void Awake()
     {
         Instance = this;
+        finishArea.SetActive(false);
+        doorOpen.SetActive(false);
     }
 
     public void OpenDoor()
@@ -52,6 +21,7 @@ public class DoorController : NetworkBehaviour
         if (!Object.HasStateAuthority) return;
 
         doorBlock.SetActive(false);
+        doorOpen.SetActive(true);
         finishArea.SetActive(true);
     }
 }
