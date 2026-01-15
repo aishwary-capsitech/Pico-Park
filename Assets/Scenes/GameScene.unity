@@ -14990,6 +14990,8 @@ GameObject:
   - component: {fileID: 1263352699}
   - component: {fileID: 1263352701}
   - component: {fileID: 1263352702}
+  - component: {fileID: 1263352704}
+  - component: {fileID: 1263352703}
   m_Layer: 0
   m_Name: DoorOpen
   m_TagString: Untagged
@@ -15143,6 +15145,42 @@ PolygonCollider2D:
       - {x: -0.24499999, y: -1.17}
       - {x: -0.235, y: -1.16}
   m_UseDelaunayMesh: 0
+--- !u!114 &1263352703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263352698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
+--- !u!114 &1263352704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263352698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 641658052
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1263352703}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &1277389396
 GameObject:
   m_ObjectHideFlags: 0
@@ -32240,6 +32278,8 @@ GameObject:
   - component: {fileID: 8965807917499792570}
   - component: {fileID: 4535618329343146144}
   - component: {fileID: 8965807917499792571}
+  - component: {fileID: 8965807917499792573}
+  - component: {fileID: 8965807917499792572}
   m_Layer: 0
   m_Name: 'DoorBlock '
   m_TagString: Untagged
@@ -34167,7 +34207,9 @@ MonoBehaviour:
   SortKey: 3066736799
   ObjectInterest: 1
   Flags: 262145
-  NestedObjects: []
+  NestedObjects:
+  - {fileID: 8965807917499792573}
+  - {fileID: 1263352704}
   NetworkedBehaviours:
   - {fileID: 9007636136044977967}
   - {fileID: 8613953405190058591}
@@ -34390,7 +34432,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c99adc9782384348bcbf5309e771515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _runner: {fileID: 0}
+  _object: {fileID: 0}
+  InvokeRpc: 0
+  ObjectIndex: 0
+  WordOffset: 0
+  WordCount: 0
+  DefaultReplicated: 1
   keyIndex: 0
+  collected: 0
 --- !u!60 &6234766361876759896
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -35182,7 +35232,6 @@ MonoBehaviour:
   - {fileID: 2838463877715543996}
   - {fileID: 48565130025431996}
   NetworkedBehaviours:
-  - {fileID: 6219820762643180709}
   - {fileID: 8291493662838907708}
   - {fileID: 8756116907202857284}
   - {fileID: 1709619858748305600}
@@ -41386,6 +41435,42 @@ PolygonCollider2D:
       - {x: 1.8, y: -1.2099999}
       - {x: 1.8, y: 0.57}
   m_UseDelaunayMesh: 0
+--- !u!114 &8965807917499792572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5148745820064871060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
+--- !u!114 &8965807917499792573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5148745820064871060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 4102617401
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 8965807917499792572}
+  ForceRemoteRenderTimeframe: 0
 --- !u!4 &9007636136044977965
 Transform:
   m_ObjectHideFlags: 0

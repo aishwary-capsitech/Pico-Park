@@ -11,7 +11,7 @@ public class Block : NetworkBehaviour
     [Networked] private float currentRotationZ { get; set; }
 
     // Networked mass (derived from player count)
-    [Networked] private float mass { get; set; }
+    [Networked] public float mass { get; set; }
 
     // Initial (scene-placed) transform
     private Vector2 initialPosition;
