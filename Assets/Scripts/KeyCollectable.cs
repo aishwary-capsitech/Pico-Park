@@ -14,8 +14,6 @@ public class KeyCollectable : NetworkBehaviour
 
         if (!other.CompareTag("Player")) return;
 
-        // Only server/state authority
-
         if (!KeyManager.Instance.Object.HasStateAuthority) return;
 
         collected = true;

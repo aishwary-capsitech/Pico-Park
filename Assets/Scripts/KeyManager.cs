@@ -1,52 +1,3 @@
-// using UnityEngine;
-// using Fusion;
-
-// public class KeyManager : NetworkBehaviour
-// {
-//     public static KeyManager Instance;
-
-//     [Header("Keys in order")]
-//     public GameObject[] keys;
-
-//     [Networked] private int collectedKeys { get; set; }
-
-//     private void Awake()
-//     {
-//         Instance = this;
-//     }
-
-//     public override void Spawned()
-//     {
-//         // Ensure only first key is active
-//         for (int i = 0; i < keys.Length; i++)
-//         {
-//             keys[i].SetActive(i == 0);
-//         }
-//     }
-
-//     public void CollectKey(int keyIndex)
-//     {
-//         // Safety check
-//         if (!Object.HasStateAuthority) return;
-
-//         // Sequential check
-//         if (keyIndex != collectedKeys) return;
-
-//         collectedKeys++;
-
-//         if (collectedKeys < keys.Length)
-//         {
-//             keys[collectedKeys].SetActive(true);
-//         }
-//         else
-//         {
-//            // DoorController.Instance.OpenDoor();
-//         }
-//     }
-// }
-
-
-
 using UnityEngine;
 using Fusion;
 
@@ -56,7 +7,7 @@ public class KeyManager : NetworkBehaviour
     [SerializeField] private DoorController doorController;
 
     [Header("Keys in order")]
-    public KeyPickup[] keys;   // Assign in correct order
+    public KeyPickup[] keys;
 
     [HideInInspector]
     [Networked] public int collectedKeys { get; set; }
@@ -88,11 +39,6 @@ public class KeyManager : NetworkBehaviour
         if (keyIndex != collectedKeys) return;
 
         collectedKeys++;
-
-        //if (collectedKeys >= keys.Length)
-        //{
-        //    DoorController.Instance.OpenDoor();
-        //}
     }
 
     public void TryOpenDoor()
@@ -116,7 +62,6 @@ public class KeyManager : NetworkBehaviour
         TryOpenDoor();
     }
 
-    // VISIBILITY SYNC
     private void UpdateKeysVisibility()
     {
         for (int i = 0; i < keys.Length; i++)
@@ -134,7 +79,7 @@ public class KeyManager : NetworkBehaviour
 
         for (int i = 0; i < keys.Length; i++)
         {
-            keys[i].SetVisible(true);
+            keys[i].SetVisible(i == 0);
         }
     }
 }
