@@ -585,19 +585,21 @@ public class Player : NetworkBehaviour
                 rb.linearVelocity.y
             );
 
+            // Use previous move input so checks compare against prior state
+            float prevMoveInput = lastMoveInput;
+
             // Trigger Move animation on input start
             if (animator != null)
             {
                 float mv = Mathf.Abs(data.horizontalMovement);
-                if (mv > 0.1f && Mathf.Abs(lastMoveInput) <= 0.1f)
+                if (mv > 0.1f && Mathf.Abs(prevMoveInput) <= 0.1f)
                     animator.SetTrigger("Move");
-                lastMoveInput = data.horizontalMovement;
             }
 
-            // Flip capsule child based on movement direction
+            // Flip capsule child based on movement direction (use previous input for edge detection)
             if (capsuleTransform != null)
             {
-                if (data.horizontalMovement < -0.1f && Mathf.Abs(lastMoveInput) <= 0.1f)
+                if (data.horizontalMovement < -0.1f && Mathf.Abs(prevMoveInput) <= 0.1f)
                 {
                     // Left -> y = 0
                     capsuleTransform.localEulerAngles = new Vector3(
@@ -605,7 +607,7 @@ public class Player : NetworkBehaviour
                         0f,
                         capsuleTransform.localEulerAngles.z);
                 }
-                else if (data.horizontalMovement > 0.1f && Mathf.Abs(lastMoveInput) <= 0.1f)
+                else if (data.horizontalMovement > 0.1f && Mathf.Abs(prevMoveInput) <= 0.1f)
                 {
                     // Right -> y = 180
                     capsuleTransform.localEulerAngles = new Vector3(
@@ -614,6 +616,9 @@ public class Player : NetworkBehaviour
                         capsuleTransform.localEulerAngles.z);
                 }
             }
+
+            // store current input for next frame
+            lastMoveInput = data.horizontalMovement;
 
             // JUMP
             var jumpPressed = data.jumpButton.GetPressed(JumpButtonsPrevious);
@@ -658,27 +663,29 @@ public class Player : NetworkBehaviour
         if (!Object.HasStateAuthority)
         {
             float mv = Mathf.Abs(rb.linearVelocity.x);
-            if (mv > 0.1f && lastRemoteMove <= 0.1f)
+            float prevRemoteMove = lastRemoteMove;
+            if (mv > 0.1f && prevRemoteMove <= 0.1f)
                 animator.SetTrigger("Move");
             lastRemoteMove = mv;
 
             float vert = rb.linearVelocity.y;
-            if (vert > 0.1f && lastRemoteVertical <= 0.1f)
+            float prevRemoteVertical = lastRemoteVertical;
+            if (vert > 0.1f && prevRemoteVertical <= 0.1f)
                 animator.SetTrigger("Jump");
             lastRemoteVertical = vert;
 
-            // Flip capsule child for remote instances based on velocity direction
+            // Flip capsule child for remote instances based on velocity direction (use previous move state)
             if (capsuleTransform != null)
             {
                 float vx = rb.linearVelocity.x;
-                if (vx < -0.1f && Mathf.Abs(lastRemoteMove) <= 0.1f)
+                if (vx < -0.1f && prevRemoteMove <= 0.1f)
                 {
                     capsuleTransform.localEulerAngles = new Vector3(
                         capsuleTransform.localEulerAngles.x,
                         0f,
                         capsuleTransform.localEulerAngles.z);
                 }
-                else if (vx > 0.1f && Mathf.Abs(lastRemoteMove) <= 0.1f)
+                else if (vx > 0.1f && prevRemoteMove <= 0.1f)
                 {
                     capsuleTransform.localEulerAngles = new Vector3(
                         capsuleTransform.localEulerAngles.x,
