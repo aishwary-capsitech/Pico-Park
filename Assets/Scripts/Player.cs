@@ -511,6 +511,13 @@ public class Player : NetworkBehaviour
 
     private CinemachineCamera cam;
 
+    // Animator for visual states
+    private Animator animator;
+    private float lastMoveInput;
+    private float lastRemoteMove;
+    private float lastRemoteVertical;
+    private Transform capsuleTransform;
+
     private const string GroundTag = "Ground";
     private const string PlayerName = "Player";
 
@@ -523,6 +530,17 @@ public class Player : NetworkBehaviour
     {
         networkRb = GetComponent<NetworkRigidbody2D>();
         rb = networkRb.Rigidbody;
+
+        // Cache animator if present
+        animator = GetComponent<Animator>();
+        lastMoveInput = 0f;
+        lastRemoteMove = 0f;
+        lastRemoteVertical = 0f;
+
+        // Cache child named "Capsule" if present
+        var t = transform.Find("Capsule");
+        if (t != null)
+            capsuleTransform = t;
 
         if (HasInputAuthority)
         {
@@ -567,6 +585,36 @@ public class Player : NetworkBehaviour
                 rb.linearVelocity.y
             );
 
+            // Trigger Move animation on input start
+            if (animator != null)
+            {
+                float mv = Mathf.Abs(data.horizontalMovement);
+                if (mv > 0.1f && Mathf.Abs(lastMoveInput) <= 0.1f)
+                    animator.SetTrigger("Move");
+                lastMoveInput = data.horizontalMovement;
+            }
+
+            // Flip capsule child based on movement direction
+            if (capsuleTransform != null)
+            {
+                if (data.horizontalMovement < -0.1f && Mathf.Abs(lastMoveInput) <= 0.1f)
+                {
+                    // Left -> y = 0
+                    capsuleTransform.localEulerAngles = new Vector3(
+                        capsuleTransform.localEulerAngles.x,
+                        0f,
+                        capsuleTransform.localEulerAngles.z);
+                }
+                else if (data.horizontalMovement > 0.1f && Mathf.Abs(lastMoveInput) <= 0.1f)
+                {
+                    // Right -> y = 180
+                    capsuleTransform.localEulerAngles = new Vector3(
+                        capsuleTransform.localEulerAngles.x,
+                        180f,
+                        capsuleTransform.localEulerAngles.z);
+                }
+            }
+
             // JUMP
             var jumpPressed = data.jumpButton.GetPressed(JumpButtonsPrevious);
             JumpButtonsPrevious = data.jumpButton;
@@ -576,6 +624,10 @@ public class Player : NetworkBehaviour
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 IsGrounded = false;
                 coyoteCounter = 0f;
+
+                // Trigger Jump animation
+                if (animator != null)
+                    animator.SetTrigger("Jump");
 
                 // TEAM JUMP RAMP
                 if (teamJumpRamp != null && !jumpReported)
@@ -592,6 +644,48 @@ public class Player : NetworkBehaviour
             !UIManager.Instance.IsGameStopped())
         {
             UIManager.Instance.GameOver();
+        }
+    }
+
+    public override void Render()
+    {
+        base.Render();
+
+        if (animator == null || rb == null)
+            return;
+
+        // For remote/non-authoritative instances, trigger move/jump based on velocity changes
+        if (!Object.HasStateAuthority)
+        {
+            float mv = Mathf.Abs(rb.linearVelocity.x);
+            if (mv > 0.1f && lastRemoteMove <= 0.1f)
+                animator.SetTrigger("Move");
+            lastRemoteMove = mv;
+
+            float vert = rb.linearVelocity.y;
+            if (vert > 0.1f && lastRemoteVertical <= 0.1f)
+                animator.SetTrigger("Jump");
+            lastRemoteVertical = vert;
+
+            // Flip capsule child for remote instances based on velocity direction
+            if (capsuleTransform != null)
+            {
+                float vx = rb.linearVelocity.x;
+                if (vx < -0.1f && Mathf.Abs(lastRemoteMove) <= 0.1f)
+                {
+                    capsuleTransform.localEulerAngles = new Vector3(
+                        capsuleTransform.localEulerAngles.x,
+                        0f,
+                        capsuleTransform.localEulerAngles.z);
+                }
+                else if (vx > 0.1f && Mathf.Abs(lastRemoteMove) <= 0.1f)
+                {
+                    capsuleTransform.localEulerAngles = new Vector3(
+                        capsuleTransform.localEulerAngles.x,
+                        180f,
+                        capsuleTransform.localEulerAngles.z);
+                }
+            }
         }
     }
 
