@@ -366,11 +366,16 @@ public class UIManager : NetworkBehaviour
             bridge.ResetBridge();
         }
 
-        Block block = FindObjectOfType<Block>();
-        if (block != null && block.Object != null)
+        Block[] blocks = FindObjectsOfType<Block>();
+
+        foreach (var block in blocks)
         {
-            block.ResetBlock();
+            if (block != null)
+            {
+                block.ResetBlock();
+            }
         }
+        
         //RPC_LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 

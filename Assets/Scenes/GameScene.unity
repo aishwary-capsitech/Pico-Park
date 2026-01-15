@@ -1084,7 +1084,7 @@ GameObject:
   - component: {fileID: 85489233}
   - component: {fileID: 85489236}
   - component: {fileID: 85489235}
-  - component: {fileID: 85489234}
+  - component: {fileID: 85489237}
   m_Layer: 0
   m_Name: Ground2 (11)
   m_TagString: Ground
@@ -1107,64 +1107,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 675968862}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!60 &85489234
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 85489232}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -1.8300943, y: -0.49729937}
-      - {x: -1.8778222, y: 0.12870151}
-      - {x: -1.8758142, y: 0.9834634}
-      - {x: -1.8605924, y: 1.0245944}
-      - {x: -1.2733865, y: 1.0361438}
-      - {x: 4.13873, y: 1.036231}
-      - {x: 4.411152, y: 1.0237678}
-      - {x: 4.4253273, y: -0.43483603}
-      - {x: 4.4110594, y: -0.484618}
-      - {x: 3.9393625, y: -0.4974485}
-      - {x: -1.8300943, y: -0.49729937}
-  m_UseDelaunayMesh: 0
 --- !u!114 &85489235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1315,6 +1257,52 @@ SpriteShapeRenderer:
     m_Center: {x: 1.2742347, y: 0.2693478, z: 0}
     m_Extent: {x: 3.1526186, y: 0.76698625, z: 0}
   m_SpriteSortPoint: 0
+--- !u!61 &85489237
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85489232}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 1.2742195, y: 0.26934755}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 6.3052382, y: 1.5339725}
+  m_EdgeRadius: 0
 --- !u!1 &94808196
 GameObject:
   m_ObjectHideFlags: 0
@@ -2023,7 +2011,7 @@ Transform:
   m_GameObject: {fileID: 122107657}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 46.5935, y: 0.3137, z: 0}
+  m_LocalPosition: {x: 46.5935, y: -0.2, z: 0}
   m_LocalScale: {x: 0.5326833, y: 0.4148479, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13098,9 +13086,9 @@ PolygonCollider2D:
       - {x: -1.9529257, y: 0.55022174}
       - {x: -1.9393828, y: 0.99221146}
       - {x: -1.3523093, y: 1.0051675}
-      - {x: 23.259525, y: 1.0044789}
-      - {x: 28.390003, y: 1.0050642}
-      - {x: 28.976757, y: 0.9922145}
+      - {x: 23.284119, y: 0.938862}
+      - {x: 28.397657, y: 0.95403755}
+      - {x: 28.984411, y: 0.9411879}
       - {x: 28.990303, y: 0.55022633}
       - {x: 28.987812, y: -31.195705}
       - {x: 28.97462, y: -31.265013}
@@ -25975,7 +25963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 4
-  downDistance: 3
+  downDistance: 4
 --- !u!212 &624785977631183409
 SpriteRenderer:
   m_ObjectHideFlags: 0
