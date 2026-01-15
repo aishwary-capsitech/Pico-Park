@@ -355,6 +355,7 @@ public class UIManager : NetworkBehaviour
     {
         if (Object && Object.IsValid)
         {
+            collectedKeys = KeyManager.Instance.collectedKeys;
             UpdateUI();
         }
 
@@ -557,12 +558,9 @@ public class UIManager : NetworkBehaviour
             diamond.RPC_ResetDiamond();
         }
 
-        var keys = FindObjectsOfType<NetworkedKey>(true);
-        Debug.Log($"Resetting {keys.Length} keys");
-
-        foreach (var key in keys)
+        if (KeyManager.Instance != null)
         {
-            key.RPC_ResetKey();
+            KeyManager.Instance.ResetKeys();
         }
 
         Debug.Log("All coins reset and re-enabled");

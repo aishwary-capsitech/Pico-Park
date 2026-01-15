@@ -53,6 +53,7 @@ using Fusion;
 public class KeyManager : NetworkBehaviour
 {
     public static KeyManager Instance;
+    [SerializeField] private DoorController doorController;
 
     [Header("Keys in order")]
     public KeyPickup[] keys;   // Assign in correct order
@@ -94,14 +95,25 @@ public class KeyManager : NetworkBehaviour
         //}
     }
 
-    public void CheckAllKeyCollected()
+    public void TryOpenDoor()
     {
         if (!Object.HasStateAuthority) return;
 
-        if(collectedKeys >= keys.Length)
+        if (collectedKeys >= keys.Length)
         {
-            DoorController.Instance.OpenDoor();
+            doorController.OpenDoor();
         }
+    }
+
+    public bool AllKeysCollected()
+    {
+        return collectedKeys >= keys.Length;
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_TryOpenDoor()
+    {
+        TryOpenDoor();
     }
 
     // VISIBILITY SYNC
@@ -111,6 +123,18 @@ public class KeyManager : NetworkBehaviour
         {
             bool visible = (i == collectedKeys);
             keys[i].SetVisible(visible);
+        }
+    }
+
+    public void ResetKeys()
+    {
+        if (!Object.HasStateAuthority) return;
+
+        collectedKeys = 0;
+
+        for (int i = 0; i < keys.Length; i++)
+        {
+            keys[i].SetVisible(true);
         }
     }
 }

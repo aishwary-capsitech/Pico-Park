@@ -632,11 +632,6 @@ public class Player : NetworkBehaviour
             UIManager.Instance.CollectDiamond();
             Destroy(other.gameObject);
         }
-
-        if(other.gameObject.name.Contains("Door"))
-        {
-            KeyManager.Instance.CheckAllKeyCollected();
-        }
     }
 
     private void OnCollisionStay2D(Collision2D other)
