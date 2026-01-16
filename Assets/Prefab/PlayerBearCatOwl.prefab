@@ -277,6 +277,7 @@ GameObject:
   - component: {fileID: 6507984437421159146}
   - component: {fileID: 2615173321099106134}
   - component: {fileID: 1303089848679367413}
+  - component: {fileID: 2372519153972994961}
   m_Layer: 0
   m_Name: PlayerBearCatOwl
   m_TagString: Player
@@ -472,6 +473,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   crouchHeight: 0.1
   normalHeight: 0.2
+--- !u!70 &2372519153972994961
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000013095924222}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.23, y: 1.97}
+  m_Size: {x: 2.12, y: 2.78}
+  m_Direction: 0
 --- !u!1 &1000013134147468
 GameObject:
   m_ObjectHideFlags: 0
