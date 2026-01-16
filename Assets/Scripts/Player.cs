@@ -29,6 +29,13 @@ public class Player : NetworkBehaviour
 
     private CinemachineCamera cam;
 
+    // Animator for visual states
+    private Animator animator;
+    private float lastMoveInput;
+    private float lastRemoteMove;
+    private float lastRemoteVertical;
+    private Transform capsuleTransform;
+
     private const string GroundTag = "Ground";
     private const string PlayerName = "Player";
 
@@ -41,6 +48,17 @@ public class Player : NetworkBehaviour
     {
         networkRb = GetComponent<NetworkRigidbody2D>();
         rb = networkRb.Rigidbody;
+
+        // Cache animator if present
+        animator = GetComponent<Animator>();
+        lastMoveInput = 0f;
+        lastRemoteMove = 0f;
+        lastRemoteVertical = 0f;
+
+        // Cache child named "Capsule" if present
+        var t = transform.Find("Capsule");
+        if (t != null)
+            capsuleTransform = t;
 
         if (HasInputAuthority)
         {
@@ -85,6 +103,43 @@ public class Player : NetworkBehaviour
                 rb.linearVelocity.y
             );
 
+            // Use previous move input so checks compare against prior state
+            float prevMoveInput = lastMoveInput;
+
+            // Trigger Move animation on input start
+  
+                float mv = Mathf.Abs(data.horizontalMovement);
+                if (mv > 0.1f && Mathf.Abs(prevMoveInput) <= 0.1f)
+                    animator.SetTrigger("Move");
+                else if (mv <= 0.1f && Mathf.Abs(prevMoveInput) > 0.1f)
+                    animator.SetTrigger("Idle");
+
+            
+
+            // Flip capsule child based on movement direction (use previous input for edge detection)
+            if (capsuleTransform != null)
+            {
+                if (data.horizontalMovement < -0.1f && Mathf.Abs(prevMoveInput) <= 0.1f)
+                {
+                    // Left -> y = 0
+                    capsuleTransform.localEulerAngles = new Vector3(
+                        capsuleTransform.localEulerAngles.x,
+                        0f,
+                        capsuleTransform.localEulerAngles.z);
+                }
+                else if (data.horizontalMovement > 0.1f && Mathf.Abs(prevMoveInput) <= 0.1f)
+                {
+                    // Right -> y = 180
+                    capsuleTransform.localEulerAngles = new Vector3(
+                        capsuleTransform.localEulerAngles.x,
+                        180f,
+                        capsuleTransform.localEulerAngles.z);
+                }
+            }
+
+            // store current input for next frame
+            lastMoveInput = data.horizontalMovement;
+
             // JUMP
             var jumpPressed = data.jumpButton.GetPressed(JumpButtonsPrevious);
             JumpButtonsPrevious = data.jumpButton;
@@ -94,6 +149,12 @@ public class Player : NetworkBehaviour
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
                 IsGrounded = false;
                 coyoteCounter = 0f;
+
+                // Trigger Jump animation
+                if (animator != null)
+                {
+                    animator.SetTrigger("Jump");
+                }
 
                 // TEAM JUMP RAMP
                 if (teamJumpRamp != null && !jumpReported)
@@ -113,6 +174,74 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public override void Render()
+    {
+        base.Render();
+
+        if (animator == null || rb == null)
+            return;
+
+        // For remote/non-authoritative instances, trigger move/jump based on velocity changes
+        if (!Object.HasStateAuthority)
+        {
+            float mv = Mathf.Abs(rb.linearVelocity.x);
+            float prevRemoteMove = lastRemoteMove;
+
+/*            if (mv > 0.1f && prevRemoteMove <= 0.1f)
+                animator.SetTrigger("Move");
+            else
+                animator.SetTrigger("Idle");*/
+
+            lastRemoteMove = mv;
+
+            float vert = rb.linearVelocity.y;
+            float prevRemoteVertical = lastRemoteVertical;
+
+        /*    if (vert > 0.1f && prevRemoteVertical <= 0.1f)
+                animator.SetTrigger("Jump");*/
+           /* else
+                animator.SetTrigger("Idle");*/
+
+            lastRemoteVertical = vert;
+
+            // Flip capsule child for remote instances based on velocity direction (use previous move state)
+            if (capsuleTransform != null)
+            {
+                float vx = rb.linearVelocity.x;
+                if (vx < -0.1f && prevRemoteMove <= 0.1f)
+                {
+                    capsuleTransform.localEulerAngles = new Vector3(
+                        capsuleTransform.localEulerAngles.x,
+                        0f,
+                        capsuleTransform.localEulerAngles.z);
+                }
+                else if (vx > 0.1f && prevRemoteMove <= 0.1f)
+                {
+                    capsuleTransform.localEulerAngles = new Vector3(
+                        capsuleTransform.localEulerAngles.x,
+                        180f,
+                        capsuleTransform.localEulerAngles.z);
+                }
+            }
+
+            // If Jump animation finished, go to Idle (or Move if moving)
+            try
+            {
+                var stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+                int jumpHash = Animator.StringToHash("Jump");
+                if ((stateInfo.IsName("Jump") || stateInfo.shortNameHash == jumpHash) && stateInfo.normalizedTime >= 1f)
+                {
+                    // Choose Idle or Move based on movement after jump
+                    if (Mathf.Abs(lastRemoteMove) <= 0.1f)
+                        animator.SetTrigger("Idle");
+                    else
+                        animator.SetTrigger("Move");
+                }
+            }
+            catch { }
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (!Object.HasStateAuthority)
@@ -126,6 +255,24 @@ public class Player : NetworkBehaviour
         {
             IsGrounded = true;
             jumpReported = false;
+            // If we landed while still moving, retrigger Move animation
+            if (animator != null)
+            {
+                float vx = rb != null ? rb.linearVelocity.x : 0f;
+                if (Mathf.Abs(vx) > 0.1f)
+                {
+                    animator.SetTrigger("Move");
+                    lastMoveInput = vx;
+                }
+            }
+            // If capsule exists, ensure it's facing correct direction after landing
+            if (capsuleTransform != null && rb != null)
+            {
+                if (rb.linearVelocity.x < -0.1f)
+                    capsuleTransform.localEulerAngles = new Vector3(capsuleTransform.localEulerAngles.x, 0f, capsuleTransform.localEulerAngles.z);
+                else if (rb.linearVelocity.x > 0.1f)
+                    capsuleTransform.localEulerAngles = new Vector3(capsuleTransform.localEulerAngles.x, 180f, capsuleTransform.localEulerAngles.z);
+            }
         }
 
         if (other.gameObject.TryGetComponent(out TeamJumpRamp ramp))
