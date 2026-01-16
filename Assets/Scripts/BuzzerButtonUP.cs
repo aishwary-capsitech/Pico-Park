@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BuzzerButtonUP : MonoBehaviour
 {
-    public BoxLiftPlatform targetBox;
+    public BlockMoveUp targetBox;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -14,7 +14,7 @@ public class BuzzerButtonUP : MonoBehaviour
         // Player landed ON TOP
         if (contact.normal.y < -0.5f)
         {
-            targetBox.StartLift();
+            targetBox.StartMoveUp();
         }
     }
 
@@ -28,7 +28,7 @@ public class BuzzerButtonUP : MonoBehaviour
         // Keep lifting ONLY while standing on top
         if (contact.normal.y < -0.5f)
         {
-            targetBox.StartLift();
+            targetBox.StartMoveUp();
         }
     }
 
@@ -38,6 +38,6 @@ public class BuzzerButtonUP : MonoBehaviour
             return;
 
         // Player left -> STOP immediately
-        targetBox.StopLift();
+        targetBox.StopMoveUp();
     }
 }

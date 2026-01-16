@@ -1,28 +1,7 @@
-// using UnityEngine;
-
-// public class PushableDownBlock : MonoBehaviour
-// {
-//     private Rigidbody2D rb;
-
-//     void Awake()
-//     {
-//         rb = GetComponent<Rigidbody2D>();
-//     }
-
-//     private void OnCollisionStay2D(Collision2D collision)
-//     {
-//         if (!collision.collider.CompareTag("Player"))
-//             return;
-
-//         // Slight damping so block doesn’t slide forever
-//         rb.linearVelocity = new Vector2(rb.linearVelocity.x * 0.98f, rb.linearVelocity.y);
-//     }
-// }
-
-
+using Fusion;
 using UnityEngine;
 
-public class PushableDownBlock : MonoBehaviour
+public class PushableDownBlock : NetworkBehaviour
 {
     [Header("Mass Settings")]
     public float heavyMass = 6f;   // hard to move
