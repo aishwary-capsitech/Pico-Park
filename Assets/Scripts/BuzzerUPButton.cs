@@ -1,32 +1,3 @@
-// using UnityEngine;
-
-// public class BuzzerUPButton : MonoBehaviour
-// {
-//     public BlockMoveUp targetBlock;
-//     private bool pressed = false;
-
-//     private void OnCollisionEnter2D(Collision2D collision)
-//     {
-//         if (pressed) return;
-
-//         if (!collision.gameObject.CompareTag("Player"))
-//             return;
-
-//         pressed = true;
-//         targetBlock.StartMoveUp();
-
-//         Debug.Log("🔘 Upper buzzer pressed → block moving UP");
-//     }
-
-//     private void OnCollisionExit2D(Collision2D collision)
-// {
-//     if (!collision.gameObject.CompareTag("Player")) return;
-
-//     targetBlock.StopMoveUp();
-// }
-
-// }
-
 using UnityEngine;
 
 public class BuzzerUPButton : MonoBehaviour
