@@ -1,148 +1,59 @@
+﻿//using Fusion;
+//using UnityEngine;
 
-//working one
+//public class PlayerSwipeCrouch : NetworkBehaviour
+//{
+//    [Header("Crouch Settings")]
+//    public float crouchHeight = 0.1f;
+//    public float normalHeight = 0.2f;
 
-// using Fusion;
-// using UnityEngine;
+//    [Networked] private NetworkBool IsCrouching { get; set; }
 
-// public class PlayerSwipeCrouch : NetworkBehaviour
-// {
-//     [Header("Crouch Settings")]
-//     public float crouchHeight = 0.1f;
-//     public float normalHeight = 0.2f;
+//    private Vector3 baseScale;
 
-//     [Networked] private NetworkBool IsCrouching { get; set; }
+//    public override void Spawned()
+//    {
+//        baseScale = transform.localScale;
 
-//     private Vector3 baseScale;
-    
+//        // IMPORTANT: reset crouch on spawn / restart
+//        if (Object.HasStateAuthority)
+//            IsCrouching = false;
+//    }
 
-//     public override void Spawned()
-//     {
-//         baseScale = transform.localScale;
+//    // Called from SwipeManager (LOCAL INPUT ONLY)
+//    public void StartCrouch()
+//    {
+//        if (!Object.HasInputAuthority) return;
 
-//         // IMPORTANT: reset crouch on spawn / restart
-//         if (Object.HasStateAuthority)
-//             IsCrouching = false;
-//     }
+//        RPC_SetCrouch(true);
+//    }
 
-//     // Called from SwipeManager (LOCAL INPUT ONLY)
-//     public void StartCrouch()
-//     {
-//         if (!Object.HasInputAuthority) return;
+//    public void StopCrouch()
+//    {
+//        if (!Object.HasInputAuthority) return;
 
-//         RPC_SetCrouch(true);
-//     }
+//        RPC_SetCrouch(false);
+//    }
 
-//     public void StopCrouch()
-//     {
-//         if (!Object.HasInputAuthority) return;
+//    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+//    private void RPC_SetCrouch(NetworkBool crouch)
+//    {
+//        IsCrouching = crouch;
+//    }
 
-//         RPC_SetCrouch(false);
-//     }
+//    public override void Render()
+//    {
+//        Vector3 scale = baseScale;
 
-//     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-//     private void RPC_SetCrouch(NetworkBool crouch)
-//     {
-//         IsCrouching = crouch;
-//     }
+//        if (IsCrouching)
+//            scale.y = crouchHeight;
+//        else
+//            scale.y = normalHeight;
 
-//     public override void Render()
-//     {
-//         Vector3 scale = baseScale;
+//        transform.localScale = scale;
+//    }
+//}
 
-//         if (IsCrouching)
-//             scale.y = crouchHeight;
-//         else
-//             scale.y = normalHeight;
-
-//         transform.localScale = scale;
-//     }
-// }
-
-
-// using Fusion;
-// using UnityEngine;
-
-// public class PlayerSwipeCrouch : NetworkBehaviour
-// {
-//     [Header("Crouch Settings")]
-//     public float crouchHeight = 0.1f;
-//     public float normalHeight = 0.2f;
-
-//     [Header("Clearance Check")]
-//     public LayerMask obstacleLayer;
-//     public float checkWidth = 0.25f;
-
-//     [Networked] private NetworkBool IsCrouching { get; set; }
-
-//     private Vector3 baseScale;
-
-//     public override void Spawned()
-//     {
-//         baseScale = transform.localScale;
-
-//         if (Object.HasStateAuthority)
-//             IsCrouching = false;
-//     }
-
-//     public void StartCrouch()
-//     {
-//         if (!Object.HasInputAuthority) return;
-//         RPC_SetCrouch(true);
-//     }
-
-//     public void StopCrouch()
-//     {
-//         if (!Object.HasInputAuthority) return;
-
-//         // 🔒 BLOCK if normal height would collide
-//         if (!HasStandingClearance())
-//             return;
-
-//         RPC_SetCrouch(false);
-//     }
-
-//     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-//     private void RPC_SetCrouch(NetworkBool crouch)
-//     {
-//         IsCrouching = crouch;
-//     }
-
-//     public override void Render()
-//     {
-//         Vector3 scale = baseScale;
-//         scale.y = IsCrouching ? crouchHeight : normalHeight;
-//         transform.localScale = scale;
-//     }
-
-//     // ✅ THIS IS THE FIX
-//     private bool HasStandingClearance()
-//     {
-//         Vector2 origin = (Vector2)transform.position + Vector2.up * (normalHeight / 2f);
-
-//         Vector2 size = new Vector2(checkWidth, normalHeight);
-
-//         RaycastHit2D hit = Physics2D.BoxCast(
-//             origin,
-//             size,
-//             0f,
-//             Vector2.up,
-//             0f,
-//             obstacleLayer
-//         );
-
-//         return hit.collider == null;
-//     }
-
-//     private void OnDrawGizmosSelected()
-//     {
-//         Gizmos.color = Color.green;
-
-//         Vector2 origin = (Vector2)transform.position + Vector2.up * (normalHeight / 2f);
-//         Vector2 size = new Vector2(checkWidth, normalHeight);
-
-//         Gizmos.DrawWireCube(origin, size);
-//     }
-// }
 
 
 
