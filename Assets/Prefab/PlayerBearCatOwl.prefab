@@ -472,8 +472,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e38508a8fbb69f4db9a9d9d623460a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standingHeight: 1.8
   crouchHeight: 0.1
+  normalHeight: 0.2
 --- !u!70 &4799282058429751387
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -508,8 +508,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.5}
-  m_Size: {x: 0.5, y: 0.5}
+  m_Offset: {x: 0.23, y: 1.97}
+  m_Size: {x: 2.12, y: 2.78}
   m_Direction: 0
 --- !u!1 &1000013134147468
 GameObject:
