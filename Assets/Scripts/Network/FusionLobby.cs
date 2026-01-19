@@ -14,6 +14,9 @@ public class FusionLobby : MonoBehaviour
 
     public GameObject loaderPanel;
     public GameObject loader;
+    public GameObject tryAgainPanel;
+    public TMP_Text tryAgainText1;
+    public TMP_Text tryAgainText2;
 
     private NetworkRunner runner;
     private bool isConnecting;
@@ -21,6 +24,7 @@ public class FusionLobby : MonoBehaviour
     void Awake()
     {
         loaderPanel.SetActive(false);
+        tryAgainPanel.SetActive(false);
     }
 
     void Start()
@@ -73,6 +77,23 @@ public class FusionLobby : MonoBehaviour
         if (!result.Ok)
         {
             Debug.LogError($"Create Room Failed: {result.ShutdownReason}");
+
+            if(result.ShutdownReason == ShutdownReason.ServerInRoom)
+            {
+                tryAgainText1.text = $"Room name '{createRoom.text}' is already taken!.";
+                tryAgainText2.text = "Try another room name.";
+            }
+            else if (result.ShutdownReason == ShutdownReason.PhotonCloudTimeout)
+            {
+                tryAgainText1.text = $"Connection to server timed out!.";
+                tryAgainText2.text = "Please try again.";
+            }
+            else
+            {
+                tryAgainText1.text = $"Failed to create room '{createRoom.text}'.";
+                tryAgainText2.text = "Please try again.";
+            }
+
             ResetUI();
             return;
         }
@@ -102,6 +123,23 @@ public class FusionLobby : MonoBehaviour
         if (!result.Ok)
         {
             Debug.LogError($"Join Room Failed: {result.ShutdownReason}");
+
+            if (result.ShutdownReason == ShutdownReason.GameNotFound)
+            {
+                tryAgainText1.text = $"Room name '{joinRoom.text}' not found!.";
+                tryAgainText2.text = "Try another room name.";
+            }
+            else if (result.ShutdownReason == ShutdownReason.PhotonCloudTimeout)
+            {
+                tryAgainText1.text = $"Connection to server timed out!.";
+                tryAgainText2.text = "Please try again.";
+            }
+            else
+            {
+                tryAgainText1.text = $"Failed to join room '{joinRoom.text}'.";
+                tryAgainText2.text = "Please try again.";
+            }
+
             ResetUI();
             return;
         }
@@ -132,6 +170,7 @@ public class FusionLobby : MonoBehaviour
     {
         isConnecting = false;
         ShowLoading(false);
+        tryAgainPanel.SetActive(true);
     }
 
     void LoaderAnimation()
@@ -140,5 +179,12 @@ public class FusionLobby : MonoBehaviour
         {
             loader.transform.Rotate(0f, 0f, -300f * Time.deltaTime);
         }
+    }
+
+    public void OnTryAgain()
+    {
+        tryAgainPanel.SetActive(false);
+        joinRoom.text = "";
+        createRoom.text = "";
     }
 }
