@@ -1,7 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Fusion;
 using UnityEngine.UI;
 using TMPro;
+using System.Threading.Tasks;
 
 public class FusionLobby : MonoBehaviour
 {
@@ -20,13 +21,6 @@ public class FusionLobby : MonoBehaviour
     void Awake()
     {
         loaderPanel.SetActive(false);
-
-        // Create runner ONCE (important for fast join)
-        runner = gameObject.AddComponent<NetworkRunner>();
-        runner.ProvideInput = true;
-
-        // Required for fast & correct scene sync
-        runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
     }
 
     void Start()
@@ -40,6 +34,19 @@ public class FusionLobby : MonoBehaviour
         LoaderAnimation();
     }
 
+    void CreateRunner()
+    {
+        if (runner != null) return;
+
+        GameObject runnerObj = new GameObject("FusionRunner");
+        DontDestroyOnLoad(runnerObj);
+
+        runner = runnerObj.AddComponent<NetworkRunner>();
+        runner.ProvideInput = true;
+
+        runnerObj.AddComponent<NetworkSceneManagerDefault>();
+    }
+
     async void CreateRoom()
     {
         if (isConnecting || string.IsNullOrEmpty(createRoom.text))
@@ -48,9 +55,12 @@ public class FusionLobby : MonoBehaviour
         isConnecting = true;
         ShowLoading(true);
 
+        await ClearRunnner();
+        CreateRunner();
+
         var args = new StartGameArgs
         {
-            GameMode = GameMode.Host,       // Host creates room
+            GameMode = GameMode.Host,
             SessionName = createRoom.text,
             Scene = SceneRef.FromIndex(1),
             PlayerCount = 6,
@@ -78,9 +88,12 @@ public class FusionLobby : MonoBehaviour
         isConnecting = true;
         ShowLoading(true);
 
+        await ClearRunnner();
+        CreateRunner();
+
         var args = new StartGameArgs
         {
-            GameMode = GameMode.Client,     // Clients join room
+            GameMode = GameMode.Client,
             SessionName = joinRoom.text,
         };
 
@@ -96,11 +109,23 @@ public class FusionLobby : MonoBehaviour
         Debug.Log("Joined Room Successfully");
     }
 
+    async Task ClearRunnner()
+    {
+        if (runner != null)
+        {
+            await runner.Shutdown();
+            Destroy(runner.gameObject);
+            runner = null;
+        }
+    }
+
     void ShowLoading(bool show)
     {
         loaderPanel.SetActive(show);
         createButton.interactable = !show;
         joinButton.interactable = !show;
+        createRoom.interactable = !show;
+        joinRoom.interactable = !show;
     }
 
     void ResetUI()
