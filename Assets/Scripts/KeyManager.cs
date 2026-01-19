@@ -1,15 +1,197 @@
-using UnityEngine;
+// using UnityEngine;
+// using Fusion;
+
+// public class KeyManager : NetworkBehaviour
+// {
+//     public static KeyManager Instance;
+//     [SerializeField] private DoorController doorController;
+
+//     [Header("Keys in order")]
+//     public KeyPickup[] keys;
+
+//     [HideInInspector]
+//     [Networked] public int collectedKeys { get; set; }
+
+//     private void Awake()
+//     {
+//         Instance = this;
+//     }
+
+//     public override void Spawned()
+//     {
+//         if (Object.HasStateAuthority)
+//         {
+//             collectedKeys = 0;
+//         }
+
+//         UpdateKeysVisibility();
+//     }
+
+//     public override void Render()
+//     {
+//         UpdateKeysVisibility();
+//     }
+
+//     // CALLED BY KEY
+//     public void CollectKey(int keyIndex)
+//     {
+//         if (!Object.HasStateAuthority) return;
+//         if (keyIndex != collectedKeys) return;
+
+//         collectedKeys++;
+//     }
+
+//     public void TryOpenDoor()
+//     {
+//         if (!Object.HasStateAuthority) return;
+
+//         if (collectedKeys >= keys.Length)
+//         {
+//             doorController.OpenDoor();
+//         }
+//     }
+
+//     public bool AllKeysCollected()
+//     {
+//         return collectedKeys >= keys.Length;
+//     }
+
+//     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+//     public void RPC_TryOpenDoor()
+//     {
+//         TryOpenDoor();
+//     }
+
+//     private void UpdateKeysVisibility()
+//     {
+//         for (int i = 0; i < keys.Length; i++)
+//         {
+//             bool visible = (i == collectedKeys);
+//             keys[i].SetVisible(visible);
+//         }
+//     }
+
+//     public void ResetKeys()
+//     {
+//         if (!Object.HasStateAuthority) return;
+
+//         collectedKeys = 0;
+
+//         for (int i = 0; i < keys.Length; i++)
+//         {
+//             keys[i].SetVisible(i == 0);
+//         }
+//     }
+// }
+
+// using Fusion;
+// using UnityEngine;
+
+// public class KeyManager : NetworkBehaviour
+// {
+//     public static KeyManager Instance;
+
+//     [Header("Door")]
+//     [SerializeField] private DoorController doorController;
+
+//     [Header("Keys in order")]
+//     public KeyPickup[] keys;
+
+//     // Networked key count
+//     [Networked] public int collectedKeys { get; set; }
+
+//     private void Awake()
+//     {
+//         Instance = this;
+//     }
+
+//     // =========================
+//     // SPAWN
+//     // =========================
+//     public override void Spawned()
+//     {
+//         if (Object.HasStateAuthority)
+//         {
+//             collectedKeys = 0;
+//         }
+
+//         UpdateKeysVisibility();
+//     }
+
+//     // =========================
+//     // VISUAL UPDATE
+//     // =========================
+//     public override void Render()
+//     {
+//         UpdateKeysVisibility();
+//     }
+
+//     // =========================
+//     // CALLED BY KEY PICKUP
+//     // =========================
+//     public void CollectKey(int keyIndex)
+//     {
+//         if (!Object.HasStateAuthority)
+//             return;
+
+//         if (keyIndex != collectedKeys)
+//             return;
+
+//         collectedKeys++;
+
+//         // If all keys collected, open the door
+//         if (collectedKeys >= keys.Length && doorController != null)
+//         {
+//             doorController.OpenDoorFromKeys();
+//         }
+//     }
+
+//     // =========================
+//     // QUERY
+//     // =========================
+//     public bool AllKeysCollected()
+//     {
+//         return collectedKeys >= keys.Length;
+//     }
+
+//     // =========================
+//     // VISUAL KEY STATE
+//     // =========================
+//     private void UpdateKeysVisibility()
+//     {
+//         if (keys == null)
+//             return;
+
+//         for (int i = 0; i < keys.Length; i++)
+//         {
+//             bool visible = (i == collectedKeys);
+//             keys[i].SetVisible(visible);
+//         }
+//     }
+
+//     // =========================
+//     // RESET (OPTIONAL)
+//     // =========================
+//     public void ResetKeys()
+//     {
+//         if (!Object.HasStateAuthority)
+//             return;
+
+//         collectedKeys = 0;
+//     }
+// }
+
 using Fusion;
+using UnityEngine;
 
 public class KeyManager : NetworkBehaviour
 {
     public static KeyManager Instance;
-    [SerializeField] private DoorController doorController;
 
     [Header("Keys in order")]
     public KeyPickup[] keys;
 
-    [HideInInspector]
+    // Networked key count
     [Networked] public int collectedKeys { get; set; }
 
     private void Awake()
@@ -17,6 +199,9 @@ public class KeyManager : NetworkBehaviour
         Instance = this;
     }
 
+    // =========================
+    // SPAWN
+    // =========================
     public override void Spawned()
     {
         if (Object.HasStateAuthority)
@@ -27,43 +212,45 @@ public class KeyManager : NetworkBehaviour
         UpdateKeysVisibility();
     }
 
+    // =========================
+    // VISUAL UPDATE
+    // =========================
     public override void Render()
     {
         UpdateKeysVisibility();
     }
 
-    // CALLED BY KEY
+    // =========================
+    // CALLED BY KEY PICKUP
+    // =========================
     public void CollectKey(int keyIndex)
     {
-        if (!Object.HasStateAuthority) return;
-        if (keyIndex != collectedKeys) return;
+        if (!Object.HasStateAuthority)
+            return;
+
+        if (keyIndex != collectedKeys)
+            return;
 
         collectedKeys++;
+        // ❌ DO NOT open door here
     }
 
-    public void TryOpenDoor()
-    {
-        if (!Object.HasStateAuthority) return;
-
-        if (collectedKeys >= keys.Length)
-        {
-            doorController.OpenDoor();
-        }
-    }
-
+    // =========================
+    // QUERY USED BY DOOR
+    // =========================
     public bool AllKeysCollected()
     {
         return collectedKeys >= keys.Length;
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_TryOpenDoor()
-    {
-        TryOpenDoor();
-    }
-
+    // =========================
+    // KEY VISIBILITY
+    // =========================
     private void UpdateKeysVisibility()
     {
+        if (keys == null)
+            return;
+
         for (int i = 0; i < keys.Length; i++)
         {
             bool visible = (i == collectedKeys);
@@ -71,17 +258,14 @@ public class KeyManager : NetworkBehaviour
         }
     }
 
+    // =========================
+    // RESET (OPTIONAL)
+    // =========================
     public void ResetKeys()
     {
-        if (!Object.HasStateAuthority) return;
+        if (!Object.HasStateAuthority)
+            return;
 
         collectedKeys = 0;
-
-        for (int i = 0; i < keys.Length; i++)
-        {
-            keys[i].SetVisible(i == 0);
-        }
     }
 }
-
-
