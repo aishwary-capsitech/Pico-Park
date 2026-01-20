@@ -17,7 +17,12 @@ public class Player : NetworkBehaviour
     [Networked] public NetworkButtons JumpButtonsPrevious { get; set; }
     [Networked] public NetworkObject Carrier { get; set; }
     [Networked] public NetworkBool HasReachedFinish { get; set; }
-    [Networked] private NetworkBool IsGrounded { get; set; }
+
+    // NETWORKED VISUAL STATE
+    [Networked] private NetworkBool NetIsMoving { get; set; }
+    [Networked] private NetworkBool NetIsJumping { get; set; }
+    [Networked] private NetworkBool NetIsGrounded { get; set; }
+    [Networked] private NetworkBool NetFacingRight { get; set; }
 
     [Header("Coyote Time")]
     public float coyoteTime = 0.05f;
@@ -29,11 +34,8 @@ public class Player : NetworkBehaviour
 
     private CinemachineCamera cam;
 
-    // Animator for visual states
+    // VISUALS
     private Animator animator;
-    private float lastMoveInput;
-    private float lastRemoteMove;
-    private float lastRemoteVertical;
     private Transform capsuleTransform;
 
     private const string GroundTag = "Ground";
@@ -49,13 +51,8 @@ public class Player : NetworkBehaviour
         networkRb = GetComponent<NetworkRigidbody2D>();
         rb = networkRb.Rigidbody;
 
-        // Cache animator if present
         animator = GetComponent<Animator>();
-        lastMoveInput = 0f;
-        lastRemoteMove = 0f;
-        lastRemoteVertical = 0f;
 
-        // Cache child named "Capsule" if present
         var t = transform.Find("Capsule");
         if (t != null)
             capsuleTransform = t;
@@ -75,11 +72,10 @@ public class Player : NetworkBehaviour
         if (rb == null)
             return;
 
-        // IMPORTANT: ONLY STATE AUTHORITY MOVES PLAYER
+        // ONLY STATE AUTHORITY MOVES PLAYER
         if (!Object.HasStateAuthority)
             return;
 
-        // STOP PLAYER WHEN GAME PAUSED / OVER
         if (UIManager.Instance != null &&
             UIManager.Instance.Object != null &&
             UIManager.Instance.Object.IsValid &&
@@ -90,55 +86,18 @@ public class Player : NetworkBehaviour
         }
 
         // COYOTE TIME
-        if (IsGrounded)
+        if (NetIsGrounded)
             coyoteCounter = coyoteTime;
         else
             coyoteCounter -= Runner.DeltaTime;
 
         if (GetInput(out NetworkInputData data))
         {
-            // HORIZONTAL MOVEMENT
+            // MOVE
             rb.linearVelocity = new Vector2(
                 data.horizontalMovement * moveSpeed,
                 rb.linearVelocity.y
             );
-
-            // Use previous move input so checks compare against prior state
-            float prevMoveInput = lastMoveInput;
-
-            // Trigger Move animation on input start
-  
-                float mv = Mathf.Abs(data.horizontalMovement);
-                if (mv > 0.1f && Mathf.Abs(prevMoveInput) <= 0.1f)
-                    animator.SetTrigger("Move");
-                else if (mv <= 0.1f && Mathf.Abs(prevMoveInput) > 0.1f)
-                    animator.SetTrigger("Idle");
-
-            
-
-            // Flip capsule child based on movement direction (use previous input for edge detection)
-            if (capsuleTransform != null)
-            {
-                if (data.horizontalMovement < -0.1f && Mathf.Abs(prevMoveInput) <= 0.1f)
-                {
-                    // Left -> y = 0
-                    capsuleTransform.localEulerAngles = new Vector3(
-                        capsuleTransform.localEulerAngles.x,
-                        0f,
-                        capsuleTransform.localEulerAngles.z);
-                }
-                else if (data.horizontalMovement > 0.1f && Mathf.Abs(prevMoveInput) <= 0.1f)
-                {
-                    // Right -> y = 180
-                    capsuleTransform.localEulerAngles = new Vector3(
-                        capsuleTransform.localEulerAngles.x,
-                        180f,
-                        capsuleTransform.localEulerAngles.z);
-                }
-            }
-
-            // store current input for next frame
-            lastMoveInput = data.horizontalMovement;
 
             // JUMP
             var jumpPressed = data.jumpButton.GetPressed(JumpButtonsPrevious);
@@ -147,16 +106,9 @@ public class Player : NetworkBehaviour
             if (jumpPressed.IsSet(Buttons.Jump) && coyoteCounter > 0)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                IsGrounded = false;
+                NetIsGrounded = false;
                 coyoteCounter = 0f;
 
-                // Trigger Jump animation
-                if (animator != null)
-                {
-                    animator.SetTrigger("Jump");
-                }
-
-                // TEAM JUMP RAMP
                 if (teamJumpRamp != null && !jumpReported)
                 {
                     teamJumpRamp.PlayerJumped();
@@ -165,7 +117,17 @@ public class Player : NetworkBehaviour
             }
         }
 
-        // FALL DEATH CHECK
+        // AUTHORITATIVE VISUAL STATE
+        NetIsMoving = Mathf.Abs(rb.linearVelocity.x) > 0.1f;
+        NetIsJumping = rb.linearVelocity.y > 0.1f;
+
+        // AUTHORITATIVE FACE DIRECTION (FIX)
+        if (rb.linearVelocity.x > 0.05f)
+            NetFacingRight = true;
+        else if (rb.linearVelocity.x < -0.05f)
+            NetFacingRight = false;
+
+        // FALL DEATH
         if (rb.position.y < -4f &&
             UIManager.Instance != null &&
             !UIManager.Instance.IsGameStopped())
@@ -174,71 +136,29 @@ public class Player : NetworkBehaviour
         }
     }
 
+    // VISUALS (RUNS ON ALL PEERS)
     public override void Render()
     {
-        base.Render();
-
-        if (animator == null || rb == null)
+        if (animator == null)
             return;
 
-        // For remote/non-authoritative instances, trigger move/jump based on velocity changes
-        if (!Object.HasStateAuthority)
+        // ANIMATION (PING SAFE)
+        if (NetIsJumping)
+            animator.Play("Jump");
+        else if (NetIsMoving)
+            animator.Play("Move");
+        else
+            animator.Play("Idle");
+
+        // FACE DIRECTION (FIXED – NO VELOCITY DEPENDENCE)
+        if (capsuleTransform != null)
         {
-            float mv = Mathf.Abs(rb.linearVelocity.x);
-            float prevRemoteMove = lastRemoteMove;
-
-/*            if (mv > 0.1f && prevRemoteMove <= 0.1f)
-                animator.SetTrigger("Move");
-            else
-                animator.SetTrigger("Idle");*/
-
-            lastRemoteMove = mv;
-
-            float vert = rb.linearVelocity.y;
-            float prevRemoteVertical = lastRemoteVertical;
-
-        /*    if (vert > 0.1f && prevRemoteVertical <= 0.1f)
-                animator.SetTrigger("Jump");*/
-           /* else
-                animator.SetTrigger("Idle");*/
-
-            lastRemoteVertical = vert;
-
-            // Flip capsule child for remote instances based on velocity direction (use previous move state)
-            if (capsuleTransform != null)
-            {
-                float vx = rb.linearVelocity.x;
-                if (vx < -0.1f && prevRemoteMove <= 0.1f)
-                {
-                    capsuleTransform.localEulerAngles = new Vector3(
-                        capsuleTransform.localEulerAngles.x,
-                        0f,
-                        capsuleTransform.localEulerAngles.z);
-                }
-                else if (vx > 0.1f && prevRemoteMove <= 0.1f)
-                {
-                    capsuleTransform.localEulerAngles = new Vector3(
-                        capsuleTransform.localEulerAngles.x,
-                        180f,
-                        capsuleTransform.localEulerAngles.z);
-                }
-            }
-
-            // If Jump animation finished, go to Idle (or Move if moving)
-            try
-            {
-                var stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-                int jumpHash = Animator.StringToHash("Jump");
-                if ((stateInfo.IsName("Jump") || stateInfo.shortNameHash == jumpHash) && stateInfo.normalizedTime >= 1f)
-                {
-                    // Choose Idle or Move based on movement after jump
-                    if (Mathf.Abs(lastRemoteMove) <= 0.1f)
-                        animator.SetTrigger("Idle");
-                    else
-                        animator.SetTrigger("Move");
-                }
-            }
-            catch { }
+            capsuleTransform.localEulerAngles =
+                new Vector3(
+                    capsuleTransform.localEulerAngles.x,
+                    NetFacingRight ? 180f : 0f,
+                    capsuleTransform.localEulerAngles.z
+                );
         }
     }
 
@@ -253,38 +173,16 @@ public class Player : NetworkBehaviour
         if (other.gameObject.CompareTag(GroundTag) ||
             other.gameObject.name.Contains(PlayerName))
         {
-            IsGrounded = true;
+            NetIsGrounded = true;
             jumpReported = false;
-            // If we landed while still moving, retrigger Move animation
-            if (animator != null)
-            {
-                float vx = rb != null ? rb.linearVelocity.x : 0f;
-                if (Mathf.Abs(vx) > 0.1f)
-                {
-                    animator.SetTrigger("Move");
-                    lastMoveInput = vx;
-                }
-            }
-            // If capsule exists, ensure it's facing correct direction after landing
-            if (capsuleTransform != null && rb != null)
-            {
-                if (rb.linearVelocity.x < -0.1f)
-                    capsuleTransform.localEulerAngles = new Vector3(capsuleTransform.localEulerAngles.x, 0f, capsuleTransform.localEulerAngles.z);
-                else if (rb.linearVelocity.x > 0.1f)
-                    capsuleTransform.localEulerAngles = new Vector3(capsuleTransform.localEulerAngles.x, 180f, capsuleTransform.localEulerAngles.z);
-            }
         }
 
         if (other.gameObject.TryGetComponent(out TeamJumpRamp ramp))
-        {
             teamJumpRamp = ramp;
-        }
 
         if (other.gameObject.name.Contains("Spike") ||
             other.gameObject.name.Contains("Pendulum"))
-        {
             UIManager.Instance.GameOver();
-        }
 
         if (other.gameObject.name.Contains("Coin"))
         {
@@ -307,7 +205,7 @@ public class Player : NetworkBehaviour
         if (other.gameObject.CompareTag(GroundTag) ||
             other.gameObject.name.Contains(PlayerName))
         {
-            IsGrounded = true;
+            NetIsGrounded = true;
             jumpReported = false;
         }
 
@@ -326,18 +224,13 @@ public class Player : NetworkBehaviour
         if (other.gameObject.CompareTag(GroundTag) ||
             other.gameObject.name.Contains(PlayerName))
         {
-            IsGrounded = false;
+            NetIsGrounded = false;
         }
 
         if (other.gameObject.TryGetComponent(out TeamJumpRamp ramp))
-        {
             teamJumpRamp = null;
-        }
 
         if (other.gameObject.CompareTag("Finish"))
-        {
             HasReachedFinish = false;
-        }
     }
 }
-
