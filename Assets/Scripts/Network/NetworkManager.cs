@@ -2,6 +2,7 @@ using Fusion;
 using Fusion.Sockets;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum Buttons
 {
@@ -36,6 +37,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             Instance = this;
         }
 
+        DontDestroyOnLoad(gameObject);
         // Show mobile controls only on Android
         //         if (mobileControlsUI != null)
         //         {
@@ -57,29 +59,6 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             Debug.LogError("NetworkRunner not found in hierarchy!");
         }
     }
-
-    //private void Awake()
-    //{
-    //    if (Instance != null && Instance != this)
-    //    {
-    //        Destroy(gameObject);
-    //        return;
-    //    }
-
-    //    Instance = this;
-
-    //    runner = FindObjectOfType<NetworkRunner>();
-
-    //    if (runner != null)
-    //    {
-    //        runner.AddCallbacks(this);
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("NetworkRunner not found in hierarchy!");
-    //    }
-
-    //}
 
     public void OnLeftButtonDown()
     {
@@ -158,35 +137,25 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         spawnedPlayers.Add(player, obj);
     }
 
+    public void SetRunner(NetworkRunner newRunner)
+    {
+        // Unbind old runner
+        if (runner != null)
+        {
+            runner.RemoveCallbacks(this);
+        }
+
+        runner = newRunner;
+
+        if (runner != null)
+        {
+            runner.AddCallbacks(this);
+            Debug.Log("NetworkManager bound to new NetworkRunner");
+        }
+    }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        //if (runner.IsServer)
-        //{
-        //    Debug.Log($"OnPlayerJoined: Player {player.PlayerId}");
-
-        //    if (spawnedPlayers.ContainsKey(player))
-        //    {
-        //        Debug.LogWarning($"Player {player.PlayerId} already exist!");
-        //        return;
-        //    }
-
-        //    Vector3 spawnPos = new Vector3(Random.Range(-3, 0), 2, 0);
-        //    int i = player.PlayerId % playerPrefab.Length;
-        //    NetworkPrefabRef playerPref = playerPrefab[i];
-
-        //    NetworkObject obj = runner.Spawn(playerPref, spawnPos, Quaternion.identity, player);
-
-        //    if (obj == null)
-        //    {
-        //        Debug.LogError("FAILED TO SPAWN PLAYER! Prefab missing or not in NetworkProjectConfig.");
-        //        return;
-        //    }
-
-        //    spawnedPlayers.Add(player, obj);
-        //    Debug.Log("PLAYER SPAWNED SUCCESSFULLY");
-        //}
-
         if(!runner.IsServer)
         {
             return;
@@ -244,6 +213,17 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
         Debug.LogWarning("NETWORK SHUTDOWN → " + shutdownReason);
+
+        // Clear runner reference ONLY
+        if (this.runner == runner)
+        {
+            this.runner = null;
+        }
+
+        if (SceneManager.GetActiveScene().name != "LobbyScene")
+        {
+            SceneManager.LoadScene("LobbyScene");
+        }
     }
     public void OnConnectedToServer(NetworkRunner runner) { }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)
