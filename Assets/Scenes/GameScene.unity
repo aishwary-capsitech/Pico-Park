@@ -4399,6 +4399,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mass: 0
+  inactiveMassMultiplier: 8
+  inactiveDrag: 10
+  activeDrag: 0.5
 --- !u!114 &374459588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11425,6 +11428,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mass: 0
+  inactiveMassMultiplier: 8
+  inactiveDrag: 10
+  activeDrag: 0.5
 --- !u!114 &949987149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15454,6 +15460,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mass: 0
+  inactiveMassMultiplier: 8
+  inactiveDrag: 10
+  activeDrag: 0.5
 --- !u!114 &1356396133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20855,7 +20864,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1846759535
 Transform:
   m_ObjectHideFlags: 0
@@ -28605,6 +28614,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mass: 0
+  inactiveMassMultiplier: 8
+  inactiveDrag: 10
+  activeDrag: 0.5
 --- !u!212 &6000983394415380577
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34232,6 +34244,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mass: 0
+  inactiveMassMultiplier: 8
+  inactiveDrag: 10
+  activeDrag: 0.5
 --- !u!1 &8827897340858555066
 GameObject:
   m_ObjectHideFlags: 0
