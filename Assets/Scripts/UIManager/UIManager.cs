@@ -408,7 +408,9 @@ public class UIManager : NetworkBehaviour
             return;
 
         // Only StateAuthority should change level
-        RPC_NextLevel();
+        int currentLevel = LevelManager.Instance.level;
+        if (currentLevel != 2)
+            RPC_NextLevel();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
