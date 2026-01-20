@@ -214,6 +214,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         Debug.LogWarning("NETWORK SHUTDOWN → " + shutdownReason);
 
+        spawnedPlayers.Clear();
+
         // Clear runner reference ONLY
         if (this.runner == runner)
         {

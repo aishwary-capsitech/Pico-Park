@@ -219,7 +219,7 @@ public class PlayerSwipeCrouch : NetworkBehaviour
     // =========================
     public override void FixedUpdateNetwork()
     {
-        // 🔧 FIX: prevent client-side flicker
+        // FIX: prevent client-side flicker
         if (!Object.HasStateAuthority)
             return;
 

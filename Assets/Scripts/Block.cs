@@ -145,7 +145,7 @@ public class Block : NetworkBehaviour
 
         UpdateMass();
 
-        // 🔒 NEW: BRIDGE-STYLE CONDITION
+        // NEW: BRIDGE-STYLE CONDITION
         CheckAllPlayersOnBlock();
     }
 
