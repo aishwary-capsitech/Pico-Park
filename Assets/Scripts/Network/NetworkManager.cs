@@ -2,6 +2,7 @@ using Fusion;
 using Fusion.Sockets;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public enum Buttons
@@ -37,7 +38,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             Instance = this;
         }
 
-        DontDestroyOnLoad(gameObject);
+        DontDestroyOnLoad(EventSystem.current.gameObject);
+
         // Show mobile controls only on Android
         //         if (mobileControlsUI != null)
         //         {
@@ -58,6 +60,69 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         {
             Debug.LogError("NetworkRunner not found in hierarchy!");
         }
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != "GameScene") return;
+
+        // Force EventSystem refresh
+        EventSystem.current.SetSelectedGameObject(null);
+
+        // Rebind EventTriggers
+        RebindMobileButtons();
+    }
+
+    void RebindMobileButtons()
+    {
+        var triggers = FindObjectsOfType<EventTrigger>(true);
+
+        foreach (var trigger in triggers)
+        {
+            trigger.triggers.Clear();
+
+            AddTrigger(trigger, EventTriggerType.PointerDown, (data) =>
+            {
+                if (trigger.gameObject.name.Contains("Left"))
+                    OnLeftButtonDown();
+                else if (trigger.gameObject.name.Contains("Right"))
+                    OnRightButtonDown();
+                else if (trigger.gameObject.name.Contains("Up"))
+                    OnJumpButtonDown();
+            });
+
+            AddTrigger(trigger, EventTriggerType.PointerUp, (data) =>
+            {
+                if (trigger.gameObject.name.Contains("Left"))
+                    OnLeftButtonUp();
+                else if (trigger.gameObject.name.Contains("Right"))
+                    OnRightButtonUp();
+                else if (trigger.gameObject.name.Contains("Up"))
+                    OnJumpButtonUp();
+            });
+        }
+
+        Debug.Log("Mobile buttons rebound successfully");
+    }
+
+    void AddTrigger(EventTrigger trigger, EventTriggerType type, UnityEngine.Events.UnityAction<BaseEventData> action)
+    {
+        EventTrigger.Entry entry = new EventTrigger.Entry
+        {
+            eventID = type
+        };
+        entry.callback.AddListener(action);
+        trigger.triggers.Add(entry);
     }
 
     public void OnLeftButtonDown()
@@ -213,6 +278,10 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
         Debug.LogWarning("NETWORK SHUTDOWN → " + shutdownReason);
+
+        moveLeft = false;
+        moveRight = false;
+        jump = false;
 
         spawnedPlayers.Clear();
 

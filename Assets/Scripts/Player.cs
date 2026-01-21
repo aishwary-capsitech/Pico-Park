@@ -31,6 +31,7 @@ public class Player : NetworkBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 6f;
     public float jumpForce = 12f;
+    public float maxY = 18f;
 
     private CinemachineCamera cam;
 
@@ -126,6 +127,11 @@ public class Player : NetworkBehaviour
             NetFacingRight = true;
         else if (rb.linearVelocity.x < -0.05f)
             NetFacingRight = false;
+
+        if (rb.position.y > maxY && rb.position.y > 0f)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+        }
 
         // FALL DEATH
         if (rb.position.y < -4f &&
