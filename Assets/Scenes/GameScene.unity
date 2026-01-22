@@ -19897,6 +19897,7 @@ GameObject:
   - component: {fileID: 1487867625}
   - component: {fileID: 1487867624}
   - component: {fileID: 1487867626}
+  - component: {fileID: 1487867627}
   m_Layer: 0
   m_Name: Vertical_MovingPlatform
   m_TagString: Ground
@@ -19979,6 +19980,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1487867620}
+  - {fileID: 1487867627}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1487867624
 MonoBehaviour:
@@ -20168,6 +20170,29 @@ PolygonCollider2D:
       - {x: 1, y: -0.99990994}
       - {x: -0.99990994, y: -1}
   m_UseDelaunayMesh: 0
+--- !u!114 &1487867627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487867617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 0}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
 --- !u!1 &1501563213
 GameObject:
   m_ObjectHideFlags: 0
@@ -32670,6 +32695,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 17990671398788412}
+  - {fileID: 8114661300865212579}
   ForceRemoteRenderTimeframe: 0
 --- !u!212 &6937103843092203124
 SpriteRenderer:
@@ -35459,6 +35485,7 @@ GameObject:
   - component: {fileID: 6872198318661840605}
   - component: {fileID: 17990671398788412}
   - component: {fileID: 8114661300865212578}
+  - component: {fileID: 8114661300865212579}
   m_Layer: 0
   m_Name: Vertical_MovingPlatform
   m_TagString: Ground
@@ -35654,6 +35681,29 @@ PolygonCollider2D:
       - {x: 1, y: -0.99990994}
       - {x: -0.99990994, y: -1}
   m_UseDelaunayMesh: 0
+--- !u!114 &8114661300865212579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8114661300865212575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 0}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
 --- !u!212 &8195270948041829256
 SpriteRenderer:
   m_ObjectHideFlags: 0
