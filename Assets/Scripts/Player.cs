@@ -42,9 +42,6 @@ public class Player : NetworkBehaviour
     private const string GroundTag = "Ground";
     private const string PlayerName = "Player";
 
-    // ADDED: tracks REAL jump input only
-    [Networked] private NetworkBool RealJumpTriggered { get; set; }
-
     private void Awake()
     {
         Instance = this;
@@ -86,6 +83,7 @@ public class Player : NetworkBehaviour
             UIManager.Instance.IsGameStopped())
         {
             rb.linearVelocity = Vector2.zero;
+            NetIsJumping = false;
             return;
         }
 
@@ -113,7 +111,7 @@ public class Player : NetworkBehaviour
                 NetIsGrounded = false;
                 coyoteCounter = 0f;
 
-                RealJumpTriggered = true; // ADDED: mark that a real jump has occurred
+                NetIsJumping = true;
 
                 if (teamJumpRamp != null && !jumpReported)
                 {
@@ -126,7 +124,10 @@ public class Player : NetworkBehaviour
         // AUTHORITATIVE VISUAL STATE
         NetIsMoving = Mathf.Abs(rb.linearVelocity.x) > 0.1f;
 
-        NetIsJumping = rb.linearVelocity.y > 0.1f || RealJumpTriggered;
+        if(NetIsJumping && rb.linearVelocity.y <= 0f)
+        {
+            NetIsJumping = false;
+        }
 
         // AUTHORITATIVE FACE DIRECTION (FIX)
         if (rb.linearVelocity.x > 0.05f)
@@ -186,8 +187,8 @@ public class Player : NetworkBehaviour
             other.gameObject.name.Contains(PlayerName))
         {
             NetIsGrounded = true;
+            NetIsJumping = false;
             jumpReported = false;
-            RealJumpTriggered = false; // RESET jump trigger on landing
         }
 
         if (other.gameObject.TryGetComponent(out TeamJumpRamp ramp))
@@ -220,7 +221,6 @@ public class Player : NetworkBehaviour
         {
             NetIsGrounded = true;
             jumpReported = false;
-            RealJumpTriggered = false; // RESET jump trigger on landing
         }
 
         if (other.gameObject.CompareTag("Finish"))

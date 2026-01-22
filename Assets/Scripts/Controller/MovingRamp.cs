@@ -1,46 +1,135 @@
 ﻿//using Fusion;
+//using Fusion.Addons.Physics;
+//using System.Collections.Generic;
 //using UnityEngine;
 
+//[RequireComponent(typeof(Collider2D))]
 //public class MovingRamp : NetworkBehaviour
 //{
-//    public float moveDistance = 1.5f;
-//    public float moveSpeed = 3.0f;
+//    public float moveDistance = 2f;
+//    public float moveSpeed = 2.5f;
+//    private float playerMoveSpeed = 6f;
+//    private Rigidbody2D rb;
 
-//    private Vector3 startPos;
+//    Vector3 startPos;
+//    float lastPlatformX;
+
+//    // Player Rigidbody → relative X offset
+//    Dictionary<Rigidbody2D, float> relativeOffsets = new();
+
+//    // Rigidbody → owning NetworkObject
+//    Dictionary<Rigidbody2D, NetworkObject> rbOwners = new();
 
 //    public override void Spawned()
 //    {
+//        rb = GetComponent<Rigidbody2D>();
+
 //        startPos = transform.position;
+//        lastPlatformX = startPos.x;
 //    }
 
 //    public override void FixedUpdateNetwork()
 //    {
-//        // ONLY host moves the ramp
 //        if (!Object.HasStateAuthority) return;
 
-//        float offset = Mathf.Sin(Runner.SimulationTime * moveSpeed);
+//        if (UIManager.Instance != null &&
+//            UIManager.Instance.IsGameStopped())
+//        {
+//            if (HasStateAuthority)
+//                rb.linearVelocity = Vector2.zero;
 
-//        Vector3 newPos = startPos
-//            + Vector3.right * offset * (moveDistance / 2f);
+//            return;
+//        }
+
+//        // Move ramp
+//        float offset = Mathf.Sin(Runner.SimulationTime * moveSpeed);
+//        Vector3 newPos = startPos + Vector3.right * offset * (moveDistance * 0.5f);
+
+//        float deltaX = newPos.x - lastPlatformX;
+//        lastPlatformX = newPos.x;
 
 //        transform.position = newPos;
+
+//        UpdatePlayers();
+//    }
+
+//    void UpdatePlayers()
+//    {
+//        foreach (var pair in relativeOffsets)
+//        {
+//            Rigidbody2D rb = pair.Key;
+//            if (!rb) continue;
+
+//            NetworkObject playerObj = rbOwners[rb];
+//            if (!playerObj) continue;
+
+//            // READ NETWORK INPUT (this fixes client movement)
+//            if (!Runner.TryGetInputForPlayer(playerObj.InputAuthority, out NetworkInputData input))
+//                continue;
+
+//            float moveStep =
+//                input.horizontalMovement * playerMoveSpeed * Runner.DeltaTime;
+
+//            relativeOffsets[rb] += moveStep;
+
+//            rb.position = new Vector2(
+//                transform.position.x + relativeOffsets[rb],
+//                rb.position.y
+//            );
+//        }
+//    }
+
+//    void OnCollisionEnter2D(Collision2D col)
+//    {
+//        if (!col.collider.CompareTag("Player")) return;
+
+//        Rigidbody2D rb = col.collider.attachedRigidbody;
+//        if (!rb) return;
+
+//        NetworkObject netObj = rb.GetComponent<NetworkObject>();
+//        if (!netObj) return;
+
+//        relativeOffsets[rb] = rb.position.x - transform.position.x;
+//        rbOwners[rb] = netObj;
+//    }
+
+//    void OnCollisionExit2D(Collision2D col)
+//    {
+//        if (!col.collider.CompareTag("Player")) return;
+
+//        Rigidbody2D rb = col.collider.attachedRigidbody;
+//        if (!rb) return;
+
+//        relativeOffsets.Remove(rb);
+//        rbOwners.Remove(rb);
 //    }
 //}
 
 
 using Fusion;
-using UnityEngine;
+using Fusion.Addons.Physics;
 using System.Collections.Generic;
+using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(NetworkRigidbody2D))]
 public class MovingRamp : NetworkBehaviour
 {
+    [Header("Movement Settings")]
     public float moveDistance = 2f;
     public float moveSpeed = 2.5f;
+
     private float playerMoveSpeed = 6f;
 
-    Vector3 startPos;
-    float lastPlatformX;
+    [Networked] private float networkTime { get; set; }
+    [Networked] private NetworkBool isInitialized { get; set; }
+
+    private Rigidbody2D rb;
+    private NetworkRigidbody2D netRb;
+
+    private Vector2 startPos;
+    private float lastPlatformX;
 
     // Player Rigidbody → relative X offset
     Dictionary<Rigidbody2D, float> relativeOffsets = new();
@@ -50,48 +139,96 @@ public class MovingRamp : NetworkBehaviour
 
     public override void Spawned()
     {
-        startPos = transform.position;
+        rb = GetComponent<Rigidbody2D>();
+        netRb = GetComponent<NetworkRigidbody2D>();
+
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.gravityScale = 0f;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+
+        startPos = rb.position;
         lastPlatformX = startPos.x;
+
+        if (HasStateAuthority)
+        {
+            networkTime = 0f;
+            isInitialized = true;
+        }
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (!Object.HasStateAuthority) return;
+        if (!isInitialized)
+            return;
 
-        // Move ramp
-        float offset = Mathf.Sin(Runner.SimulationTime * moveSpeed);
-        Vector3 newPos = startPos + Vector3.right * offset * (moveDistance * 0.5f);
+        if (UIManager.Instance != null &&
+            UIManager.Instance.IsGameStopped())
+        {
+            if (HasStateAuthority)
+                rb.linearVelocity = Vector2.zero;
 
-        float deltaX = newPos.x - lastPlatformX;
-        lastPlatformX = newPos.x;
+            return;
+        }
 
-        transform.position = newPos;
+        if (!HasStateAuthority)
+            return;
+
+        networkTime += Runner.DeltaTime;
+
+        float xOffset = Mathf.Sin(networkTime * moveSpeed);
+        float targetX = startPos.x + xOffset * (moveDistance * 0.5f);
+
+        float currentX = rb.position.x;
+        float velocityX = (targetX - currentX) / Runner.DeltaTime;
+
+        rb.linearVelocity = new Vector2(velocityX, 0f);
 
         UpdatePlayers();
     }
+
+    public override void Render()
+    {
+        if (!isInitialized)
+            return;
+
+        if (UIManager.Instance != null &&
+            UIManager.Instance.IsGameStopped())
+            return;
+
+        float xOffset = Mathf.Sin(networkTime * moveSpeed);
+        float finalX = startPos.x + xOffset * (moveDistance * 0.5f);
+
+        transform.position = new Vector3(
+            finalX,
+            startPos.y,
+            transform.position.z
+        );
+    }
+
+    // ================= PLAYER HANDLING (UNCHANGED LOGIC) =================
 
     void UpdatePlayers()
     {
         foreach (var pair in relativeOffsets)
         {
-            Rigidbody2D rb = pair.Key;
-            if (!rb) continue;
+            Rigidbody2D playerRb = pair.Key;
+            if (!playerRb) continue;
 
-            NetworkObject playerObj = rbOwners[rb];
+            NetworkObject playerObj = rbOwners[playerRb];
             if (!playerObj) continue;
 
-            // READ NETWORK INPUT (this fixes client movement)
+            // Read player input (fixes client movement)
             if (!Runner.TryGetInputForPlayer(playerObj.InputAuthority, out NetworkInputData input))
                 continue;
 
             float moveStep =
                 input.horizontalMovement * playerMoveSpeed * Runner.DeltaTime;
 
-            relativeOffsets[rb] += moveStep;
+            relativeOffsets[playerRb] += moveStep;
 
-            rb.position = new Vector2(
-                transform.position.x + relativeOffsets[rb],
-                rb.position.y
+            playerRb.position = new Vector2(
+                transform.position.x + relativeOffsets[playerRb],
+                playerRb.position.y
             );
         }
     }
@@ -100,24 +237,26 @@ public class MovingRamp : NetworkBehaviour
     {
         if (!col.collider.CompareTag("Player")) return;
 
-        Rigidbody2D rb = col.collider.attachedRigidbody;
-        if (!rb) return;
+        Rigidbody2D playerRb = col.collider.attachedRigidbody;
+        if (!playerRb) return;
 
-        NetworkObject netObj = rb.GetComponent<NetworkObject>();
+        NetworkObject netObj = playerRb.GetComponent<NetworkObject>();
         if (!netObj) return;
 
-        relativeOffsets[rb] = rb.position.x - transform.position.x;
-        rbOwners[rb] = netObj;
+        relativeOffsets[playerRb] =
+            playerRb.position.x - transform.position.x;
+
+        rbOwners[playerRb] = netObj;
     }
 
     void OnCollisionExit2D(Collision2D col)
     {
         if (!col.collider.CompareTag("Player")) return;
 
-        Rigidbody2D rb = col.collider.attachedRigidbody;
-        if (!rb) return;
+        Rigidbody2D playerRb = col.collider.attachedRigidbody;
+        if (!playerRb) return;
 
-        relativeOffsets.Remove(rb);
-        rbOwners.Remove(rb);
+        relativeOffsets.Remove(playerRb);
+        rbOwners.Remove(playerRb);
     }
 }
