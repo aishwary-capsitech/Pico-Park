@@ -2,6 +2,8 @@ using Fusion;
 using Fusion.Sockets;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public enum Buttons
 {
@@ -36,6 +38,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             Instance = this;
         }
 
+        DontDestroyOnLoad(EventSystem.current.gameObject);
+
         // Show mobile controls only on Android
         //         if (mobileControlsUI != null)
         //         {
@@ -58,28 +62,68 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    //private void Awake()
-    //{
-    //    if (Instance != null && Instance != this)
-    //    {
-    //        Destroy(gameObject);
-    //        return;
-    //    }
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
 
-    //    Instance = this;
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
 
-    //    runner = FindObjectOfType<NetworkRunner>();
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != "GameScene") return;
 
-    //    if (runner != null)
-    //    {
-    //        runner.AddCallbacks(this);
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("NetworkRunner not found in hierarchy!");
-    //    }
+        // Force EventSystem refresh
+        EventSystem.current.SetSelectedGameObject(null);
 
-    //}
+        // Rebind EventTriggers
+        RebindMobileButtons();
+    }
+
+    void RebindMobileButtons()
+    {
+        var triggers = FindObjectsOfType<EventTrigger>(true);
+
+        foreach (var trigger in triggers)
+        {
+            trigger.triggers.Clear();
+
+            AddTrigger(trigger, EventTriggerType.PointerDown, (data) =>
+            {
+                if (trigger.gameObject.name.Contains("Left"))
+                    OnLeftButtonDown();
+                else if (trigger.gameObject.name.Contains("Right"))
+                    OnRightButtonDown();
+                else if (trigger.gameObject.name.Contains("Up"))
+                    OnJumpButtonDown();
+            });
+
+            AddTrigger(trigger, EventTriggerType.PointerUp, (data) =>
+            {
+                if (trigger.gameObject.name.Contains("Left"))
+                    OnLeftButtonUp();
+                else if (trigger.gameObject.name.Contains("Right"))
+                    OnRightButtonUp();
+                else if (trigger.gameObject.name.Contains("Up"))
+                    OnJumpButtonUp();
+            });
+        }
+
+        Debug.Log("Mobile buttons rebound successfully");
+    }
+
+    void AddTrigger(EventTrigger trigger, EventTriggerType type, UnityEngine.Events.UnityAction<BaseEventData> action)
+    {
+        EventTrigger.Entry entry = new EventTrigger.Entry
+        {
+            eventID = type
+        };
+        entry.callback.AddListener(action);
+        trigger.triggers.Add(entry);
+    }
 
     public void OnLeftButtonDown()
     {
@@ -158,35 +202,25 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         spawnedPlayers.Add(player, obj);
     }
 
+    public void SetRunner(NetworkRunner newRunner)
+    {
+        // Unbind old runner
+        if (runner != null)
+        {
+            runner.RemoveCallbacks(this);
+        }
+
+        runner = newRunner;
+
+        if (runner != null)
+        {
+            runner.AddCallbacks(this);
+            Debug.Log("NetworkManager bound to new NetworkRunner");
+        }
+    }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        //if (runner.IsServer)
-        //{
-        //    Debug.Log($"OnPlayerJoined: Player {player.PlayerId}");
-
-        //    if (spawnedPlayers.ContainsKey(player))
-        //    {
-        //        Debug.LogWarning($"Player {player.PlayerId} already exist!");
-        //        return;
-        //    }
-
-        //    Vector3 spawnPos = new Vector3(Random.Range(-3, 0), 2, 0);
-        //    int i = player.PlayerId % playerPrefab.Length;
-        //    NetworkPrefabRef playerPref = playerPrefab[i];
-
-        //    NetworkObject obj = runner.Spawn(playerPref, spawnPos, Quaternion.identity, player);
-
-        //    if (obj == null)
-        //    {
-        //        Debug.LogError("FAILED TO SPAWN PLAYER! Prefab missing or not in NetworkProjectConfig.");
-        //        return;
-        //    }
-
-        //    spawnedPlayers.Add(player, obj);
-        //    Debug.Log("PLAYER SPAWNED SUCCESSFULLY");
-        //}
-
         if(!runner.IsServer)
         {
             return;
@@ -244,6 +278,23 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
         Debug.LogWarning("NETWORK SHUTDOWN → " + shutdownReason);
+
+        moveLeft = false;
+        moveRight = false;
+        jump = false;
+
+        spawnedPlayers.Clear();
+
+        // Clear runner reference ONLY
+        if (this.runner == runner)
+        {
+            this.runner = null;
+        }
+
+        if (SceneManager.GetActiveScene().name != "LobbyScene")
+        {
+            SceneManager.LoadScene("LobbyScene");
+        }
     }
     public void OnConnectedToServer(NetworkRunner runner) { }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason)

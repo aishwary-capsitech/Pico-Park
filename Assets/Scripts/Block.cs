@@ -298,7 +298,9 @@ public class Block : NetworkBehaviour
         currentRotationZ = transform.rotation.eulerAngles.z;
 
         UpdateMass();
-        CheckAllPlayersTouching();
+
+        // NEW: BRIDGE-STYLE CONDITION
+        CheckAllPlayersOnBlock();
     }
 
     // =========================

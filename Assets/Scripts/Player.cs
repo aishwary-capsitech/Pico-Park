@@ -269,6 +269,7 @@ public class Player : NetworkBehaviour
     [Header("Movement Settings")]
     public float moveSpeed = 6f;
     public float jumpForce = 12f;
+    public float maxY = 18f;
 
     private CinemachineCamera cam;
 
@@ -279,8 +280,8 @@ public class Player : NetworkBehaviour
     private const string GroundTag = "Ground";
     private const string PlayerName = "Player";
 
-    // 🔑 ADDED: tracks REAL jump input only
-    private bool realJumpTriggered;
+    // ADDED: tracks REAL jump input only
+    [Networked] private NetworkBool RealJumpTriggered { get; set; }
 
     private void Awake()
     {
@@ -349,7 +350,7 @@ public class Player : NetworkBehaviour
                 NetIsGrounded = false;
                 coyoteCounter = 0f;
 
-                realJumpTriggered = true; // ✅ REAL jump only
+                RealJumpTriggered = true; // ADDED: mark that a real jump has occurred
 
                 if (teamJumpRamp != null && !jumpReported)
                 {
@@ -362,6 +363,8 @@ public class Player : NetworkBehaviour
         // AUTHORITATIVE VISUAL STATE
         NetIsMoving = Mathf.Abs(rb.linearVelocity.x) > 0.1f;
 
+        NetIsJumping = rb.linearVelocity.y > 0.1f || RealJumpTriggered;
+
         // 🔑 FIXED: jump animation ONLY when real jump happened
         NetIsJumping = realJumpTriggered;
 
@@ -370,6 +373,11 @@ public class Player : NetworkBehaviour
             NetFacingRight = true;
         else if (rb.linearVelocity.x < -0.05f)
             NetFacingRight = false;
+
+        if (rb.position.y > maxY && rb.position.y > 0f)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+        }
 
         // FALL DEATH
         if (rb.position.y < -4f &&
@@ -417,7 +425,7 @@ public class Player : NetworkBehaviour
         {
             NetIsGrounded = true;
             jumpReported = false;
-            realJumpTriggered = false; // ✅ reset jump animation
+            RealJumpTriggered = false; // RESET jump trigger on landing
         }
 
         if (other.gameObject.TryGetComponent(out TeamJumpRamp ramp))
@@ -450,7 +458,7 @@ public class Player : NetworkBehaviour
         {
             NetIsGrounded = true;
             jumpReported = false;
-            realJumpTriggered = false; // ✅ reset jump animation
+            RealJumpTriggered = false; // RESET jump trigger on landing
         }
 
         if (other.gameObject.CompareTag("Finish"))

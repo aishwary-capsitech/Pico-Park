@@ -49,6 +49,12 @@ public class FusionLobby : MonoBehaviour
         runner.ProvideInput = true;
 
         runnerObj.AddComponent<NetworkSceneManagerDefault>();
+
+        // Rebind runner to NetworkManager
+        if (NetworkManager.Instance != null)
+        {
+            NetworkManager.Instance.SetRunner(runner);
+        }
     }
 
     async void CreateRoom()

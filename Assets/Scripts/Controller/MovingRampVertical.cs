@@ -1,132 +1,55 @@
-// using UnityEngine;
-// using Fusion;
+﻿//using UnityEngine;
+//using Fusion;
 
-// public class MovingRampVertical : NetworkBehaviour
-// {
-//     public float moveHeight = 3.5f;
-//     public float moveSpeed = 2.5f;
-//     public float baseOffset = 0.1f;
+//public class MovingRampVertical : NetworkBehaviour
+//{
+//    public float moveHeight = 3.5f;
+//    public float moveSpeed = 2.5f;
+//    public float baseOffset = 0.1f;
 
-//     [Networked] private float networkTime { get; set; }
-//     [Networked] private NetworkBool isInitialized { get; set; }
+//    [Networked] private float networkTime { get; set; }
+//    [Networked] private NetworkBool isInitialized { get; set; }
 
-//     private Vector3 startPos;
+//    private Vector3 startPos;
 
-//     public override void Spawned()
-//     {
-//         startPos = transform.position;
+//    public override void Spawned()
+//    {
+//        startPos = transform.position;
 
-//         if (HasStateAuthority)
-//         {
-//             networkTime = 0f;
-//             isInitialized = true;
-//             Debug.Log($"Moving Ramp spawned at: {startPos}");
-//         }
-//     }
+//        if (HasStateAuthority)
+//        {
+//            networkTime = 0f;
+//            isInitialized = true;
+//            Debug.Log($"Moving Ramp spawned at: {startPos}");
+//        }
+//    }
 
-//     public override void FixedUpdateNetwork()
-//     {
-//         if (HasStateAuthority)
-//         {
-//             // Server updates the network time
-//             networkTime += Runner.DeltaTime;
-//         }
-//     }
+//    public override void FixedUpdateNetwork()
+//    {
+//        if (HasStateAuthority)
+//        {
+//            // Server updates the network time
+//            networkTime += Runner.DeltaTime;
+//        }
+//    }
 
-//     public override void Render()
-//     {
-//         base.Render();
+//    public override void Render()
+//    {
+//        base.Render();
 
-//         if (!isInitialized) return;
+//        if (!isInitialized) return;
 
-//         // All clients calculate position using synchronized networkTime
-//         float yOffset = (Mathf.Sin(networkTime * moveSpeed) + 1f) / 2f;
-//         float finalY = baseOffset + yOffset * moveHeight;
+//        // All clients calculate position using synchronized networkTime
+//        float yOffset = (Mathf.Sin(networkTime * moveSpeed) + 1f) / 2f;
+//        float finalY = baseOffset + yOffset * moveHeight;
 
-//         transform.position = new Vector3(
-//             startPos.x,
-//             finalY,
-//             startPos.z
-//         );
-//     }
-// }
-
-
-
-// using UnityEngine;
-// using Fusion;
-// using Fusion.Addons.Physics;
-
-// [RequireComponent(typeof(Rigidbody2D))]
-// [RequireComponent(typeof(NetworkRigidbody2D))]
-// public class MovingRampVertical : NetworkBehaviour
-// {
-//     public float moveHeight = 3.5f;
-//     public float moveSpeed = 2.5f;
-//     public float baseOffset = 0.1f;
-
-//     [Networked] private float networkTime { get; set; }
-//     [Networked] private NetworkBool isInitialized { get; set; }
-
-//     private Vector2 startPos;
-
-//     private Rigidbody2D rb;
-//     private NetworkRigidbody2D netRb;
-
-//     public override void Spawned()
-//     {
-//         rb = GetComponent<Rigidbody2D>();
-//         netRb = GetComponent<NetworkRigidbody2D>();
-
-//         startPos = rb.position;
-
-//         rb.bodyType = RigidbodyType2D.Kinematic;
-//         rb.gravityScale = 0f;
-//         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-
-//         if (HasStateAuthority)
-//         {
-//             networkTime = 0f;
-//             isInitialized = true;
-//         }
-//     }
-
-//     public override void FixedUpdateNetwork()
-//     {
-//         if (!isInitialized)
-//             return;
-
-//         // 🔒 ONLY host updates time
-//         if (HasStateAuthority)
-//             networkTime += Runner.DeltaTime;
-
-//         // 🔒 Physics movement ONLY on host
-//         if (!HasStateAuthority)
-//             return;
-
-//         float yOffset = (Mathf.Sin(networkTime * moveSpeed) + 1f) * 0.5f;
-//         float finalY = baseOffset + yOffset * moveHeight;
-
-//         rb.MovePosition(new Vector2(startPos.x, finalY));
-//     }
-
-//     // 🔑 THIS IS THE MISSING PIECE
-//     public override void Render()
-//     {
-//         if (!isInitialized)
-//             return;
-
-//         // All peers (host + client) VISUALLY move platform
-//         float yOffset = (Mathf.Sin(networkTime * moveSpeed) + 1f) * 0.5f;
-//         float finalY = baseOffset + yOffset * moveHeight;
-
-//         transform.position = new Vector3(
-//             startPos.x,
-//             finalY,
-//             transform.position.z
-//         );
-//     }
-// }
+//        transform.position = new Vector3(
+//            startPos.x,
+//            finalY,
+//            startPos.z
+//        );
+//    }
+//}
 
 
 using UnityEngine;
@@ -155,7 +78,6 @@ public class MovingRampVertical : NetworkBehaviour
         rb = GetComponent<Rigidbody2D>();
         netRb = GetComponent<NetworkRigidbody2D>();
 
-        // REQUIRED SETTINGS
         rb.bodyType = RigidbodyType2D.Kinematic;
         rb.gravityScale = 0f;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
@@ -174,19 +96,23 @@ public class MovingRampVertical : NetworkBehaviour
         if (!isInitialized)
             return;
 
-        // Only host updates time
-        if (HasStateAuthority)
-            networkTime += Runner.DeltaTime;
+        if (UIManager.Instance != null &&
+            UIManager.Instance.IsGameStopped())
+        {
+            if (HasStateAuthority)
+                rb.linearVelocity = Vector2.zero;
 
-        // Only host moves platform physics
+            return;
+        }
+
         if (!HasStateAuthority)
             return;
 
-        // Calculate desired Y position (same sine logic)
+        networkTime += Runner.DeltaTime;
+
         float yOffset = (Mathf.Sin(networkTime * moveSpeed) + 1f) * 0.5f;
         float targetY = baseOffset + yOffset * moveHeight;
 
-        // Compute velocity instead of teleporting
         float currentY = rb.position.y;
         float velocityY = (targetY - currentY) / Runner.DeltaTime;
 
@@ -197,6 +123,10 @@ public class MovingRampVertical : NetworkBehaviour
     public override void Render()
     {
         if (!isInitialized)
+            return;
+
+        if (UIManager.Instance != null &&
+            UIManager.Instance.IsGameStopped())
             return;
 
         float yOffset = (Mathf.Sin(networkTime * moveSpeed) + 1f) * 0.5f;
