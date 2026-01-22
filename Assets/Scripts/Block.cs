@@ -248,147 +248,271 @@
 //     }
 // }
 
-
 using Fusion;
+
 using System.Collections.Generic;
+
 using System.Linq;
+
 using UnityEngine;
-
+ 
 [RequireComponent(typeof(Rigidbody2D))]
+
 public class Block : NetworkBehaviour
+
 {
+
     // =========================
-    // NETWORKED SYNC (UNCHANGED)
+
+    // EXISTING NETWORKED DATA (UNCHANGED)
+
     // =========================
+
     [Networked] private float currentPositionX { get; set; }
+
     [Networked] private float currentPositionY { get; set; }
+
     [Networked] private float currentRotationZ { get; set; }
-
+ 
     [Networked] public float mass { get; set; }
-
+ 
     private Vector2 initialPosition;
+
     private float initialRotationZ;
+ 
     private Rigidbody2D rb;
+ 
+    // =========================
+
+    // ADDED (BRIDGE-LIKE LOGIC)
 
     // =========================
-    // TOUCH TRACKING (CORE LOGIC)
+
+    private HashSet<NetworkObject> playersOnBlock = new HashSet<NetworkObject>();
+
+    private bool allPlayersOnBlock = false;
+ 
     // =========================
-    private HashSet<NetworkObject> playersTouchingBlock = new HashSet<NetworkObject>();
+
+    // SPAWN
+
+    // =========================
 
     public override void Spawned()
+
     {
+
         rb = GetComponent<Rigidbody2D>();
-
+ 
         initialPosition = transform.position;
-        initialRotationZ = transform.rotation.eulerAngles.z;
 
+        initialRotationZ = transform.rotation.eulerAngles.z;
+ 
         currentPositionX = initialPosition.x;
+
         currentPositionY = initialPosition.y;
+
         currentRotationZ = initialRotationZ;
+
     }
+ 
+    // =========================
+
+    // NETWORK UPDATE
+
+    // =========================
 
     public override void FixedUpdateNetwork()
-    {
-        if (!HasStateAuthority)
-            return;
 
-        // Existing sync
+    {
+
+        if (!HasStateAuthority)
+
+            return;
+ 
+        // EXISTING SYNC LOGIC (UNCHANGED)
+
         currentPositionX = transform.position.x;
+
         currentPositionY = transform.position.y;
+
         currentRotationZ = transform.rotation.eulerAngles.z;
-
+ 
         UpdateMass();
-
+ 
         // NEW: BRIDGE-STYLE CONDITION
+
         CheckAllPlayersOnBlock();
+
     }
+ 
+    // =========================
+
+    // EXISTING MASS LOGIC (UNCHANGED)
 
     // =========================
-    // EXISTING MASS LOGIC
-    // =========================
+
     private void UpdateMass()
+
     {
+
         int playerCount = Runner.ActivePlayers.Count();
+
         mass = Mathf.Max(1f, playerCount);
+
         rb.mass = mass;
+
     }
+ 
+    // =========================
+
+    // ADDED: SAME CONDITION AS BRIDGE
 
     // =========================
-    // BRIDGE-STYLE TOUCH CHECK
-    // =========================
-    private void CheckAllPlayersTouching()
+
+    private void CheckAllPlayersOnBlock()
+
     {
+
         int requiredPlayers = Runner.ActivePlayers.Count();
+ 
+        // Until all players are on block → freeze X
 
-        if (playersTouchingBlock.Count >= requiredPlayers)
+        if (!allPlayersOnBlock)
+
         {
-            // Unlock movement
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+            if (playersOnBlock.Count >= requiredPlayers)
+
+            {
+
+                allPlayersOnBlock = true;
+
+            }
+
+            else
+
+            {
+
+                rb.constraints =
+
+                    RigidbodyConstraints2D.FreezePositionX |
+
+                    RigidbodyConstraints2D.FreezeRotation;
+
+                return;
+
+            }
+
         }
-        else
-        {
-            // Lock movement
-            rb.constraints =
-                RigidbodyConstraints2D.FreezePositionX |
-                RigidbodyConstraints2D.FreezeRotation;
-        }
+ 
+        // Once condition satisfied → restore original behavior
+
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
     }
+ 
+    // =========================
+
+    // PLAYER DETECTION (SAME AS BRIDGE)
 
     // =========================
-    // TOUCH DETECTION (ANY SIDE)
-    // =========================
+
     private void OnCollisionEnter2D(Collision2D col)
+
     {
+
         if (!HasStateAuthority)
+
             return;
-
+ 
         Player player = col.gameObject.GetComponent<Player>();
-        if (player != null)
-        {
-            playersTouchingBlock.Add(player.Object);
-        }
-    }
 
+        if (player != null)
+
+        {
+
+            playersOnBlock.Add(player.Object);
+
+        }
+
+    }
+ 
     private void OnCollisionExit2D(Collision2D col)
-    {
-        if (!HasStateAuthority)
-            return;
 
+    {
+
+        if (!HasStateAuthority)
+
+            return;
+ 
         Player player = col.gameObject.GetComponent<Player>();
+
         if (player != null)
+
         {
-            playersTouchingBlock.Remove(player.Object);
+
+            playersOnBlock.Remove(player.Object);
+
         }
+
     }
+ 
+    // =========================
+
+    // CLIENT RENDER (UNCHANGED)
 
     // =========================
-    // CLIENT RENDER
-    // =========================
+
     public override void Render()
+
     {
+
         if (!HasStateAuthority)
+
         {
+
             transform.position = new Vector2(currentPositionX, currentPositionY);
+
             transform.rotation = Quaternion.Euler(0, 0, currentRotationZ);
+
         }
+
     }
+ 
+    // =========================
+
+    // RESET (OPTIONAL)
 
     // =========================
-    // RESET
-    // =========================
+
     public void ResetBlock()
+
     {
+
         if (!HasStateAuthority)
+
             return;
-
+ 
         transform.position = initialPosition;
+
         transform.rotation = Quaternion.Euler(0, 0, initialRotationZ);
-
+ 
         rb.linearVelocity = Vector2.zero;
+
         rb.angularVelocity = 0f;
+ 
+        currentPositionX = initialPosition.x;
 
-        playersTouchingBlock.Clear();
+        currentPositionY = initialPosition.y;
+
+        currentRotationZ = initialRotationZ;
+ 
+        playersOnBlock.Clear();
+
+        allPlayersOnBlock = false;
+
     }
+
 }
-
-
+ 
