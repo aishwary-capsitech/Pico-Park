@@ -6772,7 +6772,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 48.92, y: -2.51, z: -10}
+  m_LocalPosition: {x: 71.07, y: 0.3, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16692,6 +16692,7 @@ GameObject:
   - component: {fileID: 1487867625}
   - component: {fileID: 1487867624}
   - component: {fileID: 1487867626}
+  - component: {fileID: 1487867627}
   m_Layer: 0
   m_Name: Vertical_MovingPlatform
   m_TagString: Ground
@@ -16744,15 +16745,15 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_GravityScale: 0
+  m_Material: {fileID: 6200000, guid: ce479e414d2ceea479ac6cb6ce52af94, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
@@ -16774,6 +16775,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1487867620}
+  - {fileID: 1487867627}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1487867624
 MonoBehaviour:
@@ -16963,6 +16965,29 @@ PolygonCollider2D:
       - {x: 1, y: -0.99990994}
       - {x: -0.99990994, y: -1}
   m_UseDelaunayMesh: 0
+--- !u!114 &1487867627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1487867617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 0}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
 --- !u!1 &1501563213
 GameObject:
   m_ObjectHideFlags: 0
@@ -18589,8 +18614,8 @@ Transform:
   m_GameObject: {fileID: 1641489466}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.65, y: -1.3, z: 10}
-  m_LocalScale: {x: 1.4, y: 0.2, z: 0}
+  m_LocalPosition: {x: -4.5646, y: -1.3, z: 10}
+  m_LocalScale: {x: 1.138444, y: 0.2, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1846759535}
@@ -24314,7 +24339,7 @@ Transform:
   m_GameObject: {fileID: 2130085537}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 48.92, y: -2.51, z: -10}
+  m_LocalPosition: {x: 71.07, y: 0.3, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -29740,6 +29765,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 17990671398788412}
+  - {fileID: 8114661300865212579}
   ForceRemoteRenderTimeframe: 0
 --- !u!4 &6881076013799033071
 Transform:
@@ -32627,6 +32653,7 @@ GameObject:
   - component: {fileID: 6872198318661840605}
   - component: {fileID: 17990671398788412}
   - component: {fileID: 8114661300865212578}
+  - component: {fileID: 8114661300865212579}
   m_Layer: 0
   m_Name: Vertical_MovingPlatform
   m_TagString: Ground
@@ -32822,6 +32849,29 @@ PolygonCollider2D:
       - {x: 1, y: -0.99990994}
       - {x: -0.99990994, y: -1}
   m_UseDelaunayMesh: 0
+--- !u!114 &8114661300865212579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8114661300865212575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5e690b5fb1084f5ab1c86457af401d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 0}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
 --- !u!212 &8195270948041829256
 SpriteRenderer:
   m_ObjectHideFlags: 0
