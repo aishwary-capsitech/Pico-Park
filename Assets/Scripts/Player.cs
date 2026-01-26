@@ -367,7 +367,7 @@ public class Player : NetworkBehaviour
         }
 
         // 🔑 FIXED: jump animation ONLY when real jump happened
-        NetIsJumping = RealJumpTriggered;
+        // NetIsJumping = RealJumpTriggered;
 
         // FACE DIRECTION
         if (rb.linearVelocity.x > 0.05f)
