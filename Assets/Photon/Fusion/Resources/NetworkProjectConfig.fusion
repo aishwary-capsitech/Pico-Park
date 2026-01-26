@@ -32,7 +32,7 @@
     },
     "Network": {
         "ConnectionTimeout": 30.0,
-        "ConnectionShutdownTime": 5.0,
+        "ConnectionShutdownTime": 2.0,
         "ReliableDataTransferModes": 3
     },
     "HostMigration": {

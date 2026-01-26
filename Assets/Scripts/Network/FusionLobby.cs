@@ -48,7 +48,7 @@ public class FusionLobby : MonoBehaviour
         runner = runnerObj.AddComponent<NetworkRunner>();
         runner.ProvideInput = true;
 
-        runnerObj.AddComponent<NetworkSceneManagerDefault>();
+        //runnerObj.AddComponent<NetworkSceneManagerDefault>(); // Commented Modified
 
         // Rebind runner to NetworkManager
         if (NetworkManager.Instance != null)
@@ -71,6 +71,7 @@ public class FusionLobby : MonoBehaviour
         var args = new StartGameArgs
         {
             GameMode = GameMode.Host,
+            //GameMode = GameMode.Shared,// Modified
             SessionName = createRoom.text,
             Scene = SceneRef.FromIndex(1),
             PlayerCount = 6,
@@ -121,6 +122,7 @@ public class FusionLobby : MonoBehaviour
         var args = new StartGameArgs
         {
             GameMode = GameMode.Client,
+            //GameMode = GameMode.Shared,// Modified
             SessionName = joinRoom.text,
         };
 
@@ -158,7 +160,7 @@ public class FusionLobby : MonoBehaviour
         if (runner != null)
         {
             await runner.Shutdown();
-            Destroy(runner.gameObject);
+            //Destroy(runner.gameObject); // Modified
             runner = null;
         }
     }
