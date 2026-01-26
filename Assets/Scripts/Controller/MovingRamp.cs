@@ -113,7 +113,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(NetworkRigidbody2D))]
+//[RequireComponent(typeof(NetworkRigidbody2D))]
 public class MovingRamp : NetworkBehaviour
 {
     [Header("Movement Settings")]
@@ -126,7 +126,7 @@ public class MovingRamp : NetworkBehaviour
     [Networked] private NetworkBool isInitialized { get; set; }
 
     private Rigidbody2D rb;
-    private NetworkRigidbody2D netRb;
+    //private NetworkRigidbody2D netRb;
 
     private Vector2 startPos;
     private float lastPlatformX;
@@ -140,7 +140,7 @@ public class MovingRamp : NetworkBehaviour
     public override void Spawned()
     {
         rb = GetComponent<Rigidbody2D>();
-        netRb = GetComponent<NetworkRigidbody2D>();
+        //netRb = GetComponent<NetworkRigidbody2D>();
 
         rb.bodyType = RigidbodyType2D.Kinematic;
         rb.gravityScale = 0f;
@@ -205,7 +205,7 @@ public class MovingRamp : NetworkBehaviour
         );
     }
 
-    // ================= PLAYER HANDLING (UNCHANGED LOGIC) =================
+    // PLAYER HANDLING
 
     void UpdatePlayers()
     {

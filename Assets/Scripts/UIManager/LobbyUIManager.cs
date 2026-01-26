@@ -28,6 +28,14 @@ public class LobbyUIManager : MonoBehaviour
         startButton.onClick.AddListener(OnStartClicked);
     }
 
+    void Update()
+    {
+        if ((startPanel.activeSelf != false || roomPanel.activeSelf != false) && Input.GetKeyDown(KeyCode.Escape))
+        {
+            QuitGame();
+        }
+    }
+
     void OnStartClicked()
     {
         startPanel.SetActive(false);
@@ -54,5 +62,18 @@ public class LobbyUIManager : MonoBehaviour
 
         loadingPanel.SetActive(false);
         roomPanel.SetActive(true);
+    }
+
+    public void QuitGame()
+
+    {
+#if UNITY_EDITOR
+
+        UnityEditor.EditorApplication.isPlaying = false;
+
+#else
+	 	Application.Quit();
+#endif
+
     }
 }
