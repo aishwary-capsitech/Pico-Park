@@ -389,8 +389,8 @@ MonoBehaviour:
   _HasReachedFinish:
     _value: 0
   coyoteTime: 0.05
-  moveSpeed: 4
-  jumpForce: 8
+  moveSpeed: 9
+  jumpForce: 10
   maxY: 18
 --- !u!95 &2615173321099106134
 Animator:
