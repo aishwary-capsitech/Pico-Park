@@ -1,5 +1,6 @@
 using Fusion;
 using Fusion.Sockets;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -24,6 +25,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     private Dictionary<PlayerRef, NetworkObject> spawnedPlayers =
         new Dictionary<PlayerRef, NetworkObject>();
 
+    private List<PlayerRef> pendingSpawns = new List<PlayerRef>();
+    private bool sceneReady = false;
+
     [HideInInspector] public NetworkRunner runner;
 
     private void Awake()
@@ -33,12 +37,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             Destroy(this.gameObject);
             return;
         }
-        else
-        {
-            Instance = this;
-        }
 
-        DontDestroyOnLoad(EventSystem.current.gameObject);
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
 
         // Show mobile controls only on Android
         //         if (mobileControlsUI != null)
@@ -49,6 +50,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         //             mobileControlsUI.SetActive(false);
         // #endif
         //         }
+
+
 
         runner = FindObjectOfType<NetworkRunner>();
 
@@ -221,12 +224,14 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        if(!runner.IsServer)
+        if (!runner.IsServer) return;
+
+        if (!sceneReady)
         {
+            pendingSpawns.Add(player);
             return;
         }
 
-        Debug.Log($"OnPlayerJoined: Player {player.PlayerId}");
         SpawnPlayer(runner, player);
     }
 
@@ -245,6 +250,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
+        if(!runner.IsRunning) return;
+
         var data = new NetworkInputData();
         float move = 0;
 
@@ -282,7 +289,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         moveLeft = false;
         moveRight = false;
         jump = false;
+        sceneReady = false;
 
+        pendingSpawns.Clear();
         spawnedPlayers.Clear();
 
         // Clear runner reference ONLY
@@ -307,8 +316,22 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken token) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
-    public void OnSceneLoadStart(NetworkRunner runner) { }
+    public void OnSceneLoadDone(NetworkRunner runner)
+    {
+        if (!runner.IsServer) return;
+
+        sceneReady = true;
+
+        foreach (var player in pendingSpawns)
+        {
+            SpawnPlayer(runner, player);
+        }
+
+        pendingSpawns.Clear();
+
+        Debug.Log("Scene ready → pending players spawned");
+}
+public void OnSceneLoadStart(NetworkRunner runner) { }
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, System.ArraySegment<byte> data) { }

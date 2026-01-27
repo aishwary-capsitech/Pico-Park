@@ -8,6 +8,8 @@ public class LobbyUIManager : MonoBehaviour
     public GameObject startPanel;     // Start
     public GameObject loadingPanel;   // loadingPanel
     public GameObject roomPanel;      // Canvas -> Image
+    public GameObject gameLoader;
+    public GameObject quitPanel;
 
     [Header("Start Button")]
     public Button startButton;        // Start_Button
@@ -22,6 +24,7 @@ public class LobbyUIManager : MonoBehaviour
         startPanel.SetActive(true);
         loadingPanel.SetActive(false);
         roomPanel.SetActive(false);
+        quitPanel.SetActive(false);
 
         loadingSlider.value = 0;
 
@@ -30,9 +33,11 @@ public class LobbyUIManager : MonoBehaviour
 
     void Update()
     {
-        if ((startPanel.activeSelf != false || roomPanel.activeSelf != false) && Input.GetKeyDown(KeyCode.Escape))
+        bool checkActive = roomPanel.activeSelf && !gameLoader.activeSelf;
+        if ((startPanel.activeSelf || checkActive) && Input.GetKeyDown(KeyCode.Escape))
         {
-            QuitGame();
+            //QuitGame();
+            quitPanel.SetActive(true);
         }
     }
 
@@ -75,5 +80,10 @@ public class LobbyUIManager : MonoBehaviour
 	 	Application.Quit();
 #endif
 
+    }
+
+    public void CloseQuitPanel()
+    {
+        quitPanel.SetActive(false);
     }
 }

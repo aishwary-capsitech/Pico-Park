@@ -48,7 +48,7 @@ public class FusionLobby : MonoBehaviour
         runner = runnerObj.AddComponent<NetworkRunner>();
         runner.ProvideInput = true;
 
-        //runnerObj.AddComponent<NetworkSceneManagerDefault>(); // Commented Modified
+        runnerObj.AddComponent<NetworkSceneManagerDefault>(); // Commented Modified
 
         // Rebind runner to NetworkManager
         if (NetworkManager.Instance != null)
@@ -73,13 +73,18 @@ public class FusionLobby : MonoBehaviour
             GameMode = GameMode.Host,
             //GameMode = GameMode.Shared,// Modified
             SessionName = createRoom.text,
-            Scene = SceneRef.FromIndex(1),
+            //Scene = SceneRef.FromIndex(1),
             PlayerCount = 6,
             IsVisible = true,
             IsOpen = true
         };
 
         var result = await runner.StartGame(args);
+
+        if(result.Ok && runner.IsServer)
+        {
+            runner.LoadScene(SceneRef.FromIndex(1));
+        }
 
         if (!result.Ok)
         {
@@ -128,24 +133,57 @@ public class FusionLobby : MonoBehaviour
 
         var result = await runner.StartGame(args);
 
+        //if (!result.Ok)
+        //{
+        //    Debug.LogError($"Join Room Failed: {result.ShutdownReason}");
+
+        //    if (result.ShutdownReason == ShutdownReason.GameNotFound)
+        //    {
+        //        tryAgainText1.text = $"Room name '{joinRoom.text}' not found!.";
+        //        tryAgainText2.text = "Try another room name.";
+        //    }
+        //    else if (result.ShutdownReason == ShutdownReason.PhotonCloudTimeout)
+        //    {
+        //        tryAgainText1.text = $"Connection to server timed out!.";
+        //        tryAgainText2.text = "Please try again.";
+        //    }
+        //    else
+        //    {
+        //        tryAgainText1.text = $"Failed to join room '{joinRoom.text}'.";
+        //        tryAgainText2.text = "Please try again.";
+        //    }
+
+        //    ResetUI();
+        //    return;
+        //}
+
         if (!result.Ok)
         {
             Debug.LogError($"Join Room Failed: {result.ShutdownReason}");
 
-            if (result.ShutdownReason == ShutdownReason.GameNotFound)
+            switch (result.ShutdownReason)
             {
-                tryAgainText1.text = $"Room name '{joinRoom.text}' not found!.";
-                tryAgainText2.text = "Try another room name.";
-            }
-            else if (result.ShutdownReason == ShutdownReason.PhotonCloudTimeout)
-            {
-                tryAgainText1.text = $"Connection to server timed out!.";
-                tryAgainText2.text = "Please try again.";
-            }
-            else
-            {
-                tryAgainText1.text = $"Failed to join room '{joinRoom.text}'.";
-                tryAgainText2.text = "Please try again.";
+                case ShutdownReason.GameNotFound:
+                    // This can happen due to timing issues as well
+                    tryAgainText1.text = $"Unable to find room '{joinRoom.text}'.";
+                    tryAgainText2.text = "Make sure the host is online and try again.";
+                    break;
+
+                case ShutdownReason.PhotonCloudTimeout:
+                    tryAgainText1.text = "Connection to server timed out!";
+                    tryAgainText2.text = "Please try again.";
+                    break;
+
+                case ShutdownReason.Ok:
+                    // Should never hit here, but safe guard
+                    tryAgainText1.text = $"Failed to join room '{joinRoom.text}'.";
+                    tryAgainText2.text = "Please try again.";
+                    break;
+
+                default:
+                    tryAgainText1.text = $"Failed to join room '{joinRoom.text}'.";
+                    tryAgainText2.text = "Please try again.";
+                    break;
             }
 
             ResetUI();
