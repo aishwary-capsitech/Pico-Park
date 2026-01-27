@@ -381,7 +381,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000013095924222}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b46ba91c664b0b4eb8b8a08f57df585, type: 3}
+  m_Script: {fileID: 11500000, guid: 5b185ed4eb4022a4586869bb1a83a809, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   networkRb: {fileID: 0}
@@ -389,8 +389,8 @@ MonoBehaviour:
   _HasReachedFinish:
     _value: 0
   coyoteTime: 0.05
-  moveSpeed: 4
-  jumpForce: 8
+  moveSpeed: 6
+  jumpForce: 12
   maxY: 18
 --- !u!95 &2615173321099106134
 Animator:
@@ -423,7 +423,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000013095924222}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e38508a8fbb69f4db9a9d9d623460a8, type: 3}
+  m_Script: {fileID: 11500000, guid: 94779441d50d00e408bad496ebfbea97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   crouchHeight: 0.1

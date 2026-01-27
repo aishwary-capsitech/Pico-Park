@@ -847,8 +847,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 73332622}
+  NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &73332622
 MonoBehaviour:
@@ -4829,7 +4828,6 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 374459592}
-  - {fileID: 374459587}
   ForceRemoteRenderTimeframe: 0
 --- !u!50 &374459589
 Rigidbody2D:
@@ -5524,11 +5522,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 388701724}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 524060815828dc1439dfcf7ec8b23ab3, type: 3}
+  m_Script: {fileID: 11500000, guid: b4233cb712feaa94da4e5cfff8c8e25e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 519420031}
-  parallaxSpeed: -0.1
+  parallaxSpeed: 0
 --- !u!212 &388701728
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -7636,8 +7634,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 429913544}
+  NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &429913544
 MonoBehaviour:
@@ -9664,8 +9661,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 542362149}
+  NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &542362149
 MonoBehaviour:
@@ -14533,7 +14529,6 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 949987153}
-  - {fileID: 949987148}
   ForceRemoteRenderTimeframe: 0
 --- !u!50 &949987150
 Rigidbody2D:
@@ -19218,7 +19213,6 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1356396137}
-  - {fileID: 1356396132}
   ForceRemoteRenderTimeframe: 0
 --- !u!50 &1356396134
 Rigidbody2D:
@@ -21530,8 +21524,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 1559279127}
+  NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1559279127
 MonoBehaviour:
@@ -24875,8 +24868,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 1858200054}
+  NetworkedBehaviours: []
   ForceRemoteRenderTimeframe: 0
 --- !u!1 &1866012391
 GameObject:
@@ -28278,7 +28270,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2003188119627675236}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
+  m_Script: {fileID: 11500000, guid: 842d11a8191ea834c979e396c4acb0cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   keyIndex: 4
@@ -28767,7 +28759,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5145560861717057705}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
+  m_Script: {fileID: 11500000, guid: 842d11a8191ea834c979e396c4acb0cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   keyIndex: 2
@@ -29910,7 +29902,6 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 4008960140285955357}
   - {fileID: 6097221781997802789}
   ForceRemoteRenderTimeframe: 0
 --- !u!1 &3555715055856626525
@@ -30775,7 +30766,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4324711948530811492}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
+  m_Script: {fileID: 11500000, guid: 842d11a8191ea834c979e396c4acb0cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   keyIndex: 5
@@ -31924,7 +31915,6 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 5976497488482354412}
   - {fileID: 5976497488482354413}
-  - {fileID: 5976497488482354415}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &5976497488482354415
 MonoBehaviour:
@@ -32230,7 +32220,6 @@ MonoBehaviour:
   - {fileID: 1727193519}
   NetworkedBehaviours:
   - {fileID: 9007636136044977967}
-  - {fileID: 8613953405190058591}
   ForceRemoteRenderTimeframe: 0
 --- !u!60 &6139173823505304668
 PolygonCollider2D:
@@ -32459,7 +32448,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4074088103988334641}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
+  m_Script: {fileID: 11500000, guid: 842d11a8191ea834c979e396c4acb0cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   keyIndex: 3
@@ -32678,7 +32667,6 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 619405924849525465}
   - {fileID: 6396895224692674254}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &6396895224692674254
@@ -33839,7 +33827,6 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 52661730164943993}
   - {fileID: 7291267046248529250}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &7291267046248529250
@@ -35175,7 +35162,6 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 7911066173351509580}
   - {fileID: 7911066173351509575}
   ForceRemoteRenderTimeframe: 0
 --- !u!4 &7814471153369334597
@@ -35808,7 +35794,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 557378069824262869}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45f9346d3a2ba7f4abd6ee0d53e236d1, type: 3}
+  m_Script: {fileID: 11500000, guid: e2ccf8ab4e47fbb40aeb7973ca52d6d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   keys:
@@ -36172,7 +36158,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6609515172302559733}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
+  m_Script: {fileID: 11500000, guid: 842d11a8191ea834c979e396c4acb0cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   keyIndex: 0
@@ -37041,7 +37027,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5467482713162626369}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e41051516623b04ba2c7c30e9831561, type: 3}
+  m_Script: {fileID: 11500000, guid: 842d11a8191ea834c979e396c4acb0cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   keyIndex: 1
@@ -37498,7 +37484,6 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 8798774593282252701}
   - {fileID: 8798774593282252702}
-  - {fileID: 8798774593282252704}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &8798774593282252704
 MonoBehaviour:
