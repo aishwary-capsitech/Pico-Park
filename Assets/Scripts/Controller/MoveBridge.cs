@@ -41,6 +41,7 @@ public class MoveBridge : NetworkBehaviour
         }
 
         // Initialize networked position
+        
         currentPositionX = transform.position.x;
         currentPositionY = transform.position.y;
 
@@ -50,6 +51,7 @@ public class MoveBridge : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
         // Only server calculates movement
+    
         if (HasStateAuthority)
         {
             if (isMoving && !hasReachedTarget)

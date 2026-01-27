@@ -133,30 +133,6 @@ public class FusionLobby : MonoBehaviour
 
         var result = await runner.StartGame(args);
 
-        //if (!result.Ok)
-        //{
-        //    Debug.LogError($"Join Room Failed: {result.ShutdownReason}");
-
-        //    if (result.ShutdownReason == ShutdownReason.GameNotFound)
-        //    {
-        //        tryAgainText1.text = $"Room name '{joinRoom.text}' not found!.";
-        //        tryAgainText2.text = "Try another room name.";
-        //    }
-        //    else if (result.ShutdownReason == ShutdownReason.PhotonCloudTimeout)
-        //    {
-        //        tryAgainText1.text = $"Connection to server timed out!.";
-        //        tryAgainText2.text = "Please try again.";
-        //    }
-        //    else
-        //    {
-        //        tryAgainText1.text = $"Failed to join room '{joinRoom.text}'.";
-        //        tryAgainText2.text = "Please try again.";
-        //    }
-
-        //    ResetUI();
-        //    return;
-        //}
-
         if (!result.Ok)
         {
             Debug.LogError($"Join Room Failed: {result.ShutdownReason}");
@@ -226,7 +202,7 @@ public class FusionLobby : MonoBehaviour
             loader.transform.Rotate(0f, 0f, -300f * Time.deltaTime);
         }
     }
-
+    
     public void OnTryAgain()
     {
         tryAgainPanel.SetActive(false);

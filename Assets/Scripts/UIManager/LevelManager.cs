@@ -12,9 +12,6 @@ public class LevelManager : NetworkBehaviour
     [Networked] public int level { get; set; } = 1;
 
     private int lastAppliedLevel = -1;
-
-    // -----------------------------------------------------
-
     private void Awake()
     {
         if (Instance == null)
@@ -24,15 +21,9 @@ public class LevelManager : NetworkBehaviour
             Destroy(gameObject);
             return;
         }
-
-        // IMPORTANT:
-        // Do NOT disable levels here
-        // Both must stay ACTIVE for Fusion
         level1.SetActive(true);
         level2.SetActive(true);
     }
-
-    // -----------------------------------------------------
 
     public override void Spawned()
     {
@@ -43,8 +34,6 @@ public class LevelManager : NetworkBehaviour
         }
     }
 
-    // -----------------------------------------------------
-
     public override void Render()
     {
         if (level != lastAppliedLevel)
@@ -53,24 +42,15 @@ public class LevelManager : NetworkBehaviour
             lastAppliedLevel = level;
         }
     }
-
-    // -----------------------------------------------------
-
     public void IncreaseLevel()
     {
         if (!Object.HasStateAuthority) return;
         level++;
     }
 
-    // -----------------------------------------------------
     // THIS DOES NOT TOUCH SPIKES OR HAZARDS
-    // -----------------------------------------------------
-
     private void ApplyLevelState()
     {
-        // ONLY toggle level ROOT visibility
-        // (These roots MUST NOT contain NetworkObjects)
-
         level1.SetActive(level == 1);
         level2.SetActive(level == 2);
 

@@ -64,7 +64,6 @@ public class Bullet : NetworkBehaviour
         // Hit player
         if (collision.CompareTag("Player"))
         {
-            // TODO: Apply damage here (Networked Health)
             Runner.Despawn(Object);
         }
     }

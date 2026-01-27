@@ -58,8 +58,6 @@ public class BridgeRotation : NetworkBehaviour
             }
         }
     }
-
-
     public override void Render()
     {
         if (!HasStateAuthority)

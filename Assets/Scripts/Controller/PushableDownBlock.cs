@@ -4,8 +4,8 @@ using UnityEngine;
 public class PushableDownBlock : NetworkBehaviour
 {
     [Header("Mass Settings")]
-    public float heavyMass = 6f;   // hard to move
-    public float lightMass = 2f;   // easy to move
+    public float heavyMass = 6f;   
+    public float lightMass = 2f;   
 
     [Header("Damping")]
     public float horizontalDamping = 0.98f;
@@ -16,7 +16,7 @@ public class PushableDownBlock : NetworkBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.mass = heavyMass; // start heavy
+        rb.mass = heavyMass; 
     }
 
     void FixedUpdate()
@@ -30,7 +30,7 @@ public class PushableDownBlock : NetworkBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // 🔻 Top block landed → make lighter
+        // Top block landed → make lighter
         if (collision.collider.CompareTag("TopBlock"))
         {
             topBlockOnMe = true;
@@ -40,7 +40,7 @@ public class PushableDownBlock : NetworkBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        // 🔺 Top block removed → heavy again
+        // Top block removed → heavy again
         if (collision.collider.CompareTag("TopBlock"))
         {
             topBlockOnMe = false;

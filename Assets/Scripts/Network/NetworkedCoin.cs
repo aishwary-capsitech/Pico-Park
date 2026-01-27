@@ -7,7 +7,6 @@ public class NetworkedCoin : NetworkBehaviour
 
     public override void Spawned()
     {
-        // Visual sync when object spawns
         ApplyVisualState();
     }
 

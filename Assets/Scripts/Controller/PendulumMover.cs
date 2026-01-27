@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class PendulumMover : NetworkBehaviour
 {
-    public float maxAngle = 45f;   // how far left-right it swings
-    public float speed = 2f;       // swing speed
+    public float maxAngle = 45f;   
+    public float speed = 2f;       
 
     public override void FixedUpdateNetwork()
     {

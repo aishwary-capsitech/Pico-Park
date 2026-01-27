@@ -5,17 +5,17 @@ using System.Collections;
 public class LobbyUIManager : MonoBehaviour
 {
     [Header("Panels")]
-    public GameObject startPanel;     // Start
-    public GameObject loadingPanel;   // loadingPanel
-    public GameObject roomPanel;      // Canvas -> Image
+    public GameObject startPanel;    
+    public GameObject loadingPanel;  
+    public GameObject roomPanel;      
     public GameObject gameLoader;
     public GameObject quitPanel;
 
     [Header("Start Button")]
-    public Button startButton;        // Start_Button
+    public Button startButton;       
 
     [Header("Loading")]
-    public Slider loadingSlider;      // LoadingSlider
+    public Slider loadingSlider;      
     public float loadingTime = 3f;
 
     void Start()

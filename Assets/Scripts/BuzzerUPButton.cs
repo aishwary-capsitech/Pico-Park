@@ -4,7 +4,7 @@ public class BuzzerUPButton : MonoBehaviour
 {
     public BlockMoveUp targetBlock;
 
-    private int playersOnButton = 0; // supports multiple players safely
+    private int playersOnButton = 0; 
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -16,7 +16,7 @@ public class BuzzerUPButton : MonoBehaviour
         if (playersOnButton == 1) // first player presses
         {
             targetBlock.StartMoveUp();
-            Debug.Log("🔘 Buzzer pressed → block moving UP");
+            Debug.Log("Buzzer pressed → block moving UP");
         }
     }
 
@@ -31,7 +31,7 @@ public class BuzzerUPButton : MonoBehaviour
         {
             playersOnButton = 0;
             targetBlock.StopMoveUp();
-            Debug.Log("🔘 Buzzer released → block moving DOWN");
+            Debug.Log("Buzzer released → block moving DOWN");
         }
     }
 }

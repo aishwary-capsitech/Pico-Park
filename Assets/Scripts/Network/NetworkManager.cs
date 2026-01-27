@@ -40,19 +40,6 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        // Show mobile controls only on Android
-        //         if (mobileControlsUI != null)
-        //         {
-        // #if UNITY_ANDROID && !UNITY_EDITOR
-        //             mobileControlsUI.SetActive(true);
-        // #else
-        //             mobileControlsUI.SetActive(false);
-        // #endif
-        //         }
-
-
-
         runner = FindObjectOfType<NetworkRunner>();
 
         if (runner != null)

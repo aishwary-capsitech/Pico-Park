@@ -13,7 +13,7 @@ public class BuzzerButtonDOWN : MonoBehaviour
 
         ContactPoint2D contact = collision.GetContact(0);
 
-        // ✅ Player landed ON TOP of buzzer
+        // Player landed ON TOP of buzzer
         if (contact.normal.y < -0.5f)
         {
             playerCount++;
@@ -28,7 +28,7 @@ public class BuzzerButtonDOWN : MonoBehaviour
 
         ContactPoint2D contact = collision.GetContact(0);
 
-        // ✅ Keep moving down ONLY while standing on top
+        // Keep moving down ONLY while standing on top
         if (contact.normal.y < -0.5f)
         {
             targetBox.StartMoveDown();

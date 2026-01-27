@@ -12,8 +12,7 @@ public class BoxLiftPlatform : NetworkBehaviour
     public float downSpeed = 6f;
 
     [Header("Timing")]
-    public float holdAtTopTime = 0.3f;   // 🟢 pause at top
-
+    public float holdAtTopTime = 0.3f;   
     private bool isPressed = false;
     private bool isHolding = false;
 
@@ -29,7 +28,6 @@ public class BoxLiftPlatform : NetworkBehaviour
         if (!Object.HasStateAuthority)
             return;
 
-        // ⛔ stop movement while holding
         if (isHolding)
             return;
 
@@ -53,7 +51,6 @@ public class BoxLiftPlatform : NetworkBehaviour
             speed * Runner.DeltaTime
         );
 
-        // ✅ clean STOP at top
         if (isPressed && Vector3.Distance(transform.position, upPosition.position) < 0.01f)
         {
             StartCoroutine(HoldAtTop());
@@ -67,7 +64,7 @@ public class BoxLiftPlatform : NetworkBehaviour
         isHolding = false;
     }
 
-    // 🔔 called by buzzer
+    // called by buzzer
     public void StartLift()
     {
         if (!Object.HasStateAuthority)
@@ -76,7 +73,7 @@ public class BoxLiftPlatform : NetworkBehaviour
         isPressed = true;
     }
 
-    // 🔕 called when player leaves
+    // called when player leaves
     public void StopLift()
     {
         if (!Object.HasStateAuthority)

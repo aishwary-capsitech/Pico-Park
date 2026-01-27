@@ -169,8 +169,6 @@ public class UIManager : NetworkBehaviour
 
         UpdateCollectibleUI();
     }
-
-
     // COLLECTIBLES
     public void CollectCoin()
     {
@@ -375,8 +373,6 @@ public class UIManager : NetworkBehaviour
                 block.ResetBlock();
             }
         }
-        
-        //RPC_LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
