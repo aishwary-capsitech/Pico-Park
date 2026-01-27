@@ -22692,7 +22692,7 @@ Transform:
   m_GameObject: {fileID: 1727193515}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 1.5217, y: -0.1714, z: -0.5336}
+  m_LocalPosition: {x: 1.5217, y: -0.2107, z: -0.5336}
   m_LocalScale: {x: 0.43771905, y: 0.942842, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -28783,8 +28783,8 @@ HingeJoint2D:
     m_MaximumMotorForce: 10000
   m_UseLimits: 1
   m_AngleLimits:
-    m_LowerAngle: -25
-    m_UpperAngle: 25
+    m_LowerAngle: -30
+    m_UpperAngle: 30
 --- !u!1 &2222415978717199737
 GameObject:
   m_ObjectHideFlags: 0
@@ -31888,7 +31888,7 @@ GameObject:
   - component: {fileID: 2116488987253997560}
   - component: {fileID: 2132889163571008993}
   m_Layer: 0
-  m_Name: Ground10
+  m_Name: Ground10Seesaw
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

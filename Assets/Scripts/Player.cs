@@ -9,6 +9,7 @@ public class Player : NetworkBehaviour
 
     [HideInInspector] public NetworkRigidbody2D networkRb;
     private Rigidbody2D rb;
+    private Color[] colors;
 
     // TEAM JUMP RAMP
     private TeamJumpRamp teamJumpRamp;
@@ -66,6 +67,8 @@ public class Player : NetworkBehaviour
         }
 
         HasReachedFinish = false;
+
+        RandomColor();
     }
 
     public override void FixedUpdateNetwork()
@@ -209,6 +212,11 @@ public class Player : NetworkBehaviour
             UIManager.Instance.CollectDiamond();
             Destroy(other.gameObject);
         }
+
+        if(other.gameObject.name.Contains("Seesaw"))
+        {
+            AddGravity();
+        }
     }
 
     private void OnCollisionStay2D(Collision2D other)
@@ -246,5 +254,46 @@ public class Player : NetworkBehaviour
 
         if (other.gameObject.CompareTag("Finish"))
             HasReachedFinish = false;
+
+        if (other.gameObject.name.Contains("Seesaw"))
+        {
+            RemoveGravity();
+        }
+    }
+
+    private void AddGravity()
+    {
+        rb.gravityScale = 70f;
+        rb.angularDamping = 20f;
+        jumpForce = 12f;
+    }
+
+    private void RemoveGravity()
+    {
+        rb.gravityScale = 3f;
+        rb.angularDamping = 0.05f;
+        jumpForce = 8f;
+    }
+
+    private void RandomColor()
+    {
+        var playerSprite = GetComponentInChildren<SpriteRenderer>();
+        string[] hexValues =
+        {
+            "#FFF272",
+            "#FFFFFF",
+            "#A0FFA0",
+            "#A0E8FF"
+        };
+
+        colors = new Color[hexValues.Length];
+
+        for (int i = 0; i < hexValues.Length; i++)
+        {
+            ColorUtility.TryParseHtmlString(hexValues[i], out colors[i]);
+        }
+
+        int colorIndex = Object.InputAuthority.PlayerId % colors.Length;
+        playerSprite.color = colors[colorIndex];
     }
 }
