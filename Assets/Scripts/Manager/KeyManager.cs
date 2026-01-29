@@ -13,7 +13,7 @@ public class KeyManager : NetworkBehaviour
     {
         Instance = this;
     }
-    // SPAWN
+  
     public override void Spawned()
     {
         if (Object.HasStateAuthority)
@@ -24,7 +24,6 @@ public class KeyManager : NetworkBehaviour
         UpdateKeysVisibility();
     }
 
-    // VISUAL UPDATE
        public override void Render()
     {
         UpdateKeysVisibility();
@@ -61,7 +60,6 @@ public class KeyManager : NetworkBehaviour
         }
     }
    
-    // RESET (OPTIONAL)
     public void ResetKeys()
     {
         if (!Object.HasStateAuthority)

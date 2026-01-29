@@ -63,14 +63,12 @@ public class SwipeManager : MonoBehaviour
 
     void Update()
     {
-        // 🔴 Player lost (restart / despawn) → rebind
         if (playerNetObj == null || !playerNetObj.IsValid)
         {
             StartFindingPlayer();
             return;
         }
 
-        // Touch start
         if (Input.GetMouseButtonDown(0))
         {
             if (EventSystem.current != null &&
@@ -81,7 +79,6 @@ public class SwipeManager : MonoBehaviour
             swipeActive = true;
         }
 
-        // Swipe down
         if (Input.GetMouseButton(0) && swipeActive)
         {
             float deltaY = startPos.y - Input.mousePosition.y;
@@ -92,7 +89,6 @@ public class SwipeManager : MonoBehaviour
             }
         }
 
-        // Release
         if (Input.GetMouseButtonUp(0))
         {
             swipeActive = false;

@@ -25,7 +25,6 @@ public class PauseManager : MonoBehaviour
         pauseImage.sprite = pauseSprite;   
     }
 
-    // When pause button (top-right) is clicked
     public void OnPauseClicked()
     {
         if (!isPaused)

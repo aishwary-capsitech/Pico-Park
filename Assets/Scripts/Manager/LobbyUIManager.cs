@@ -36,7 +36,6 @@ public class LobbyUIManager : MonoBehaviour
         bool checkActive = roomPanel.activeSelf && !gameLoader.activeSelf;
         if ((startPanel.activeSelf || checkActive) && Input.GetKeyDown(KeyCode.Escape))
         {
-            //QuitGame();
             quitPanel.SetActive(true);
         }
     }

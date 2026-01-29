@@ -47,8 +47,6 @@ public class LevelManager : NetworkBehaviour
         if (!Object.HasStateAuthority) return;
         level++;
     }
-
-    // THIS DOES NOT TOUCH SPIKES OR HAZARDS
     private void ApplyLevelState()
     {
         level1.SetActive(level == 1);

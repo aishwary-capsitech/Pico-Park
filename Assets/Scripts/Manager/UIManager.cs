@@ -403,7 +403,6 @@ public class UIManager : NetworkBehaviour
         if (!Object || !Object.IsValid)
             return;
 
-        // Only StateAuthority should change level
         int currentLevel = LevelManager.Instance.level;
         if (currentLevel != 2)
             RPC_NextLevel();
@@ -412,10 +411,9 @@ public class UIManager : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     private void RPC_NextLevel()
     {
-        // Hide level complete UI
+    
         isLevelCompleteNetwork = false;
 
-        // Reset values
         NetworkedCoins = 0;
         NetworkedDiamonds = 0;
         collectedKeys = 0;
