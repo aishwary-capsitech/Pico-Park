@@ -31,11 +31,44 @@ public class FusionLobby : MonoBehaviour
     {
         createButton.onClick.AddListener(CreateRoom);
         joinButton.onClick.AddListener(JoinRoom);
+
+        createRoom.onSubmit.AddListener(OnCreateRoomSubmit);
+        joinRoom.onSubmit.AddListener(OnJoinRoomSubmit);
     }
 
     void Update()
     {
         LoaderAnimation();
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (createRoom.isFocused)
+                joinRoom.ActivateInputField();
+            else
+                createRoom.ActivateInputField();
+        }
+    }
+
+    void OnCreateRoomSubmit(string value)
+    {
+        // Prevent double call while connecting
+        if (isConnecting) return;
+
+        // Enter key triggers onSubmit
+        if (!string.IsNullOrEmpty(value))
+        {
+            CreateRoom();
+        }
+    }
+
+    void OnJoinRoomSubmit(string value)
+    {
+        if (isConnecting) return;
+
+        if (!string.IsNullOrEmpty(value))
+        {
+            JoinRoom();
+        }
     }
 
     void CreateRunner()
