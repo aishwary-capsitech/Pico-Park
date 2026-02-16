@@ -9,12 +9,15 @@ public class Player : NetworkBehaviour
  
     [HideInInspector] public NetworkRigidbody2D networkRb;
     private Rigidbody2D rb;
+    private Collider2D col;
+    private SpriteRenderer spr;
     private Color[] colors;
 
     // TEAM JUMP RAMP
     private TeamJumpRamp teamJumpRamp;
     private bool jumpReported;
- 
+
+    [Networked] private int NetSortingOrder { get; set; } = 0;
     [Networked] public NetworkButtons JumpButtonsPrevious { get; set; }
     [Networked] public NetworkObject Carrier { get; set; }
     [Networked] public NetworkBool HasReachedFinish { get; set; }
@@ -52,7 +55,10 @@ public class Player : NetworkBehaviour
     {
         networkRb = GetComponent<NetworkRigidbody2D>();
         rb = networkRb.Rigidbody;
- 
+
+        col = GetComponent<Collider2D>();
+        spr = GetComponentInChildren<SpriteRenderer>();
+
         animator = GetComponent<Animator>();
  
         var t = transform.Find("Capsule");
@@ -149,6 +155,7 @@ public class Player : NetworkBehaviour
             !UIManager.Instance.IsGameStopped())
         {
             UIManager.Instance.GameOver();
+            RPC_PlayHaptic();
         }
     }
  
@@ -157,7 +164,10 @@ public class Player : NetworkBehaviour
     {
         if (animator == null)
             return;
- 
+
+        if (spr != null)
+            spr.sortingOrder = NetSortingOrder;
+
         // ANIMATION (PING SAFE)
         if (NetIsJumping)
             animator.Play("Jump");
@@ -196,11 +206,22 @@ public class Player : NetworkBehaviour
  
         if (other.gameObject.TryGetComponent(out TeamJumpRamp ramp))
             teamJumpRamp = ramp;
- 
+
         if (other.gameObject.name.Contains("Spike") ||
             other.gameObject.name.Contains("Pendulum"))
+        {
             UIManager.Instance.GameOver();
- 
+            RPC_PlayHaptic();
+        }
+
+        if (other.gameObject.CompareTag("Pits"))
+        {
+            UIManager.Instance.GameOver();
+            col.enabled = false;
+            NetSortingOrder = -1;
+            RPC_PlayHaptic();
+        }
+
         if (other.gameObject.name.Contains("Coin"))
         {
             UIManager.Instance.CollectCoin();
@@ -295,5 +316,44 @@ public class Player : NetworkBehaviour
 
         int colorIndex = Object.InputAuthority.PlayerId % colors.Length;
         playerSprite.color = colors[colorIndex];
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    private void RPC_PlayHaptic()
+    {
+        Debug.Log("Haptic : " + SettingManager.Instance.isHapticEnabled);
+#if UNITY_ANDROID
+    if (SettingManager.Instance.isHapticEnabled)
+        Handheld.Vibrate();
+#endif
+    }
+
+    // ================= QUICK CHAT =================
+
+    public void SendQuickChat(QuickChatType type)
+    {
+        if (!Object.HasInputAuthority)
+            return;
+
+        RPC_ShowQuickChat(type);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_SendQuickChat(QuickChatType type)
+    {
+        if (UIManager.Instance != null)
+            UIManager.Instance.ShowQuickChat(type);
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_ShowQuickChat(QuickChatType type, RpcInfo info = default)
+    {
+        int playerNumber = Object.InputAuthority.PlayerId;
+
+        string message = UIManager.Instance.GetQuickChatText(type);
+
+        UIManager.Instance.ShowQuickChatMessage(
+            $"Player {playerNumber}: {message}"
+        );
     }
 }

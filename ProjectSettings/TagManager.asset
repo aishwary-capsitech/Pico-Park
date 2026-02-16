@@ -8,6 +8,7 @@ TagManager:
   - TopBlock
   - Key
   - Spike
+  - Pits
   layers:
   - Default
   - TransparentFX

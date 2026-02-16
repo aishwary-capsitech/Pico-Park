@@ -1,9 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class LobbyUIManager : MonoBehaviour
 {
+    public GameObject soloTrainingRoom;
+
     [Header("Panels")]
     public GameObject startPanel;    
     public GameObject loadingPanel;  
@@ -20,10 +23,27 @@ public class LobbyUIManager : MonoBehaviour
 
     void Start()
     {
+        int isGameOver = PlayerPrefs.GetInt("GameOver");
+
+        if(isGameOver == 0)
+        {
+            startPanel.SetActive(true);
+            loadingPanel.SetActive(false);
+            roomPanel.SetActive(false);
+            PlayerPrefs.SetInt("GameOver", 1);
+        }
+        else
+        {
+            startPanel.SetActive(false);
+            loadingPanel.SetActive(false);
+            roomPanel.SetActive(true);
+            PlayerPrefs.SetInt("GameOver", 0);
+        }
+
         // Initial state
-        startPanel.SetActive(true);
-        loadingPanel.SetActive(false);
-        roomPanel.SetActive(false);
+        //startPanel.SetActive(true);
+        //loadingPanel.SetActive(false);
+        //roomPanel.SetActive(false);
         quitPanel.SetActive(false);
 
         loadingSlider.value = 0;
@@ -47,6 +67,11 @@ public class LobbyUIManager : MonoBehaviour
         loadingSlider.value = 0;
 
         StartCoroutine(LoadingRoutine());
+    }
+
+    public void JoinTraining()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     IEnumerator LoadingRoutine()

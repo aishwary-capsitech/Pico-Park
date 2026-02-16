@@ -37,6 +37,16 @@ public class UIManager : NetworkBehaviour
     public GameObject level1;
     public GameObject level2;
 
+    [Header("Quick Chat")]
+    public GameObject quickChatMessagePanel;
+    public GameObject quickChatAllMessage;
+    public TMP_Text quickChatMessageText;
+    public GameObject options;
+    public GameObject quickChatButton;
+    private bool isQuickChatOpen = false;
+    private bool IsChattingEnabled => SettingManager.Instance.isChattingEnabled;
+    private Coroutine quickChatRoutine;
+
     [Networked] private NetworkBool isPausedNetwork { get; set; }
     [Networked] private NetworkBool isGameOverNetwork { get; set; }
     [Networked] private NetworkBool isLevelCompleteNetwork { get; set; }
@@ -47,6 +57,7 @@ public class UIManager : NetworkBehaviour
     [SerializeField] private float updateInterval = 0.5f;
     private float timer;
     private NetworkRunner runner;
+    public bool isGameOver = false;
 
     void Awake()
     {
@@ -62,6 +73,9 @@ public class UIManager : NetworkBehaviour
             return;
         }
         
+        level2.SetActive(false);
+        SelectQuickChatOption();
+        ToggleChat();
         Time.timeScale = 1f;
 
         if (pausePanel != null)
@@ -77,6 +91,15 @@ public class UIManager : NetworkBehaviour
             pauseButtonImage.sprite = pauseSprite;
 
         runner = FindObjectOfType<NetworkRunner>();
+
+        if (quickChatMessagePanel != null)
+            quickChatMessagePanel.SetActive(false);
+
+        if (quickChatAllMessage != null) 
+            quickChatAllMessage.SetActive(false);
+
+        if (options != null)
+            options.SetActive(isQuickChatOpen);
     }
 
     public override void Spawned()
@@ -230,7 +253,7 @@ public class UIManager : NetworkBehaviour
         if (keyText != null)
             keyText.transform.parent.gameObject.SetActive(isLevel2);
 
-        Debug.Log($"UpdateCollectibleUI → Level: {currentLevel}");
+        //Debug.Log($"UpdateCollectibleUI → Level: {currentLevel}");
     }
 
     public bool AllCollected()
@@ -356,6 +379,11 @@ public class UIManager : NetworkBehaviour
             ResetCollectibles();
             UpdateCollectibleUI();
             NetworkManager.Instance.RestartGamePlayer();
+            //if (isQuickChatOpen)
+            //{
+            //    isQuickChatOpen = false;
+            //    options.SetActive(isQuickChatOpen);
+            //}
         }
 
         BridgeRotation bridge = FindObjectOfType<BridgeRotation>();
@@ -373,6 +401,16 @@ public class UIManager : NetworkBehaviour
                 block.ResetBlock();
             }
         }
+
+        //var allMessagetext = quickChatAllMessage.GetComponentInChildren<TMP_Text>();
+        //if (allMessagetext != null)
+        //{
+        //    allMessagetext.text = "";
+        //}
+
+        //quickChatMessagePanel.SetActive(false);
+        //quickChatAllMessage.SetActive(false);
+        RPC_ClearQuickChatUI();
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -444,6 +482,8 @@ public class UIManager : NetworkBehaviour
     private void RPC_SetGameOver(NetworkBool gameOver)
     {
         isGameOverNetwork = gameOver;
+        isGameOver = gameOver;
+        PlayerPrefs.SetInt("GameOver", gameOver ? 1 : 0);
         Debug.Log("Game over screen shown to all players");
     }
 
@@ -457,5 +497,143 @@ public class UIManager : NetworkBehaviour
             Destroy(runner.gameObject);
 
         SceneManager.LoadScene("LobbyScene");
+    }
+
+    public void ExitTraining()
+    {
+        SceneManager.LoadScene("LobbyScene");
+        PlayerPrefs.SetInt("GameOver", 1);
+    }
+
+    //public void ToggleSetting()
+    //{
+    //    if(SettingManager.Instance != null)
+    //        SettingManager.Instance.ToggleSettingPanel();
+    //}
+
+    public void ToggleChat()
+    {
+        quickChatButton.SetActive(IsChattingEnabled);
+        Debug.Log("Chatting Enabled: " + SettingManager.Instance.isChattingEnabled);
+        Debug.Log("Game Scene Chat : " + IsChattingEnabled);
+    }
+
+    public void ToggleQuickChat()
+    {
+        if (!isQuickChatOpen)
+        {
+            isQuickChatOpen = true;
+            options.SetActive(isQuickChatOpen);
+        }
+        else
+        {
+            isQuickChatOpen = false;
+            options.SetActive(isQuickChatOpen);
+        }
+    }
+
+    public void SelectQuickChatOption()
+    {
+        foreach (Button btn in options.GetComponentsInChildren<Button>())
+        {
+            btn.onClick.AddListener(() =>
+            {
+                QuickChatType type = (QuickChatType)btn.transform.GetSiblingIndex();
+                string message = btn.GetComponentInChildren<TMP_Text>().text;
+                Player localPlayer = FindObjectsOfType<Player>()
+                    .FirstOrDefault(p => p.Object.HasInputAuthority);
+                if(localPlayer != null)
+                    localPlayer.SendQuickChat(type);
+                if (isQuickChatOpen)
+                {
+                    isQuickChatOpen = false;
+                    options.SetActive(isQuickChatOpen);
+                }
+            });
+        }
+    }
+
+    public void ShowQuickChat(QuickChatType type)
+    {
+        if (quickChatRoutine != null)
+            StopCoroutine(quickChatRoutine);
+
+        quickChatMessageText.text = GetQuickChatText(type);
+        quickChatMessagePanel.SetActive(true); 
+        quickChatAllMessage.SetActive(true);
+
+        quickChatRoutine = StartCoroutine(HideQuickChatAfterDelay());
+    }
+
+    public void ShowQuickChatMessage(string message)
+    {
+        quickChatMessagePanel.SetActive(true);
+        quickChatAllMessage.SetActive(true);
+
+        quickChatMessageText.text = message;
+
+        var allMessageText = quickChatAllMessage.GetComponentInChildren<TMP_Text>();
+        if (allMessageText != null)
+        {
+            allMessageText.text += $" {message}";
+        }
+
+        var scrollRect = quickChatAllMessage.GetComponent<ScrollRect>();
+        if (scrollRect != null)
+        {
+            Canvas.ForceUpdateCanvases();
+            scrollRect.verticalNormalizedPosition = 0f;
+        }
+
+        if (quickChatRoutine != null)
+            StopCoroutine(quickChatRoutine);
+
+        quickChatRoutine = StartCoroutine(HideQuickChatAfterDelay());
+    }
+
+    IEnumerator HideQuickChatAfterDelay()
+    {
+        yield return new WaitForSeconds(2.5f);
+        quickChatMessagePanel.SetActive(false);
+        quickChatAllMessage.SetActive(false);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_ClearQuickChatUI()
+    {
+        if (quickChatAllMessage != null)
+        {
+            var allMessageText = quickChatAllMessage.GetComponentInChildren<TMP_Text>();
+            if (allMessageText != null)
+            {
+                allMessageText.text = "";
+            }
+        }
+
+        if (quickChatMessagePanel != null)
+            quickChatMessagePanel.SetActive(false);
+
+        if (quickChatAllMessage != null)
+            quickChatAllMessage.SetActive(false);
+
+        isQuickChatOpen = false;
+        options.SetActive(false);
+    }
+
+    public string GetQuickChatText(QuickChatType type)
+    {
+        switch (type)
+        {
+            case QuickChatType.Hii:
+                return "Hi!";
+            case QuickChatType.Wait:
+                return "Wait!";
+            case QuickChatType.Help:
+                return "Help!";
+            case QuickChatType.LetsGo:
+                return "Let's Go!";
+            default:
+                return "";
+        }
     }
 }

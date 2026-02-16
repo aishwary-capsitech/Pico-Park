@@ -107,7 +107,7 @@ public class FusionLobby : MonoBehaviour
             //GameMode = GameMode.Shared,// Modified
             SessionName = createRoom.text,
             //Scene = SceneRef.FromIndex(1),
-            PlayerCount = 6,
+            PlayerCount = 4,
             IsVisible = true,
             IsOpen = true
         };
@@ -172,6 +172,11 @@ public class FusionLobby : MonoBehaviour
 
             switch (result.ShutdownReason)
             {
+                case ShutdownReason.GameIsFull:
+                    tryAgainText1.text = $"{joinRoom.text} is already full";
+                    tryAgainText2.text = $"Please join another room.";
+                    break;
+
                 case ShutdownReason.GameNotFound:
                     // This can happen due to timing issues as well
                     tryAgainText1.text = $"Unable to find room '{joinRoom.text}'.";
@@ -183,11 +188,11 @@ public class FusionLobby : MonoBehaviour
                     tryAgainText2.text = "Please try again.";
                     break;
 
-                case ShutdownReason.Ok:
-                    // Should never hit here, but safe guard
-                    tryAgainText1.text = $"Failed to join room '{joinRoom.text}'.";
-                    tryAgainText2.text = "Please try again.";
-                    break;
+                //case ShutdownReason.Ok:
+                //    // Should never hit here, but safe guard
+                //    tryAgainText1.text = $"Failed to join room '{joinRoom.text}'.";
+                //    tryAgainText2.text = "Please try again.";
+                //    break;
 
                 default:
                     tryAgainText1.text = $"Failed to join room '{joinRoom.text}'.";
