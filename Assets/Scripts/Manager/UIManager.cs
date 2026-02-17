@@ -496,13 +496,15 @@ public class UIManager : NetworkBehaviour
         if (runner != null)
             Destroy(runner.gameObject);
 
+        PlayerPrefs.SetInt("GameOver", 1);
         SceneManager.LoadScene("LobbyScene");
     }
 
     public void ExitTraining()
     {
-        SceneManager.LoadScene("LobbyScene");
+        QuitGame();
         PlayerPrefs.SetInt("GameOver", 1);
+        PlayerPrefs.DeleteKey("TrainingMode");
     }
 
     //public void ToggleSetting()

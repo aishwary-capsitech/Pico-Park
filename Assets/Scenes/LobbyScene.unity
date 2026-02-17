@@ -2544,6 +2544,7 @@ MonoBehaviour:
   joinRoom: {fileID: 659771705}
   createButton: {fileID: 1129516449}
   joinButton: {fileID: 721142609}
+  soloTrainingRoom: {fileID: 2045712214}
   loaderPanel: {fileID: 2128133311}
   loader: {fileID: 1325900833}
   tryAgainPanel: {fileID: 928426426}
@@ -7837,19 +7838,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2045712212}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1902668702}
-        m_TargetAssemblyTypeName: LobbyUIManager, Assembly-CSharp
-        m_MethodName: JoinTraining
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &2072812669
 GameObject:
   m_ObjectHideFlags: 0

@@ -21439,6 +21439,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb16cd20cc40f7d419998a12fd2bf677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trainingLevel: {fileID: 542530034}
   level1: {fileID: 1846759534}
   level2: {fileID: 2222415978717199737}
   _level: 1
