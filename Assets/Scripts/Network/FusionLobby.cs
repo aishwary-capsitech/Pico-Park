@@ -11,6 +11,7 @@ public class FusionLobby : MonoBehaviour
     public TMP_InputField joinRoom;
     public Button createButton;
     public Button joinButton;
+    public Button soloTrainingRoom;
 
     public GameObject loaderPanel;
     public GameObject loader;
@@ -20,6 +21,9 @@ public class FusionLobby : MonoBehaviour
 
     private NetworkRunner runner;
     private bool isConnecting;
+
+    private string trainingRoomName = "SoloTrainingRoomGameMode.Single";
+    public bool isTrainingMode = false;
 
     void Awake()
     {
@@ -31,6 +35,7 @@ public class FusionLobby : MonoBehaviour
     {
         createButton.onClick.AddListener(CreateRoom);
         joinButton.onClick.AddListener(JoinRoom);
+        soloTrainingRoom.onClick.AddListener(OnCreateTrainingRoom);
 
         createRoom.onSubmit.AddListener(OnCreateRoomSubmit);
         joinRoom.onSubmit.AddListener(OnJoinRoomSubmit);
@@ -49,6 +54,14 @@ public class FusionLobby : MonoBehaviour
         }
     }
 
+    void OnCreateTrainingRoom()
+    {
+        if (isConnecting) return;
+        CreateTrainingRoom();
+        isTrainingMode = true;
+        PlayerPrefs.SetInt("TrainingMode", 1);
+    }
+
     void OnCreateRoomSubmit(string value)
     {
         // Prevent double call while connecting
@@ -58,6 +71,7 @@ public class FusionLobby : MonoBehaviour
         if (!string.IsNullOrEmpty(value))
         {
             CreateRoom();
+            PlayerPrefs.SetInt("TrainingMode", 0);
         }
     }
 
@@ -68,6 +82,7 @@ public class FusionLobby : MonoBehaviour
         if (!string.IsNullOrEmpty(value))
         {
             JoinRoom();
+            PlayerPrefs.SetInt("TrainingMode", 0);
         }
     }
 
@@ -88,6 +103,40 @@ public class FusionLobby : MonoBehaviour
         {
             NetworkManager.Instance.SetRunner(runner);
         }
+    }
+
+    async void CreateTrainingRoom()
+    {
+        if (isConnecting)
+            return;
+
+        isConnecting = true;
+        ShowLoading(true);
+        await ClearRunnner();
+        CreateRunner();
+        var args = new StartGameArgs
+        {
+            GameMode = GameMode.Single,
+            SessionName = trainingRoomName,
+            //PlayerCount = 1,
+            IsVisible = false,
+            IsOpen = false
+        };
+        var result = await runner.StartGame(args);
+        if(result.Ok && runner.IsServer)
+        {
+            runner.LoadScene(SceneRef.FromIndex(1));
+            Debug.Log("Player = 1 : " + runner.ActivePlayers.Equals("1"));
+        }
+        if (!result.Ok)
+        {
+            Debug.LogError($"Create Training Room Failed: {result.ShutdownReason}");
+            tryAgainText1.text = $"Failed to create training room.";
+            tryAgainText2.text = "Please try again.";
+            ResetUI();
+            return;
+        }
+        Debug.Log("Training Room Created Successfully");
     }
 
     async void CreateRoom()

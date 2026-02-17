@@ -6,12 +6,15 @@ public class LevelManager : NetworkBehaviour
     public static LevelManager Instance;
 
     [Header("Level Roots (Scene Objects)")]
+    public GameObject trainingLevel;
     public GameObject level1;
     public GameObject level2;
 
     [Networked] public int level { get; set; } = 1;
 
     private int lastAppliedLevel = -1;
+    private bool isTrainingMode => PlayerPrefs.GetInt("TrainingMode", 0) == 1;
+
     private void Awake()
     {
         if (Instance == null)
@@ -23,6 +26,7 @@ public class LevelManager : NetworkBehaviour
         }
         level1.SetActive(true);
         level2.SetActive(true);
+        trainingLevel.SetActive(true);
     }
 
     public override void Spawned()
@@ -30,7 +34,16 @@ public class LevelManager : NetworkBehaviour
         // Host decides initial level
         if (Object.HasStateAuthority)
         {
-            level = 1;
+            if (isTrainingMode)
+            {
+                level = 0;
+                Debug.Log("Level : " + level);
+            }
+            else
+            {
+                level = 1;
+                Debug.Log("Level : " + level);
+            }
         }
     }
 
@@ -49,6 +62,7 @@ public class LevelManager : NetworkBehaviour
     }
     private void ApplyLevelState()
     {
+        trainingLevel.SetActive(level == 0);
         level1.SetActive(level == 1);
         level2.SetActive(level == 2);
 
